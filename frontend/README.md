@@ -9,6 +9,8 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 - Vue 3
 - Vite 7
 - Yarn 4
+- Vue Router 5
+- Husky 9
 
 ## Setup
 
