@@ -2,6 +2,14 @@
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+## Used Technologies
+
+- Nuxt 4
+- Nitro 2
+- Vue 3
+- Vite 7
+- Yarn 4
+
 ## Setup
 
 Make sure to install dependencies:
