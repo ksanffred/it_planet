@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "nuxt": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://nuxt.com/mcp"
+      ]
+    }
+  },
+  "$version": 3
+}
