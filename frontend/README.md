@@ -11,6 +11,9 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 - Yarn 4
 - Vue Router 5
 - Husky 9
+- Oxlint
+- Oxfmt
+- Typescript 5
 
 ## Setup
 
