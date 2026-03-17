@@ -1,10 +1,12 @@
 {
   "name": "frontend",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "lint": "oxlint --type-aware --type-check --fix .",
+    "format": "oxfmt --write",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && cd .. && husky frontend/.husky"
@@ -15,6 +17,11 @@
     "vue-router": "^5.0.3"
   },
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "oxc-nuxt": "^0.1.5",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.56.0",
+    "oxlint-tsgolint": "^0.17.0",
+    "typescript": "^5.9.3"
   }
 }
