@@ -86,3 +86,15 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Deploy with docker
+
+Build and run docker image for production
+
+```bash
+# build docker image
+docker build -t tramplin-frontend .
+
+# launch docker container
+docker run -d -p 3000:80 --rm tramplin-frontend
+```
