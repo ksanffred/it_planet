@@ -14,6 +14,8 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 - Oxlint
 - Oxfmt
 - Typescript 5
+- Vitetest 4
+- Nuxt/test-utils 4
 
 ## Setup
 
