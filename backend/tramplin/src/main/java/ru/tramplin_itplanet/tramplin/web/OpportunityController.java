@@ -7,15 +7,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
+import ru.tramplin_itplanet.tramplin.web.dto.CreateOpportunityRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityCardResponse;
+import ru.tramplin_itplanet.tramplin.web.mapper.CreateOpportunityRequestMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityCardMapper;
 
 @Tag(name = "Opportunities", description = "Career opportunities: vacancies, internships, mentorships, and events")
@@ -45,9 +46,26 @@ public class OpportunityController {
             @Parameter(description = "ID of the opportunity", example = "1")
             @PathVariable Long id) {
         log.info("GET /opportunities/{}", id);
+        return ResponseEntity.ok(OpportunityCardMapper.toResponse(opportunityService.getById(id)));
+    }
+
+    @Operation(
+            summary = "Create a new opportunity card",
+            description = "Creates a vacancy, internship, mentorship, or career event. Returns the full created card with its generated ID."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Opportunity created successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation failed — required fields missing or invalid",
+                    content = @Content(schema = @Schema(example = "{\"status\":400,\"errors\":[\"title: must not be blank\"]}"))),
+            @ApiResponse(responseCode = "404", description = "Referenced employer not found",
+                    content = @Content(schema = @Schema(example = "{\"status\":404,\"error\":\"Employer not found with id: 5\"}")))
+    })
+    @PostMapping
+    public ResponseEntity<OpportunityCardResponse> create(@Valid @RequestBody CreateOpportunityRequest request) {
+        log.info("POST /opportunities: title={}, type={}, employerId={}", request.title(), request.type(), request.employerId());
         OpportunityCardResponse response = OpportunityCardMapper.toResponse(
-                opportunityService.getById(id)
+                opportunityService.create(CreateOpportunityRequestMapper.toCommand(request))
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

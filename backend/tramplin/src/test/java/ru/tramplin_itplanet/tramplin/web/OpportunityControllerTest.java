@@ -3,8 +3,10 @@ package ru.tramplin_itplanet.tramplin.web;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.*;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
@@ -13,8 +15,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,6 +51,56 @@ class OpportunityControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Opportunity not found with id: 99"));
+    }
+
+    @Test
+    void create_validRequest_returns201WithCreatedCard() throws Exception {
+        when(opportunityService.create(any())).thenReturn(buildOpportunity(1L));
+
+        mockMvc.perform(post("/opportunities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Java Developer"))
+                .andExpect(jsonPath("$.type").value("VACANCY"));
+    }
+
+    @Test
+    void create_missingRequiredFields_returns400() throws Exception {
+        mockMvc.perform(post("/opportunities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    void create_unknownEmployerId_returns404() throws Exception {
+        when(opportunityService.create(any())).thenThrow(new EmployerNotFoundException(99L));
+
+        mockMvc.perform(post("/opportunities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 99,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Employer not found with id: 99"));
     }
 
     private Opportunity buildOpportunity(Long id) {

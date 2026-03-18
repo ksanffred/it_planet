@@ -50,6 +50,39 @@ class OpportunityServiceImplTest {
         verify(opportunityRepository).findById(99L);
     }
 
+    @Test
+    void create_validCommand_returnsSavedOpportunity() {
+        CreateOpportunityCommand command = buildCommand();
+        Opportunity expected = buildOpportunity(1L);
+        when(opportunityRepository.save(command)).thenReturn(expected);
+
+        Opportunity result = opportunityService.create(command);
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).save(command);
+    }
+
+    private CreateOpportunityCommand buildCommand() {
+        return new CreateOpportunityCommand(
+                1L,
+                "Java Developer",
+                "Backend role",
+                OpportunityType.VACANCY,
+                OpportunityFormat.REMOTE,
+                null,
+                "Moscow",
+                null,
+                null,
+                BigDecimal.valueOf(100_000),
+                BigDecimal.valueOf(150_000),
+                null,
+                LocalDateTime.of(2026, 6, 1, 0, 0),
+                OpportunityStatus.ACTIVE,
+                List.of(),
+                List.of()
+        );
+    }
+
     private Opportunity buildOpportunity(Long id) {
         return new Opportunity(
                 id,
