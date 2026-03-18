@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "03.18.2026",
+  "version": "03.19.2026",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,6 @@
     "lint": "oxlint --type-aware --type-check --fix .",
     "format": "oxfmt --write",
     "test": "vitest",
-    "test:ci": "vitest run",
     "test:e2e": "vitest --project e2e",
     "test:unit": "vitest --project unit",
     "test:nuxt": "vitest --project nuxt",
@@ -24,6 +23,7 @@
   },
   "devDependencies": {
     "@nuxt/test-utils": "^4.0.0",
+    "@vitest/ui": "^4.1.0",
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^20.8.4",
     "husky": "^9.1.7",
@@ -32,6 +32,7 @@
     "oxlint": "^1.56.0",
     "oxlint-tsgolint": "^0.17.0",
     "playwright-core": "^1.58.2",
+    "sass": "^1.98.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   },
