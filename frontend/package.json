@@ -7,6 +7,11 @@
     "dev": "nuxt dev",
     "lint": "oxlint --type-aware --type-check --fix .",
     "format": "oxfmt --write",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "test:e2e": "vitest --project e2e",
+    "test:unit": "vitest --project unit",
+    "test:nuxt": "vitest --project nuxt",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && cd .. && husky frontend/.husky"
@@ -17,12 +22,17 @@
     "vue-router": "^5.0.3"
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^4.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^20.8.4",
     "husky": "^9.1.7",
     "oxc-nuxt": "^0.1.5",
     "oxfmt": "^0.41.0",
     "oxlint": "^1.56.0",
     "oxlint-tsgolint": "^0.17.0",
-    "typescript": "^5.9.3"
+    "playwright-core": "^1.58.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   },
   "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7"
 }

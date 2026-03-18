@@ -1,4 +1,5 @@
 cd frontend
+yarn test
 yarn build
 yarn lint
 yarn format
