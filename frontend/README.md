@@ -118,3 +118,7 @@ yarn test:unit
 # Launch nuxt runtime testing
 yarn test:nuxt
 ```
+
+## Versioning
+
+The project version is determines by the date of the last commit
