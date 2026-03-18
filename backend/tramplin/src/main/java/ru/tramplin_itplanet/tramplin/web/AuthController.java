@@ -11,10 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 import ru.tramplin_itplanet.tramplin.domain.service.AuthService;
 import ru.tramplin_itplanet.tramplin.web.dto.AuthResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.LoginRequest;
@@ -59,5 +58,17 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         log.info("POST /auth/login: email={}", request.email());
         return ResponseEntity.ok(authService.login(request.email(), request.password()));
+    }
+
+    @Operation(summary = "Verify email address")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Email verified"),
+            @ApiResponse(responseCode = "400", description = "Token invalid or expired")
+    })
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, String>> verify(@RequestParam String token) {
+        log.info("GET /auth/verify");
+        authService.verifyEmail(token);
+        return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
     }
 }

@@ -23,15 +23,18 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final EmailVerificationService emailVerificationService;
 
     public AuthServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            JwtService jwtService,
-                           UserDetailsService userDetailsService) {
+                           UserDetailsService userDetailsService,
+                           EmailVerificationService emailVerificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
@@ -43,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
         }
         String passwordHash = passwordEncoder.encode(password);
         User user = userRepository.save(email, displayName, passwordHash, role);
+        emailVerificationService.sendVerificationEmail(user.id(), user.email());
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String token = jwtService.generateToken(userDetails);
         log.info("User registered successfully: id={}, email={}", user.id(), user.email());
@@ -61,5 +65,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(email).orElseThrow();
         log.info("User logged in successfully: email={}", email);
         return new AuthResponse(token, user.id(), user.email(), user.displayName(), user.role().name());
+    }
+
+    @Override
+    public void verifyEmail(String token) {
+        Long userId = emailVerificationService.consumeToken(token);
+        userRepository.verifyUser(userId);
+        log.info("Email verified for userId={}", userId);
     }
 }

@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface UserRepository {
     Optional<User> findByEmail(String email);
+    Optional<User> findById(Long id);
     User save(String email, String displayName, String passwordHash, UserRole role);
+    void verifyUser(Long id);
 }

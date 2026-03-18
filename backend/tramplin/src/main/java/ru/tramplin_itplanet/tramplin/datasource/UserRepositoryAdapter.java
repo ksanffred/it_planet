@@ -31,6 +31,22 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(Long id) {
+        log.debug("Looking up user by id: {}", id);
+        return jpaUserRepository.findById(id).map(UserEntityMapper::toDomain);
+    }
+
+    @Override
+    public void verifyUser(Long id) {
+        log.debug("Verifying user id: {}", id);
+        jpaUserRepository.findById(id).ifPresent(entity -> {
+            entity.setVerified(true);
+            jpaUserRepository.save(entity);
+            log.info("User verified: id={}", id);
+        });
+    }
+
+    @Override
     public User save(String email, String displayName, String passwordHash, UserRole role) {
         log.debug("Saving new user with email: {}", email);
         UserEntity entity = new UserEntity();

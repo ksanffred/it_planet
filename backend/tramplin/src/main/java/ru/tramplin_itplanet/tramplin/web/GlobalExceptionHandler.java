@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException;
 
@@ -46,6 +47,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", 401,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(InvalidVerificationTokenException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidToken(InvalidVerificationTokenException ex) {
+        log.warn("Invalid verification token: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
                 "error", ex.getMessage()
         ));
     }
