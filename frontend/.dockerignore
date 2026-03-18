@@ -1,7 +1,8 @@
-node_modules/
-.nuxt/
-.output/
-.cache/
-dist/
+.node_modules
+.nuxt
+.output
+.gitignore
+.qwen
+.husky
+*.md
 *.log
-.git
