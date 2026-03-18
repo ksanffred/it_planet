@@ -1,3 +1,5 @@
 package ru.tramplin_itplanet.tramplin.domain.model;
 
-public record Tag(Long id, String name, TagCategory category) {}
+import java.io.Serializable;
+
+public record Tag(Long id, String name, TagCategory category) implements Serializable {}

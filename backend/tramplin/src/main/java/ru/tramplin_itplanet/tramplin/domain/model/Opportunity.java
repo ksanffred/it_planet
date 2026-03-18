@@ -1,5 +1,6 @@
 package ru.tramplin_itplanet.tramplin.domain.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,4 +23,4 @@ public record Opportunity(
         OpportunityStatus status,
         List<String> media,
         List<Tag> tags
-) {}
+) implements Serializable {}

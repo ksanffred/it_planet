@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.*;
@@ -31,6 +34,12 @@ class OpportunityControllerTest {
     @MockitoBean
     private OpportunityService opportunityService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
     @Test
     void getCard_existingId_returns200WithOpportunityCard() throws Exception {
         when(opportunityService.getById(1L)).thenReturn(buildOpportunity(1L));
@@ -54,6 +63,7 @@ class OpportunityControllerTest {
     }
 
     @Test
+    @WithMockUser
     void create_validRequest_returns201WithCreatedCard() throws Exception {
         when(opportunityService.create(any())).thenReturn(buildOpportunity(1L));
 
@@ -75,6 +85,7 @@ class OpportunityControllerTest {
     }
 
     @Test
+    @WithMockUser
     void create_missingRequiredFields_returns400() throws Exception {
         mockMvc.perform(post("/opportunities")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,6 +96,7 @@ class OpportunityControllerTest {
     }
 
     @Test
+    @WithMockUser
     void create_unknownEmployerId_returns404() throws Exception {
         when(opportunityService.create(any())).thenThrow(new EmployerNotFoundException(99L));
 
