@@ -1,0 +1,73 @@
+package ru.tramplin_itplanet.tramplin.web;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
+import ru.tramplin_itplanet.tramplin.domain.model.*;
+import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(OpportunityController.class)
+class OpportunityControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private OpportunityService opportunityService;
+
+    @Test
+    void getCard_existingId_returns200WithOpportunityCard() throws Exception {
+        when(opportunityService.getById(1L)).thenReturn(buildOpportunity(1L));
+
+        mockMvc.perform(get("/opportunities/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Java Developer"))
+                .andExpect(jsonPath("$.type").value("VACANCY"))
+                .andExpect(jsonPath("$.employer.name").value("Acme Corp"));
+    }
+
+    @Test
+    void getCard_nonExistingId_returns404() throws Exception {
+        when(opportunityService.getById(99L)).thenThrow(new OpportunityNotFoundException(99L));
+
+        mockMvc.perform(get("/opportunities/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Opportunity not found with id: 99"));
+    }
+
+    private Opportunity buildOpportunity(Long id) {
+        return new Opportunity(
+                id,
+                new Employer(1L, "Acme Corp", null, "https://acme.com", "hr@acme.com"),
+                "Java Developer",
+                "Backend role",
+                OpportunityType.VACANCY,
+                OpportunityFormat.REMOTE,
+                null,
+                "Moscow",
+                null,
+                null,
+                BigDecimal.valueOf(100_000),
+                BigDecimal.valueOf(150_000),
+                LocalDateTime.of(2026, 1, 1, 0, 0),
+                LocalDateTime.of(2026, 6, 1, 0, 0),
+                OpportunityStatus.ACTIVE,
+                List.of(),
+                List.of()
+        );
+    }
+}
