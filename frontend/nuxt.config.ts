@@ -3,4 +3,10 @@ export default defineNuxtConfig({
   modules: ['oxc-nuxt', '@nuxt/test-utils/module'],
   devtools: { enabled: true },
   compatibilityDate: '2025-07-15',
+  vite: {
+    css: {
+      preprocessorMaxWorkers: true,
+    },
+  },
+  css: ['~/assets/styles/main.scss'],
 })

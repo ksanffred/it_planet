@@ -16,6 +16,7 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 - Typescript 5
 - Vitetest 4
 - Nuxt/test-utils 4
+- Scss
 
 ## Setup
 
