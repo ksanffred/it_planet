@@ -1,0 +1,4735 @@
+{
+  "version": "2.9",
+  "children": [
+    {
+      "type": "frame",
+      "id": "qSVzi",
+      "x": -15,
+      "y": 24,
+      "name": "Tramplin Homepage",
+      "width": 1440,
+      "fill": "#FCFAEE",
+      "layout": "vertical",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "ygnlO",
+          "name": "Header Section",
+          "width": 1180,
+          "fill": "#FCFAEE",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "tWbZj",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "sf3QC",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "kRISI",
+                      "name": "brandDot",
+                      "fill": "#FF5F00",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "ScETg",
+                      "name": "brandText",
+                      "fill": "#161413",
+                      "content": "ТРАМПЛИН",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "IXdck",
+                      "name": "brandTag",
+                      "fill": "#558B6E",
+                      "content": "платформа карьеры",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "soqUN",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "7IuMM",
+                      "name": "loginBtn",
+                      "fill": "#F1EBBB",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "w8j49",
+                          "name": "loginTxt",
+                          "fill": "#2F2923",
+                          "content": "Войти",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "2SDUk",
+                      "name": "regBtn",
+                      "fill": "#0049B8",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qpRDL",
+                          "name": "regTxt",
+                          "fill": "#FCFAEE",
+                          "content": "Регистрация",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jfEbv",
+              "name": "Hero Intro",
+              "width": "fill_container",
+              "fill": "#0049B8",
+              "cornerRadius": 26,
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "7hhHD",
+                  "name": "heroLeft",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "MRlcK",
+                      "name": "heroTitle",
+                      "fill": "#FCFAEE",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Найдите стажировки, вакансии, наставников и карьерные события в одной интерактивной ленте",
+                      "lineHeight": 1.05,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 38,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CGrkQ",
+                      "name": "heroSub",
+                      "fill": "#F8F5DD",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Исследуйте возможности по стеку, уровню и формату. Мгновенно переключайтесь между картой и списком.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Yj30I",
+                      "name": "heroBadgeRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "tdtxJ",
+                          "name": "b1",
+                          "fill": "#FF5F00",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "j105y",
+                              "name": "b1t",
+                              "fill": "#FCFAEE",
+                              "content": "Карта + лента",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "kjOtF",
+                          "name": "b2",
+                          "fill": "#F1EBBB",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "UXa7t",
+                              "name": "b2t",
+                              "fill": "#2F2923",
+                              "content": "Умные теги",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VYiWt",
+                  "name": "heroArt",
+                  "width": 340,
+                  "height": 220,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 35,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#FF5F00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#F1EBBB",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#558B6E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "R9tzk",
+          "name": "Controls + Map/List",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 18,
+          "padding": [
+            0,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "VOvvx",
+              "name": "searchRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "5hpSt",
+                  "name": "searchBox",
+                  "width": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gxF70",
+                      "name": "searchText",
+                      "fill": "#423C37",
+                      "content": "Поиск стажировок, компаний, технологий...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KXfEe",
+                  "name": "mapCtaButton",
+                  "width": 300,
+                  "height": 64,
+                  "fill": "#2F2923",
+                  "cornerRadius": 20,
+                  "gap": 10,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UulVD",
+                      "name": "mapThumb",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "dulhiier",
+                        "link": "https://unsplash.com/@dulhiier",
+                        "author": "Nastya Dulhiier"
+                      },
+                      "width": 96,
+                      "height": 52,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1542382189-f2600a163c2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMjEzNjR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#FCFAEE"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "c5rsO",
+                      "name": "copyWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "eYKH3",
+                          "name": "mapCtaTitle",
+                          "fill": "#FCFAEE",
+                          "content": "Открыть карту",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "7fwFL",
+                          "name": "mapCtaSub",
+                          "fill": "#F1EBBB",
+                          "content": "Смотреть возможности по локации",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VJxhV",
+              "name": "chipsRow",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jLepD",
+                  "name": "chip1",
+                  "fill": "#0049B8",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "RJndZ",
+                      "name": "chip1t",
+                      "fill": "#FCFAEE",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mP8ZB",
+                  "name": "chip2",
+                  "fill": "#558B6E",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "q1OrX",
+                      "name": "chip2t",
+                      "fill": "#FCFAEE",
+                      "content": "Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "GQVE7",
+                  "name": "chip3",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "5uExu",
+                      "name": "chip3t",
+                      "fill": "#2F2923",
+                      "content": "Гибрид",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Vlam5",
+          "name": "Feed Mosaic A (Self)",
+          "width": 1197,
+          "height": 399,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "JSQ7S",
+              "x": 20,
+              "y": 20,
+              "name": "cardA",
+              "width": 390,
+              "fill": "#FCFAEE",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QtyWJ",
+                  "name": "imgA",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "silverkblack",
+                    "link": "https://unsplash.com/@silverkblack",
+                    "author": "Vitaly Gariev"
+                  },
+                  "width": "fill_container",
+                  "height": 190,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "7MDde",
+                  "name": "titleA",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Стажировка: Младший Python-инженер",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 20,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "Mf4F8",
+                  "name": "descA",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Разработка внутренних API при поддержке наставника и еженедельных тех-встречах.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "iD5R4",
+                  "name": "tagA",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Orbit Labs · Python · SQL · Джуниор · Полный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "CV7mn",
+              "x": 458.5,
+              "y": 20,
+              "name": "cardB",
+              "width": 320,
+              "fill": "#0049B8",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zlBCl",
+                  "name": "imgB",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "tecnic",
+                    "link": "https://unsplash.com/@tecnic",
+                    "author": "TECNIC Bioprocess Solutions"
+                  },
+                  "width": "fill_container",
+                  "height": 272,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1748346674126-8c0df10f2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "McMm3",
+                  "name": "titleB",
+                  "fill": "#FCFAEE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Хакатон по фронтенду: решения для климата",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "2Ye4q",
+                  "name": "descB",
+                  "fill": "#F8F5DD",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Оффлайн-событие с реальными кейсами компаний и призами.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "r8CKy",
+                  "name": "tagB",
+                  "fill": "#F1EBBB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Code House · Событие · Офис · Алматы",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qgLCe",
+              "x": 816.5,
+              "y": 20,
+              "name": "cardC",
+              "width": 360,
+              "fill": "#F8F5DD",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AlcJl",
+                  "name": "imgC",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "litoondev",
+                    "link": "https://unsplash.com/@litoondev",
+                    "author": "litoon dev"
+                  },
+                  "width": "fill_container",
+                  "height": 210,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1738094060048-a4247139d866?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODd8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "95lCG",
+                  "name": "titleC",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Программа наставничества: трек по инженерии данных",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 19,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "2pLFR",
+                  "name": "descC",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "12-недельный трек с наставниками, ревью портфолио и пробными интервью.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "7lTzd",
+                  "name": "tagC",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tramplin Mentors · Удалённо · Python · ETL",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QkRER",
+          "name": "Feed Mosaic B (Agent)",
+          "width": 1180,
+          "height": 411,
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "CX4sA",
+              "x": 690.5,
+              "y": -40,
+              "name": "fillShape",
+              "fill": "#FF5F00",
+              "width": 150,
+              "height": 150
+            },
+            {
+              "type": "frame",
+              "id": "O24eq",
+              "x": 415.5,
+              "y": 57,
+              "name": "cardD",
+              "width": 350,
+              "fill": "#F8F5DD",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "D7wWZ",
+                  "name": "imgD",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "ogelamar",
+                    "link": "https://unsplash.com/@ogelamar",
+                    "author": "Code💻 Ninja⚡"
+                  },
+                  "width": "fill_container",
+                  "height": 180,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "NttcO",
+                  "name": "titleD",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Стажировка QA для финтех-платформы",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "Jjw9X",
+                  "name": "descD",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Основы ручного и автоматизированного тестирования под руководством наставника.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "SgHMA",
+                  "name": "tagD",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "NovaPay · Офис · Джуниор · Неполный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jCzD2",
+              "x": 27.5,
+              "y": -26,
+              "name": "cardE",
+              "width": 360,
+              "fill": "#568b6eff",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "iPc8L",
+                  "name": "imgE",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "taymaster",
+                    "link": "https://unsplash.com/@taymaster",
+                    "author": "Les Taylor"
+                  },
+                  "width": "fill_container",
+                  "height": 200,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1772582728749-7161bcb0a49a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "aWSup",
+                  "name": "titleE",
+                  "fill": "#FCFAEE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "День открытых дверей карьеры: встреча cloud-команд",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "aoqxk",
+                  "name": "descE",
+                  "fill": "#F8F5DD",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Познакомьтесь с командами найма, посетите короткие лекции и отправьте резюме на месте.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "eaDeH",
+                  "name": "tagE",
+                  "fill": "#F1EBBB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "SkyNet Group · Событие · Гибрид · Астана",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ycDAg",
+              "x": 805.5,
+              "y": 6,
+              "name": "cardF",
+              "width": 320,
+              "fill": "#FCFAEE",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zANzl",
+                  "name": "imgF",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "akinggraphic",
+                    "link": "https://unsplash.com/@akinggraphic",
+                    "author": "Adeniji Abdullahi A"
+                  },
+                  "width": "fill_container",
+                  "height": 271,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1662962066574-ad3e912295c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "u3Z75",
+                  "name": "titleF",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Удалённая позиция: младший Java-разработчик",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "5n8Bz",
+                  "name": "descF",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Продуктовая backend-роль с code review и планом онбординга.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "Gs9FZ",
+                  "name": "tagF",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "BitFlow · Удалённо · Java · Полный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GoKXy",
+          "name": "Feed Mosaic A (Self)",
+          "width": 1197,
+          "height": 399,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "2IOS5",
+              "x": 787.5,
+              "y": 49,
+              "name": "cardB",
+              "width": 395,
+              "height": 303,
+              "fill": "#0049B8",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JTW0B",
+                  "name": "imgB",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "tecnic",
+                    "link": "https://unsplash.com/@tecnic",
+                    "author": "TECNIC Bioprocess Solutions"
+                  },
+                  "width": "fill_container",
+                  "height": 161,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1748346674126-8c0df10f2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "yLG9B",
+                  "name": "titleB",
+                  "fill": "#FCFAEE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Хакатон по фронтенду: решения для климата",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "9aPY5",
+                  "name": "descB",
+                  "fill": "#F8F5DD",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Оффлайн-событие с реальными кейсами компаний и призами.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "TVOFZ",
+                  "name": "tagB",
+                  "fill": "#F1EBBB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Code House · Событие · Офис · Алматы",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "P04dh",
+              "x": 31.5,
+              "y": -35,
+              "name": "cardC",
+              "width": 360,
+              "fill": "#F8F5DD",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "7F6oG",
+                  "name": "imgC",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "litoondev",
+                    "link": "https://unsplash.com/@litoondev",
+                    "author": "litoon dev"
+                  },
+                  "width": "fill_container",
+                  "height": 210,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1738094060048-a4247139d866?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODd8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "Hwa3G",
+                  "name": "titleC",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Программа наставничества: трек по инженерии данных",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 19,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "u9Hj4",
+                  "name": "descC",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "12-недельный трек с наставниками, ревью портфолио и пробными интервью.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "2Uvey",
+                  "name": "tagC",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tramplin Mentors · Удалённо · Python · ETL",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UQ1Jr",
+              "x": 413.5,
+              "y": -10,
+              "name": "cardA",
+              "width": 353,
+              "height": 375,
+              "fill": "#FCFAEE",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Bx7AL",
+                  "name": "imgA",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "silverkblack",
+                    "link": "https://unsplash.com/@silverkblack",
+                    "author": "Vitaly Gariev"
+                  },
+                  "width": "fill_container",
+                  "height": 190,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "lnxMv",
+                  "name": "titleA",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Стажировка: Младший Python-инженер",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 20,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "cNDRq",
+                  "name": "descA",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Разработка внутренних API при поддержке наставника и еженедельных тех-встречах.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "T4JBH",
+                  "name": "tagA",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Orbit Labs · Python · SQL · Джуниор · Полный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UOCZD",
+          "name": "Footer",
+          "width": "fill_container",
+          "fill": "#2F2923",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "yAKCP",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "31fSR",
+                  "name": "ftBrand",
+                  "fill": "#F8F5DD",
+                  "content": "ТРАМПЛИН",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "XUVrV",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0vABw",
+                      "name": "link1",
+                      "fill": "#F1EBBB",
+                      "content": "Возможности",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ISR5H",
+                      "name": "link2",
+                      "fill": "#F1EBBB",
+                      "content": "Наставники",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lOlC8",
+                      "name": "link3",
+                      "fill": "#F1EBBB",
+                      "content": "События",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "1KoJm",
+                      "name": "link4",
+                      "fill": "#F1EBBB",
+                      "content": "Контакты",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BtEBI",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EnmAQ",
+                  "name": "ftCaption",
+                  "fill": "#F8F5DD",
+                  "content": "Поиск IT-возможностей на карте и в списке: стажировки, вакансии, наставничество и события.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "eqJrC",
+                  "name": "ftYear",
+                  "fill": "#FF5F00",
+                  "content": "2026 Трамплин",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "kYE29",
+      "x": 1560,
+      "y": 0,
+      "name": "Map Only Page",
+      "width": 1440,
+      "fill": "#FCFAEE",
+      "layout": "vertical",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "0jKGf",
+          "name": "newHeader",
+          "width": 1180,
+          "fill": "#FCFAEE",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "eZ222",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "9zBBM",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "PI0oN",
+                      "name": "brandDot",
+                      "fill": "#FF5F00",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "XsOEO",
+                      "name": "brandText",
+                      "fill": "#161413",
+                      "content": "TRAMPLIN",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WBQOc",
+                      "name": "brandTag",
+                      "fill": "#558B6E",
+                      "content": "карьерная платформа",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xiuJx",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "fsOL1",
+                      "name": "loginBtn",
+                      "fill": "#F1EBBB",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "gkOFp",
+                          "name": "loginTxt",
+                          "fill": "#2F2923",
+                          "content": "Войти",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "vXpIN",
+                      "name": "regBtn",
+                      "fill": "#0049B8",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ybSih",
+                          "name": "regTxt",
+                          "fill": "#FCFAEE",
+                          "content": "Регистрация",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "0vApD",
+              "name": "Hero Intro",
+              "width": "fill_container",
+              "fill": "#0049B8",
+              "cornerRadius": 26,
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "H1Uda",
+                  "name": "heroLeft",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sZNbf",
+                      "name": "heroTitle",
+                      "fill": "#FCFAEE",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Найдите стажировки, вакансии, менторов и карьерные события в одной интерактивной ленте",
+                      "lineHeight": 1.05,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 38,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lcwqR",
+                      "name": "heroSub",
+                      "fill": "#F8F5DD",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Изучайте возможности по стеку, уровню и формату. Мгновенно переключайтесь между картой и списком.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "oQ5PK",
+                      "name": "heroBadgeRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gJqAw",
+                          "name": "b1",
+                          "fill": "#FF5F00",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "40igK",
+                              "name": "b1t",
+                              "fill": "#FCFAEE",
+                              "content": "Карта + Лента",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HvvQm",
+                          "name": "b2",
+                          "fill": "#F1EBBB",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "2E46t",
+                              "name": "b2t",
+                              "fill": "#2F2923",
+                              "content": "Умные теги",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "G54lP",
+                  "name": "heroArt",
+                  "width": 340,
+                  "height": 220,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 35,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#FF5F00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#F1EBBB",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#558B6E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "eLoDq",
+          "name": "newControls",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 18,
+          "padding": [
+            0,
+            36,
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "9oycb",
+              "name": "searchRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "1H8lk",
+                  "name": "searchBox",
+                  "width": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gHrgv",
+                      "name": "searchText",
+                      "fill": "#423C37",
+                      "content": "Поиск стажировок, вакансий, компаний, технологий...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ap4G5",
+                  "name": "cardCtaButton",
+                  "width": 300,
+                  "height": 64,
+                  "fill": "#2F2923",
+                  "cornerRadius": 20,
+                  "gap": 10,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DFnyo",
+                      "name": "cardsThumb",
+                      "width": 78,
+                      "height": 52,
+                      "fill": "#F8F5DD",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#FCFAEE"
+                      },
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "AXxs1",
+                          "x": 10,
+                          "y": 15,
+                          "name": "cardBack",
+                          "rotation": -10,
+                          "fill": "#D9D3A6",
+                          "width": 22,
+                          "height": 15
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "5xavx",
+                          "x": 16,
+                          "y": 18,
+                          "name": "cardMid",
+                          "rotation": 2,
+                          "fill": "#E8E2BA",
+                          "width": 24,
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "69v3E",
+                          "x": 14,
+                          "y": 12,
+                          "name": "cardFront",
+                          "fill": "#FCFAEE",
+                          "width": 24,
+                          "height": 16,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#2F2923"
+                          }
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 1,
+                          "id": "OLN52",
+                          "x": 18,
+                          "y": 16,
+                          "name": "cardLine1",
+                          "fill": "#2F2923",
+                          "width": 14,
+                          "height": 2
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 1,
+                          "id": "oBuOv",
+                          "x": 18,
+                          "y": 20,
+                          "name": "cardLine2",
+                          "fill": "#423C37",
+                          "width": 10,
+                          "height": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mvzPS",
+                      "name": "cardCtaCopyWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "EeRun",
+                          "name": "cardCtaTitle",
+                          "fill": "#FCFAEE",
+                          "content": "Открыть карточки",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mpmU5",
+                          "name": "cardCtaSub",
+                          "fill": "#F1EBBB",
+                          "content": "Просматривайте возможности в виде карточек",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "M7xcA",
+              "name": "chipsRow",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FtoOC",
+                  "name": "chip1",
+                  "fill": "#0049B8",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JDb2g",
+                      "name": "chip1t",
+                      "fill": "#FCFAEE",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "agfnv",
+                  "name": "chip2",
+                  "fill": "#558B6E",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0Jhdr",
+                      "name": "chip2t",
+                      "fill": "#FCFAEE",
+                      "content": "Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "uyXI4",
+                  "name": "chip3",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wkrDn",
+                      "name": "chip3t",
+                      "fill": "#2F2923",
+                      "content": "Гибрид",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZEXXp",
+              "name": "mainPane",
+              "width": "fill_container",
+              "height": 420,
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zCEKs",
+                  "name": "mapPanel",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#E9F1E7",
+                  "cornerRadius": 24,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#558B6E"
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "Njtqo",
+                      "x": 110,
+                      "y": 120,
+                      "name": "markerA",
+                      "fill": "#FF5F00",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "XS4Sk",
+                      "x": 320,
+                      "y": 200,
+                      "name": "markerB",
+                      "fill": "#0049B8",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "sNWd9",
+                      "x": 540,
+                      "y": 130,
+                      "name": "markerC",
+                      "fill": "#558B6E",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "frame",
+                      "id": "L21ly",
+                      "x": 140,
+                      "y": 140,
+                      "name": "hoverMini",
+                      "width": 210,
+                      "fill": "#FCFAEE",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 10,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "3xgzL",
+                          "name": "hoverTitle",
+                          "fill": "#161413",
+                          "content": "Стажер Python @ FinBridge",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 13,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ACfQQ",
+                          "name": "hoverMeta",
+                          "fill": "#423C37",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Офис · Алматы · до закрытия 10 дней",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QfhyJ",
+                  "name": "cardEquivalentBlock",
+                  "width": 420,
+                  "height": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 22,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "T4OK1",
+                      "name": "cardHero",
+                      "width": "fill_container",
+                      "height": 170,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "cornerRadius": 16
+                    },
+                    {
+                      "type": "text",
+                      "id": "RGDnH",
+                      "name": "cardTitle",
+                      "fill": "#161413",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Backend-стажировка в Orbit Labs",
+                      "lineHeight": 1.1,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 18,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "256Eg",
+                      "name": "cardDesc",
+                      "fill": "#2F2923",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Разрабатывайте API и задачи обработки медиа с менторством и влиянием на реальный продукт.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mgQcC",
+                      "name": "cardTag",
+                      "fill": "#0049B8",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Orbit Labs · Гибрид · Python · SQL · Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "k91QB",
+          "name": "newFooter",
+          "width": "fill_container",
+          "fill": "#2F2923",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "yY0N7",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ot3ze",
+                  "name": "ftBrand",
+                  "fill": "#F8F5DD",
+                  "content": "TRAMPLIN",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "qlpTv",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HyRa9",
+                      "name": "link1",
+                      "fill": "#F1EBBB",
+                      "content": "Возможности",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QpyNn",
+                      "name": "link2",
+                      "fill": "#F1EBBB",
+                      "content": "Менторы",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zYtC3",
+                      "name": "link3",
+                      "fill": "#F1EBBB",
+                      "content": "События",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tQc9m",
+                      "name": "link4",
+                      "fill": "#F1EBBB",
+                      "content": "Контакты",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xZcvp",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "U9b9O",
+                  "name": "ftCaption",
+                  "fill": "#F8F5DD",
+                  "content": "Поиск IT-карьеры на карте и в списке: стажировки, вакансии, менторство и события.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "HwIBK",
+                  "name": "ftYear",
+                  "fill": "#FF5F00",
+                  "content": "2026 Tramplin",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ncgqB",
+      "x": 3120,
+      "y": 24,
+      "name": "Tramplin Homepage Dark (New)",
+      "width": 1440,
+      "fill": "#0B0F14",
+      "layout": "vertical",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "SM6OI",
+          "name": "Header Section",
+          "width": 1180,
+          "fill": "#0B0F14",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "rFfDf",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "BXwqp",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "p2LUJ",
+                      "name": "brandDot",
+                      "fill": "#F97316",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "3rr0t",
+                      "name": "brandText",
+                      "fill": "#F3F6FB",
+                      "content": "ТРАМПЛИН",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "osjgS",
+                      "name": "brandTag",
+                      "fill": "#6EE7B7",
+                      "content": "платформа карьеры",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QLfQW",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "h42Uh",
+                      "name": "loginBtn",
+                      "fill": "#1B2635",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#475569"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ToTuC",
+                          "name": "loginTxt",
+                          "fill": "#E5EAF2",
+                          "content": "Войти",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "aai0w",
+                      "name": "regBtn",
+                      "fill": "#1E3A8A",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "SbjFy",
+                          "name": "regTxt",
+                          "fill": "#F8FAFC",
+                          "content": "Регистрация",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GJZA0",
+              "name": "Hero Intro",
+              "width": "fill_container",
+              "fill": "#1E3A8A",
+              "cornerRadius": 26,
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mSPuC",
+                  "name": "heroLeft",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "WXW3q",
+                      "name": "heroTitle",
+                      "fill": "#F8FAFC",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Найдите стажировки, вакансии, наставников и карьерные события в одной интерактивной ленте",
+                      "lineHeight": 1.05,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 38,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "PowZD",
+                      "name": "heroSub",
+                      "fill": "#D8E1EE",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Исследуйте возможности по стеку, уровню и формату. Мгновенно переключайтесь между картой и списком.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "0GRSy",
+                      "name": "heroBadgeRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "jq68f",
+                          "name": "b1",
+                          "fill": "#F97316",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "NpSmE",
+                              "name": "b1t",
+                              "fill": "#F8FAFC",
+                              "content": "Карта + лента",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "e7U1R",
+                          "name": "b2",
+                          "fill": "#1B2635",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "HLIbx",
+                              "name": "b2t",
+                              "fill": "#E5EAF2",
+                              "content": "Умные теги",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "SfNiC",
+                  "name": "heroArt",
+                  "width": 340,
+                  "height": 220,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 35,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#FF5F00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#F1EBBB",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#558B6E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "3B8hS",
+          "name": "Controls + Map/List",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 18,
+          "padding": [
+            0,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "EsmUh",
+              "name": "searchRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "9f0KM",
+                  "name": "searchBox",
+                  "width": "fill_container",
+                  "fill": "#121923",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#475569"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "qcSeq",
+                      "name": "searchText",
+                      "fill": "#B8C2D1",
+                      "content": "Поиск стажировок, компаний, технологий...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ogWPO",
+                  "name": "mapCtaButton",
+                  "width": 300,
+                  "height": 64,
+                  "fill": "#111827",
+                  "cornerRadius": 20,
+                  "gap": 10,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kvTIW",
+                      "name": "mapThumb",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "dulhiier",
+                        "link": "https://unsplash.com/@dulhiier",
+                        "author": "Nastya Dulhiier"
+                      },
+                      "width": 96,
+                      "height": 52,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1542382189-f2600a163c2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMjEzNjR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#334155"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Q9sL9",
+                      "name": "copyWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jjsOJ",
+                          "name": "mapCtaTitle",
+                          "fill": "#F8FAFC",
+                          "content": "Открыть карту",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "m2XsZ",
+                          "name": "mapCtaSub",
+                          "fill": "#C3D1E6",
+                          "content": "Смотреть возможности по локации",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "aY9xo",
+              "name": "chipsRow",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "8ymG9",
+                  "name": "chip1",
+                  "fill": "#1E3A8A",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "2gwTI",
+                      "name": "chip1t",
+                      "fill": "#F8FAFC",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dEzyo",
+                  "name": "chip2",
+                  "fill": "#14532D",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "fCaGH",
+                      "name": "chip2t",
+                      "fill": "#F8FAFC",
+                      "content": "Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RaLBF",
+                  "name": "chip3",
+                  "fill": "#1B2635",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#475569"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GhFkj",
+                      "name": "chip3t",
+                      "fill": "#E5EAF2",
+                      "content": "Гибрид",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "e3y1S",
+          "name": "Feed Mosaic A (Self)",
+          "width": 1197,
+          "height": 399,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "a0GBI",
+              "x": 20,
+              "y": 20,
+              "name": "cardA",
+              "width": 390,
+              "fill": "#0B0F14",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#475569"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "8NpTl",
+                  "name": "imgA",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "silverkblack",
+                    "link": "https://unsplash.com/@silverkblack",
+                    "author": "Vitaly Gariev"
+                  },
+                  "width": "fill_container",
+                  "height": 190,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "CIqEh",
+                  "name": "titleA",
+                  "fill": "#F3F6FB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Стажировка: Младший Python-инженер",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 20,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "Qq15D",
+                  "name": "descA",
+                  "fill": "#E5EAF2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Разработка внутренних API при поддержке наставника и еженедельных тех-встречах.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "eA5GC",
+                  "name": "tagA",
+                  "fill": "#7FB0FF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Orbit Labs · Python · SQL · Джуниор · Полный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YF6pV",
+              "x": 458.5,
+              "y": 20,
+              "name": "cardB",
+              "width": 320,
+              "fill": "#1E3A8A",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Mmhtw",
+                  "name": "imgB",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "tecnic",
+                    "link": "https://unsplash.com/@tecnic",
+                    "author": "TECNIC Bioprocess Solutions"
+                  },
+                  "width": "fill_container",
+                  "height": 272,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1748346674126-8c0df10f2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "HKGZY",
+                  "name": "titleB",
+                  "fill": "#F8FAFC",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Хакатон по фронтенду: решения для климата",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "vBn35",
+                  "name": "descB",
+                  "fill": "#D8E1EE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Оффлайн-событие с реальными кейсами компаний и призами.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "EP8Zu",
+                  "name": "tagB",
+                  "fill": "#C3D1E6",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Code House · Событие · Офис · Алматы",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Asg1s",
+              "x": 816.5,
+              "y": 20,
+              "name": "cardC",
+              "width": 360,
+              "fill": "#121923",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#475569"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "qsOr5",
+                  "name": "imgC",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "litoondev",
+                    "link": "https://unsplash.com/@litoondev",
+                    "author": "litoon dev"
+                  },
+                  "width": "fill_container",
+                  "height": 210,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1738094060048-a4247139d866?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODd8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "Bw0jn",
+                  "name": "titleC",
+                  "fill": "#F3F6FB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Программа наставничества: трек по инженерии данных",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 19,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "QPMHP",
+                  "name": "descC",
+                  "fill": "#E5EAF2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "12-недельный трек с наставниками, ревью портфолио и пробными интервью.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "POuQe",
+                  "name": "tagC",
+                  "fill": "#7FB0FF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tramplin Mentors · Удалённо · Python · ETL",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jxodo",
+          "name": "Feed Mosaic B (Agent)",
+          "width": 1180,
+          "height": 411,
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "YF2FK",
+              "x": 690.5,
+              "y": -40,
+              "name": "fillShape",
+              "fill": "#F97316",
+              "width": 150,
+              "height": 150
+            },
+            {
+              "type": "frame",
+              "id": "jOBTD",
+              "x": 415.5,
+              "y": 57,
+              "name": "cardD",
+              "width": 350,
+              "fill": "#121923",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#475569"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mPcNO",
+                  "name": "imgD",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "ogelamar",
+                    "link": "https://unsplash.com/@ogelamar",
+                    "author": "Code💻 Ninja⚡"
+                  },
+                  "width": "fill_container",
+                  "height": 180,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "wL4ET",
+                  "name": "titleD",
+                  "fill": "#F3F6FB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Стажировка QA для финтех-платформы",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "fL1XU",
+                  "name": "descD",
+                  "fill": "#E5EAF2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Основы ручного и автоматизированного тестирования под руководством наставника.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "HkX7J",
+                  "name": "tagD",
+                  "fill": "#7FB0FF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "NovaPay · Офис · Джуниор · Неполный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "QAtd1",
+              "x": 27.5,
+              "y": -26,
+              "name": "cardE",
+              "width": 360,
+              "fill": "#14532D",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Xq4m5",
+                  "name": "imgE",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "taymaster",
+                    "link": "https://unsplash.com/@taymaster",
+                    "author": "Les Taylor"
+                  },
+                  "width": "fill_container",
+                  "height": 200,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1772582728749-7161bcb0a49a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "Vaiwt",
+                  "name": "titleE",
+                  "fill": "#F8FAFC",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "День открытых дверей карьеры: встреча cloud-команд",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "rPY5t",
+                  "name": "descE",
+                  "fill": "#D8E1EE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Познакомьтесь с командами найма, посетите короткие лекции и отправьте резюме на месте.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "hP9uv",
+                  "name": "tagE",
+                  "fill": "#C3D1E6",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "SkyNet Group · Событие · Гибрид · Астана",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "auFRw",
+              "x": 805.5,
+              "y": 6,
+              "name": "cardF",
+              "width": 320,
+              "fill": "#0B0F14",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#475569"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Sl2cE",
+                  "name": "imgF",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "akinggraphic",
+                    "link": "https://unsplash.com/@akinggraphic",
+                    "author": "Adeniji Abdullahi A"
+                  },
+                  "width": "fill_container",
+                  "height": 271,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1662962066574-ad3e912295c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "KuXye",
+                  "name": "titleF",
+                  "fill": "#F3F6FB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Удалённая позиция: младший Java-разработчик",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "k4u3w",
+                  "name": "descF",
+                  "fill": "#E5EAF2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Продуктовая backend-роль с code review и планом онбординга.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "rF24y",
+                  "name": "tagF",
+                  "fill": "#7FB0FF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "BitFlow · Удалённо · Java · Полный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "J6uh4",
+          "name": "Feed Mosaic A (Self)",
+          "width": 1197,
+          "height": 399,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "LgZRE",
+              "x": 787.5,
+              "y": 49,
+              "name": "cardB",
+              "width": 395,
+              "height": 303,
+              "fill": "#1E3A8A",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oVUmo",
+                  "name": "imgB",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "tecnic",
+                    "link": "https://unsplash.com/@tecnic",
+                    "author": "TECNIC Bioprocess Solutions"
+                  },
+                  "width": "fill_container",
+                  "height": 161,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1748346674126-8c0df10f2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "OExCd",
+                  "name": "titleB",
+                  "fill": "#F8FAFC",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Хакатон по фронтенду: решения для климата",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "JFZ02",
+                  "name": "descB",
+                  "fill": "#D8E1EE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Оффлайн-событие с реальными кейсами компаний и призами.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "tMogT",
+                  "name": "tagB",
+                  "fill": "#C3D1E6",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Code House · Событие · Офис · Алматы",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "cIduw",
+              "x": 31.5,
+              "y": -35,
+              "name": "cardC",
+              "width": 360,
+              "fill": "#121923",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#475569"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "v2hXZ",
+                  "name": "imgC",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "litoondev",
+                    "link": "https://unsplash.com/@litoondev",
+                    "author": "litoon dev"
+                  },
+                  "width": "fill_container",
+                  "height": 210,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1738094060048-a4247139d866?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODd8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "exUvG",
+                  "name": "titleC",
+                  "fill": "#F3F6FB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Программа наставничества: трек по инженерии данных",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 19,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "Xkqae",
+                  "name": "descC",
+                  "fill": "#E5EAF2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "12-недельный трек с наставниками, ревью портфолио и пробными интервью.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "GPa0e",
+                  "name": "tagC",
+                  "fill": "#7FB0FF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tramplin Mentors · Удалённо · Python · ETL",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xxqT3",
+              "x": 413.5,
+              "y": -10,
+              "name": "cardA",
+              "width": 353,
+              "height": 375,
+              "fill": "#0B0F14",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#475569"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SrLT1",
+                  "name": "imgA",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "silverkblack",
+                    "link": "https://unsplash.com/@silverkblack",
+                    "author": "Vitaly Gariev"
+                  },
+                  "width": "fill_container",
+                  "height": 190,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "puEKg",
+                  "name": "titleA",
+                  "fill": "#F3F6FB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Стажировка: Младший Python-инженер",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 20,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "owVCd",
+                  "name": "descA",
+                  "fill": "#E5EAF2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Разработка внутренних API при поддержке наставника и еженедельных тех-встречах.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "uQSnv",
+                  "name": "tagA",
+                  "fill": "#7FB0FF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Orbit Labs · Python · SQL · Джуниор · Полный день",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oO1Q7",
+          "name": "Footer",
+          "width": "fill_container",
+          "fill": "#111827",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "WagcT",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VL1g6",
+                  "name": "ftBrand",
+                  "fill": "#D8E1EE",
+                  "content": "ТРАМПЛИН",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "5bcG7",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "DUqNA",
+                      "name": "link1",
+                      "fill": "#C3D1E6",
+                      "content": "Возможности",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "aaneP",
+                      "name": "link2",
+                      "fill": "#C3D1E6",
+                      "content": "Наставники",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "nTuw1",
+                      "name": "link3",
+                      "fill": "#C3D1E6",
+                      "content": "События",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ByyI2",
+                      "name": "link4",
+                      "fill": "#C3D1E6",
+                      "content": "Контакты",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vdhUg",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Ox7n7",
+                  "name": "ftCaption",
+                  "fill": "#D8E1EE",
+                  "content": "Поиск IT-возможностей на карте и в списке: стажировки, вакансии, наставничество и события.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "IPw3t",
+                  "name": "ftYear",
+                  "fill": "#FF8A3D",
+                  "content": "2026 Трамплин",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Kabqd",
+      "x": 4680,
+      "y": 0,
+      "name": "Map Only Page Dark (New)",
+      "width": 1440,
+      "fill": "#0B0F14",
+      "layout": "vertical",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "EjyxH",
+          "name": "newHeader",
+          "width": 1180,
+          "fill": "#0B0F14",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "yni7K",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "2SZw4",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "q8Vuj",
+                      "name": "brandDot",
+                      "fill": "#F97316",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "5XdoM",
+                      "name": "brandText",
+                      "fill": "#F3F6FB",
+                      "content": "TRAMPLIN",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n1o9N",
+                      "name": "brandTag",
+                      "fill": "#6EE7B7",
+                      "content": "карьерная платформа",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "XE6IU",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "hlKpv",
+                      "name": "loginBtn",
+                      "fill": "#1B2635",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#475569"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xMnSj",
+                          "name": "loginTxt",
+                          "fill": "#E5EAF2",
+                          "content": "Войти",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "1BS3q",
+                      "name": "regBtn",
+                      "fill": "#1E3A8A",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ubt75",
+                          "name": "regTxt",
+                          "fill": "#F8FAFC",
+                          "content": "Регистрация",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LCyln",
+              "name": "Hero Intro",
+              "width": "fill_container",
+              "fill": "#1E3A8A",
+              "cornerRadius": 26,
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SrSrC",
+                  "name": "heroLeft",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "8hyo8",
+                      "name": "heroTitle",
+                      "fill": "#F8FAFC",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Найдите стажировки, вакансии, менторов и карьерные события в одной интерактивной ленте",
+                      "lineHeight": 1.05,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 38,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Q7QrE",
+                      "name": "heroSub",
+                      "fill": "#D8E1EE",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Изучайте возможности по стеку, уровню и формату. Мгновенно переключайтесь между картой и списком.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QlCUz",
+                      "name": "heroBadgeRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "F1Ded",
+                          "name": "b1",
+                          "fill": "#F97316",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "P3fu5",
+                              "name": "b1t",
+                              "fill": "#F8FAFC",
+                              "content": "Карта + Лента",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "AdSt1",
+                          "name": "b2",
+                          "fill": "#1B2635",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "y1KYy",
+                              "name": "b2t",
+                              "fill": "#E5EAF2",
+                              "content": "Умные теги",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cOeoK",
+                  "name": "heroArt",
+                  "width": 340,
+                  "height": 220,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 35,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#FF5F00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#F1EBBB",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#558B6E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vU8aU",
+          "name": "newControls",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 18,
+          "padding": [
+            0,
+            36,
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "6IlnG",
+              "name": "searchRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jAw1p",
+                  "name": "searchBox",
+                  "width": "fill_container",
+                  "fill": "#121923",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#475569"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VQ1Ia",
+                      "name": "searchText",
+                      "fill": "#B8C2D1",
+                      "content": "Поиск стажировок, вакансий, компаний, технологий...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ClVBp",
+                  "name": "cardCtaButton",
+                  "width": 300,
+                  "height": 64,
+                  "fill": "#111827",
+                  "cornerRadius": 20,
+                  "gap": 10,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "eAVWR",
+                      "name": "cardsThumb",
+                      "width": 78,
+                      "height": 52,
+                      "fill": "#121923",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#334155"
+                      },
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "VIHeC",
+                          "x": 10,
+                          "y": 15,
+                          "name": "cardBack",
+                          "rotation": -10,
+                          "fill": "#D9D3A6",
+                          "width": 22,
+                          "height": 15
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "07EEa",
+                          "x": 16,
+                          "y": 18,
+                          "name": "cardMid",
+                          "rotation": 2,
+                          "fill": "#E8E2BA",
+                          "width": 24,
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "veiqq",
+                          "x": 14,
+                          "y": 12,
+                          "name": "cardFront",
+                          "fill": "#0B0F14",
+                          "width": 24,
+                          "height": 16,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#2F2923"
+                          }
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 1,
+                          "id": "sszsF",
+                          "x": 18,
+                          "y": 16,
+                          "name": "cardLine1",
+                          "fill": "#111827",
+                          "width": 14,
+                          "height": 2
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 1,
+                          "id": "Iw55e",
+                          "x": 18,
+                          "y": 20,
+                          "name": "cardLine2",
+                          "fill": "#334155",
+                          "width": 10,
+                          "height": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "iTscv",
+                      "name": "cardCtaCopyWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "a8Vl6",
+                          "name": "cardCtaTitle",
+                          "fill": "#F8FAFC",
+                          "content": "Открыть карточки",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "PwUpY",
+                          "name": "cardCtaSub",
+                          "fill": "#C3D1E6",
+                          "content": "Просматривайте возможности в виде карточек",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LtPfQ",
+              "name": "chipsRow",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FXkZU",
+                  "name": "chip1",
+                  "fill": "#1E3A8A",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hIaun",
+                      "name": "chip1t",
+                      "fill": "#F8FAFC",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Ywzbi",
+                  "name": "chip2",
+                  "fill": "#14532D",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ztk7j",
+                      "name": "chip2t",
+                      "fill": "#F8FAFC",
+                      "content": "Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DCz6L",
+                  "name": "chip3",
+                  "fill": "#1B2635",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#475569"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "yM11J",
+                      "name": "chip3t",
+                      "fill": "#E5EAF2",
+                      "content": "Гибрид",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "5sVW5",
+              "name": "mainPane",
+              "width": "fill_container",
+              "height": 420,
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "yIrPo",
+                  "name": "mapPanel",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#E9F1E7",
+                  "cornerRadius": 24,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#558B6E"
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "CjzoE",
+                      "x": 110,
+                      "y": 120,
+                      "name": "markerA",
+                      "fill": "#F97316",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "Fnb4U",
+                      "x": 320,
+                      "y": 200,
+                      "name": "markerB",
+                      "fill": "#1E3A8A",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "fPRNK",
+                      "x": 540,
+                      "y": 130,
+                      "name": "markerC",
+                      "fill": "#14532D",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "frame",
+                      "id": "xurq9",
+                      "x": 140,
+                      "y": 140,
+                      "name": "hoverMini",
+                      "width": 210,
+                      "fill": "#0B0F14",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#475569"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 10,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Z7dBc",
+                          "name": "hoverTitle",
+                          "fill": "#F3F6FB",
+                          "content": "Стажер Python @ FinBridge",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 13,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Vxqu2",
+                          "name": "hoverMeta",
+                          "fill": "#B8C2D1",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Офис · Алматы · до закрытия 10 дней",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "4X4Qo",
+                  "name": "cardEquivalentBlock",
+                  "width": 420,
+                  "height": "fill_container",
+                  "fill": "#121923",
+                  "cornerRadius": 22,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#475569"
+                  },
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "7gYDH",
+                      "name": "cardHero",
+                      "width": "fill_container",
+                      "height": 170,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "cornerRadius": 16
+                    },
+                    {
+                      "type": "text",
+                      "id": "4J2RH",
+                      "name": "cardTitle",
+                      "fill": "#F3F6FB",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Backend-стажировка в Orbit Labs",
+                      "lineHeight": 1.1,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 18,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "BIm04",
+                      "name": "cardDesc",
+                      "fill": "#E5EAF2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Разрабатывайте API и задачи обработки медиа с менторством и влиянием на реальный продукт.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "AQwpa",
+                      "name": "cardTag",
+                      "fill": "#7FB0FF",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Orbit Labs · Гибрид · Python · SQL · Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "XeIpw",
+          "name": "newFooter",
+          "width": "fill_container",
+          "fill": "#111827",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "lG331",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "oPCpA",
+                  "name": "ftBrand",
+                  "fill": "#D8E1EE",
+                  "content": "TRAMPLIN",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "lWRJi",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "1ybpl",
+                      "name": "link1",
+                      "fill": "#C3D1E6",
+                      "content": "Возможности",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "7BKAE",
+                      "name": "link2",
+                      "fill": "#C3D1E6",
+                      "content": "Менторы",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WstRI",
+                      "name": "link3",
+                      "fill": "#C3D1E6",
+                      "content": "События",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "RcPEy",
+                      "name": "link4",
+                      "fill": "#C3D1E6",
+                      "content": "Контакты",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iXT2T",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "fYBTR",
+                  "name": "ftCaption",
+                  "fill": "#D8E1EE",
+                  "content": "Поиск IT-карьеры на карте и в списке: стажировки, вакансии, менторство и события.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "FbHlZ",
+                  "name": "ftYear",
+                  "fill": "#FF8A3D",
+                  "content": "2026 Tramplin",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "themes": {
+    "Mode": [
+      "Light",
+      "Dark"
+    ]
+  },
+  "variables": {
+    "--sidebar": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E7E8E5"
+        },
+        {
+          "value": "#18181b",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#18181b"
+        },
+        {
+          "value": "#18181b",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-primary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#fafafa"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#ffffff1a",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2a2a30",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#18181b"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-ring": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#71717a"
+        },
+        {
+          "value": "#71717a",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--background": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--card": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF"
+        },
+        {
+          "value": "#1A1A1A",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--card-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--popover": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF"
+        },
+        {
+          "value": "#1A1A1A",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FF8400"
+        },
+        {
+          "value": "#FF8400",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--primary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--secondary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E7E8E5"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--secondary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--muted": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--muted-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#B8B9B6",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--accent-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#F2F3F0",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--destructive": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#D93C15"
+        },
+        {
+          "value": "#FF5C33",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--border": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--input": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--ring": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#666666",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--black": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "--font-primary": {
+      "type": "string",
+      "value": "JetBrains Mono"
+    },
+    "--font-secondary": {
+      "type": "string",
+      "value": "Geist"
+    },
+    "--radius-none": {
+      "type": "number",
+      "value": 0
+    },
+    "--radius-pill": {
+      "type": "number",
+      "value": 999
+    },
+    "--color-success": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#DFE6E1"
+        },
+        {
+          "value": "#222924",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-success-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#004D1A"
+        },
+        {
+          "value": "#B6FFCE",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-warning": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E9E3D8"
+        },
+        {
+          "value": "#291C0F",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-warning-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#804200"
+        },
+        {
+          "value": "#FF8400",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-error": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E5DCDA"
+        },
+        {
+          "value": "#24100B",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-error-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#8C1C00"
+        },
+        {
+          "value": "#FF5C33",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-info": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#DFDFE6"
+        },
+        {
+          "value": "#222229",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-info-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#000066"
+        },
+        {
+          "value": "#B2B2FF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--radius-m": {
+      "type": "number",
+      "value": 16
+    }
+  }
+}
