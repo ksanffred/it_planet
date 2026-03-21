@@ -1,0 +1,2626 @@
+{
+  "version": "2.9",
+  "children": [
+    {
+      "type": "frame",
+      "id": "qSVzi",
+      "x": -15,
+      "y": 24,
+      "name": "Tramplin Homepage",
+      "width": 1440,
+      "fill": "#FCFAEE",
+      "layout": "vertical",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "ygnlO",
+          "name": "Header Section",
+          "width": 1180,
+          "fill": "#FCFAEE",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "tWbZj",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "sf3QC",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "kRISI",
+                      "name": "brandDot",
+                      "fill": "#FF5F00",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "ScETg",
+                      "name": "brandText",
+                      "fill": "#161413",
+                      "content": "TRAMPLIN",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "IXdck",
+                      "name": "brandTag",
+                      "fill": "#558B6E",
+                      "content": "career platform",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "soqUN",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "7IuMM",
+                      "name": "loginBtn",
+                      "fill": "#F1EBBB",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "w8j49",
+                          "name": "loginTxt",
+                          "fill": "#2F2923",
+                          "content": "Log in",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "2SDUk",
+                      "name": "regBtn",
+                      "fill": "#0049B8",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qpRDL",
+                          "name": "regTxt",
+                          "fill": "#FCFAEE",
+                          "content": "Register",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jfEbv",
+              "name": "Hero Intro",
+              "width": "fill_container",
+              "fill": "#0049B8",
+              "cornerRadius": 26,
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "7hhHD",
+                  "name": "heroLeft",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "MRlcK",
+                      "name": "heroTitle",
+                      "fill": "#FCFAEE",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Find internships, jobs, mentors, and career events in one interactive feed",
+                      "lineHeight": 1.05,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 38,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CGrkQ",
+                      "name": "heroSub",
+                      "fill": "#F8F5DD",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Explore opportunities by stack, level, and format. Switch between map and list views instantly.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Yj30I",
+                      "name": "heroBadgeRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "tdtxJ",
+                          "name": "b1",
+                          "fill": "#FF5F00",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "j105y",
+                              "name": "b1t",
+                              "fill": "#FCFAEE",
+                              "content": "Map + Feed",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "kjOtF",
+                          "name": "b2",
+                          "fill": "#F1EBBB",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "UXa7t",
+                              "name": "b2t",
+                              "fill": "#2F2923",
+                              "content": "Smart Tags",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VYiWt",
+                  "name": "heroArt",
+                  "width": 340,
+                  "height": 220,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 35,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#FF5F00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#F1EBBB",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#558B6E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "R9tzk",
+          "name": "Controls + Map/List",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 18,
+          "padding": [
+            0,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "VOvvx",
+              "name": "searchRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "5hpSt",
+                  "name": "searchBox",
+                  "width": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gxF70",
+                      "name": "searchText",
+                      "fill": "#423C37",
+                      "content": "Search opportunities, companies, technologies...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KXfEe",
+                  "name": "mapCtaButton",
+                  "width": 300,
+                  "height": 64,
+                  "fill": "#2F2923",
+                  "cornerRadius": 20,
+                  "gap": 10,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UulVD",
+                      "name": "mapThumb",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "dulhiier",
+                        "link": "https://unsplash.com/@dulhiier",
+                        "author": "Nastya Dulhiier"
+                      },
+                      "width": 96,
+                      "height": 52,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1542382189-f2600a163c2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMjEzNjR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#FCFAEE"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "c5rsO",
+                      "name": "copyWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "eYKH3",
+                          "name": "mapCtaTitle",
+                          "fill": "#FCFAEE",
+                          "content": "Open map",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "7fwFL",
+                          "name": "mapCtaSub",
+                          "fill": "#F1EBBB",
+                          "content": "View opportunities by location",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VJxhV",
+              "name": "chipsRow",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jLepD",
+                  "name": "chip1",
+                  "fill": "#0049B8",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "RJndZ",
+                      "name": "chip1t",
+                      "fill": "#FCFAEE",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mP8ZB",
+                  "name": "chip2",
+                  "fill": "#558B6E",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "q1OrX",
+                      "name": "chip2t",
+                      "fill": "#FCFAEE",
+                      "content": "Junior",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "GQVE7",
+                  "name": "chip3",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "5uExu",
+                      "name": "chip3t",
+                      "fill": "#2F2923",
+                      "content": "Hybrid",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Vlam5",
+          "name": "Feed Mosaic A (Self)",
+          "width": 1197,
+          "height": 399,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "JSQ7S",
+              "x": 20,
+              "y": 20,
+              "name": "cardA",
+              "width": 390,
+              "fill": "#FCFAEE",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QtyWJ",
+                  "name": "imgA",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "silverkblack",
+                    "link": "https://unsplash.com/@silverkblack",
+                    "author": "Vitaly Gariev"
+                  },
+                  "width": "fill_container",
+                  "height": 190,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "7MDde",
+                  "name": "titleA",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Junior Python Engineer Internship",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 20,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "Mf4F8",
+                  "name": "descA",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Build internal APIs with mentorship support and weekly tech talks.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "iD5R4",
+                  "name": "tagA",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Orbit Labs · Python · SQL · Junior · Full-time",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "CV7mn",
+              "x": 458.5,
+              "y": 20,
+              "name": "cardB",
+              "width": 320,
+              "fill": "#0049B8",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zlBCl",
+                  "name": "imgB",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "tecnic",
+                    "link": "https://unsplash.com/@tecnic",
+                    "author": "TECNIC Bioprocess Solutions"
+                  },
+                  "width": "fill_container",
+                  "height": 272,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1748346674126-8c0df10f2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "McMm3",
+                  "name": "titleB",
+                  "fill": "#FCFAEE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Frontend Hackathon: Build for Climate",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "2Ye4q",
+                  "name": "descB",
+                  "fill": "#F8F5DD",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "In-person event with real company cases and prizes.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "r8CKy",
+                  "name": "tagB",
+                  "fill": "#F1EBBB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Code House · Event · Office · Almaty",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qgLCe",
+              "x": 816.5,
+              "y": 20,
+              "name": "cardC",
+              "width": 360,
+              "fill": "#F8F5DD",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AlcJl",
+                  "name": "imgC",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "litoondev",
+                    "link": "https://unsplash.com/@litoondev",
+                    "author": "litoon dev"
+                  },
+                  "width": "fill_container",
+                  "height": 210,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1738094060048-a4247139d866?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODd8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "95lCG",
+                  "name": "titleC",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Mentorship Program: Data Engineering Track",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 19,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "2pLFR",
+                  "name": "descC",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "12-week mentor-led track, portfolio review, and mock interviews.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "7lTzd",
+                  "name": "tagC",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tramplin Mentors · Remote · Python · ETL",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QkRER",
+          "name": "Feed Mosaic B (Agent)",
+          "width": 1180,
+          "height": 411,
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "CX4sA",
+              "x": 690.5,
+              "y": -40,
+              "name": "fillShape",
+              "fill": "#FF5F00",
+              "width": 150,
+              "height": 150
+            },
+            {
+              "type": "frame",
+              "id": "O24eq",
+              "x": 415.5,
+              "y": 57,
+              "name": "cardD",
+              "width": 350,
+              "fill": "#F8F5DD",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "D7wWZ",
+                  "name": "imgD",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "ogelamar",
+                    "link": "https://unsplash.com/@ogelamar",
+                    "author": "Code💻 Ninja⚡"
+                  },
+                  "width": "fill_container",
+                  "height": 180,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "NttcO",
+                  "name": "titleD",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "QA Internship for Fintech Platform",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "Jjw9X",
+                  "name": "descD",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Manual + automation basics with mentor supervision.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "SgHMA",
+                  "name": "tagD",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "NovaPay · Office · Junior · Part-time",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jCzD2",
+              "x": 27.5,
+              "y": -26,
+              "name": "cardE",
+              "width": 360,
+              "fill": "#568b6eff",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "iPc8L",
+                  "name": "imgE",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "taymaster",
+                    "link": "https://unsplash.com/@taymaster",
+                    "author": "Les Taylor"
+                  },
+                  "width": "fill_container",
+                  "height": 200,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1772582728749-7161bcb0a49a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "aWSup",
+                  "name": "titleE",
+                  "fill": "#FCFAEE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Career Open House: Cloud Teams Meetup",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "aoqxk",
+                  "name": "descE",
+                  "fill": "#F8F5DD",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Meet hiring teams, join lightning lectures, and submit your CV live.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "eaDeH",
+                  "name": "tagE",
+                  "fill": "#F1EBBB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "SkyNet Group · Event · Hybrid · Astana",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ycDAg",
+              "x": 805.5,
+              "y": 6,
+              "name": "cardF",
+              "width": 320,
+              "fill": "#FCFAEE",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zANzl",
+                  "name": "imgF",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "akinggraphic",
+                    "link": "https://unsplash.com/@akinggraphic",
+                    "author": "Adeniji Abdullahi A"
+                  },
+                  "width": "fill_container",
+                  "height": 271,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1662962066574-ad3e912295c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTk0NTZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "u3Z75",
+                  "name": "titleF",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Remote Java Junior Position",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "5n8Bz",
+                  "name": "descF",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Product backend role with code review and onboarding plan.",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "Gs9FZ",
+                  "name": "tagF",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "BitFlow · Remote · Java · Full-time",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GoKXy",
+          "name": "Feed Mosaic A (Self)",
+          "width": 1197,
+          "height": 399,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "2IOS5",
+              "x": 787.5,
+              "y": 49,
+              "name": "cardB",
+              "width": 395,
+              "height": 303,
+              "fill": "#0049B8",
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JTW0B",
+                  "name": "imgB",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "tecnic",
+                    "link": "https://unsplash.com/@tecnic",
+                    "author": "TECNIC Bioprocess Solutions"
+                  },
+                  "width": "fill_container",
+                  "height": 161,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1748346674126-8c0df10f2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "yLG9B",
+                  "name": "titleB",
+                  "fill": "#FCFAEE",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Frontend Hackathon: Build for Climate",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "9aPY5",
+                  "name": "descB",
+                  "fill": "#F8F5DD",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "In-person event with real company cases and prizes.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "TVOFZ",
+                  "name": "tagB",
+                  "fill": "#F1EBBB",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Code House · Event · Office · Almaty",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "P04dh",
+              "x": 31.5,
+              "y": -35,
+              "name": "cardC",
+              "width": 360,
+              "fill": "#F8F5DD",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "7F6oG",
+                  "name": "imgC",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "litoondev",
+                    "link": "https://unsplash.com/@litoondev",
+                    "author": "litoon dev"
+                  },
+                  "width": "fill_container",
+                  "height": 210,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1738094060048-a4247139d866?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODd8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "Hwa3G",
+                  "name": "titleC",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Mentorship Program: Data Engineering Track",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 19,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "u9Hj4",
+                  "name": "descC",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "12-week mentor-led track, portfolio review, and mock interviews.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "2Uvey",
+                  "name": "tagC",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tramplin Mentors · Remote · Python · ETL",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UQ1Jr",
+              "x": 413.5,
+              "y": -10,
+              "name": "cardA",
+              "width": 353,
+              "height": 375,
+              "fill": "#FCFAEE",
+              "cornerRadius": 22,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Bx7AL",
+                  "name": "imgA",
+                  "metadata": {
+                    "type": "unsplash",
+                    "username": "silverkblack",
+                    "link": "https://unsplash.com/@silverkblack",
+                    "author": "Vitaly Gariev"
+                  },
+                  "width": "fill_container",
+                  "height": 190,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                    "mode": "fill"
+                  },
+                  "cornerRadius": 16
+                },
+                {
+                  "type": "text",
+                  "id": "lnxMv",
+                  "name": "titleA",
+                  "fill": "#161413",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Junior Python Engineer Internship",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 20,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "cNDRq",
+                  "name": "descA",
+                  "fill": "#2F2923",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Build internal APIs with mentorship support and weekly tech talks.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "T4JBH",
+                  "name": "tagA",
+                  "fill": "#0049B8",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Orbit Labs · Python · SQL · Junior · Full-time",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UOCZD",
+          "name": "Footer",
+          "width": "fill_container",
+          "fill": "#2F2923",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "yAKCP",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "31fSR",
+                  "name": "ftBrand",
+                  "fill": "#F8F5DD",
+                  "content": "TRAMPLIN",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "XUVrV",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0vABw",
+                      "name": "link1",
+                      "fill": "#F1EBBB",
+                      "content": "Opportunities",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ISR5H",
+                      "name": "link2",
+                      "fill": "#F1EBBB",
+                      "content": "Mentors",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lOlC8",
+                      "name": "link3",
+                      "fill": "#F1EBBB",
+                      "content": "Events",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "1KoJm",
+                      "name": "link4",
+                      "fill": "#F1EBBB",
+                      "content": "Contacts",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BtEBI",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EnmAQ",
+                  "name": "ftCaption",
+                  "fill": "#F8F5DD",
+                  "content": "Map/list discovery for IT careers: internships, jobs, mentorship, and events.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "eqJrC",
+                  "name": "ftYear",
+                  "fill": "#FF5F00",
+                  "content": "2026 Tramplin",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "kYE29",
+      "x": 1560,
+      "y": 0,
+      "name": "Map Only Page",
+      "width": 1440,
+      "fill": "#FCFAEE",
+      "layout": "vertical",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "0jKGf",
+          "name": "newHeader",
+          "width": 1180,
+          "fill": "#FCFAEE",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "eZ222",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "9zBBM",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "PI0oN",
+                      "name": "brandDot",
+                      "fill": "#FF5F00",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "XsOEO",
+                      "name": "brandText",
+                      "fill": "#161413",
+                      "content": "TRAMPLIN",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WBQOc",
+                      "name": "brandTag",
+                      "fill": "#558B6E",
+                      "content": "career platform",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xiuJx",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "fsOL1",
+                      "name": "loginBtn",
+                      "fill": "#F1EBBB",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "gkOFp",
+                          "name": "loginTxt",
+                          "fill": "#2F2923",
+                          "content": "Log in",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "vXpIN",
+                      "name": "regBtn",
+                      "fill": "#0049B8",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ybSih",
+                          "name": "regTxt",
+                          "fill": "#FCFAEE",
+                          "content": "Register",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "0vApD",
+              "name": "Hero Intro",
+              "width": "fill_container",
+              "fill": "#0049B8",
+              "cornerRadius": 26,
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "H1Uda",
+                  "name": "heroLeft",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sZNbf",
+                      "name": "heroTitle",
+                      "fill": "#FCFAEE",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Find internships, jobs, mentors, and career events in one interactive feed",
+                      "lineHeight": 1.05,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 38,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lcwqR",
+                      "name": "heroSub",
+                      "fill": "#F8F5DD",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Explore opportunities by stack, level, and format. Switch between map and list views instantly.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "oQ5PK",
+                      "name": "heroBadgeRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gJqAw",
+                          "name": "b1",
+                          "fill": "#FF5F00",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "40igK",
+                              "name": "b1t",
+                              "fill": "#FCFAEE",
+                              "content": "Map + Feed",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HvvQm",
+                          "name": "b2",
+                          "fill": "#F1EBBB",
+                          "cornerRadius": 16,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "2E46t",
+                              "name": "b2t",
+                              "fill": "#2F2923",
+                              "content": "Smart Tags",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "G54lP",
+                  "name": "heroArt",
+                  "width": 340,
+                  "height": 220,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 35,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#FF5F00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#F1EBBB",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#558B6E",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "eLoDq",
+          "name": "newControls",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 18,
+          "padding": [
+            0,
+            36,
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "9oycb",
+              "name": "searchRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "1H8lk",
+                  "name": "searchBox",
+                  "width": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gHrgv",
+                      "name": "searchText",
+                      "fill": "#423C37",
+                      "content": "Search opportunities, companies, technologies...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ap4G5",
+                  "name": "cardCtaButton",
+                  "width": 300,
+                  "height": 64,
+                  "fill": "#2F2923",
+                  "cornerRadius": 20,
+                  "gap": 10,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DFnyo",
+                      "name": "cardsThumb",
+                      "width": 78,
+                      "height": 52,
+                      "fill": "#F8F5DD",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#FCFAEE"
+                      },
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "AXxs1",
+                          "x": 10,
+                          "y": 15,
+                          "name": "cardBack",
+                          "rotation": -10,
+                          "fill": "#D9D3A6",
+                          "width": 22,
+                          "height": 15
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "5xavx",
+                          "x": 16,
+                          "y": 18,
+                          "name": "cardMid",
+                          "rotation": 2,
+                          "fill": "#E8E2BA",
+                          "width": 24,
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "69v3E",
+                          "x": 14,
+                          "y": 12,
+                          "name": "cardFront",
+                          "fill": "#FCFAEE",
+                          "width": 24,
+                          "height": 16,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#2F2923"
+                          }
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 1,
+                          "id": "OLN52",
+                          "x": 18,
+                          "y": 16,
+                          "name": "cardLine1",
+                          "fill": "#2F2923",
+                          "width": 14,
+                          "height": 2
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 1,
+                          "id": "oBuOv",
+                          "x": 18,
+                          "y": 20,
+                          "name": "cardLine2",
+                          "fill": "#423C37",
+                          "width": 10,
+                          "height": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mvzPS",
+                      "name": "cardCtaCopyWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "EeRun",
+                          "name": "cardCtaTitle",
+                          "fill": "#FCFAEE",
+                          "content": "Open cards",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mpmU5",
+                          "name": "cardCtaSub",
+                          "fill": "#F1EBBB",
+                          "content": "Browse opportunities as cards",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "M7xcA",
+              "name": "chipsRow",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FtoOC",
+                  "name": "chip1",
+                  "fill": "#0049B8",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JDb2g",
+                      "name": "chip1t",
+                      "fill": "#FCFAEE",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "agfnv",
+                  "name": "chip2",
+                  "fill": "#558B6E",
+                  "cornerRadius": 16,
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0Jhdr",
+                      "name": "chip2t",
+                      "fill": "#FCFAEE",
+                      "content": "Junior",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "uyXI4",
+                  "name": "chip3",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wkrDn",
+                      "name": "chip3t",
+                      "fill": "#2F2923",
+                      "content": "Hybrid",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZEXXp",
+              "name": "mainPane",
+              "width": "fill_container",
+              "height": 420,
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zCEKs",
+                  "name": "mapPanel",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#E9F1E7",
+                  "cornerRadius": 24,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#558B6E"
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "Njtqo",
+                      "x": 110,
+                      "y": 120,
+                      "name": "markerA",
+                      "fill": "#FF5F00",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "XS4Sk",
+                      "x": 320,
+                      "y": 200,
+                      "name": "markerB",
+                      "fill": "#0049B8",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "sNWd9",
+                      "x": 540,
+                      "y": 130,
+                      "name": "markerC",
+                      "fill": "#558B6E",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "frame",
+                      "id": "L21ly",
+                      "x": 140,
+                      "y": 140,
+                      "name": "hoverMini",
+                      "width": 210,
+                      "fill": "#FCFAEE",
+                      "cornerRadius": 14,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 10,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "3xgzL",
+                          "name": "hoverTitle",
+                          "fill": "#161413",
+                          "content": "Intern Python @ FinBridge",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 13,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ACfQQ",
+                          "name": "hoverMeta",
+                          "fill": "#423C37",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Office · Almaty · closes in 10 days",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QfhyJ",
+                  "name": "cardEquivalentBlock",
+                  "width": 420,
+                  "height": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 22,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "T4OK1",
+                      "name": "cardHero",
+                      "width": "fill_container",
+                      "height": 170,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "cornerRadius": 16
+                    },
+                    {
+                      "type": "text",
+                      "id": "RGDnH",
+                      "name": "cardTitle",
+                      "fill": "#161413",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Backend Internship at Orbit Labs",
+                      "lineHeight": 1.1,
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 18,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "256Eg",
+                      "name": "cardDesc",
+                      "fill": "#2F2923",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Build APIs and media processing tasks with mentorship and real product impact.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mgQcC",
+                      "name": "cardTag",
+                      "fill": "#0049B8",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Orbit Labs · Hybrid · Python · SQL · Junior",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "k91QB",
+          "name": "newFooter",
+          "width": "fill_container",
+          "fill": "#2F2923",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "yY0N7",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ot3ze",
+                  "name": "ftBrand",
+                  "fill": "#F8F5DD",
+                  "content": "TRAMPLIN",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "qlpTv",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HyRa9",
+                      "name": "link1",
+                      "fill": "#F1EBBB",
+                      "content": "Opportunities",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QpyNn",
+                      "name": "link2",
+                      "fill": "#F1EBBB",
+                      "content": "Mentors",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zYtC3",
+                      "name": "link3",
+                      "fill": "#F1EBBB",
+                      "content": "Events",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tQc9m",
+                      "name": "link4",
+                      "fill": "#F1EBBB",
+                      "content": "Contacts",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xZcvp",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "U9b9O",
+                  "name": "ftCaption",
+                  "fill": "#F8F5DD",
+                  "content": "Map/list discovery for IT careers: internships, jobs, mentorship, and events.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "HwIBK",
+                  "name": "ftYear",
+                  "fill": "#FF5F00",
+                  "content": "2026 Tramplin",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "themes": {
+    "Mode": [
+      "Light",
+      "Dark"
+    ]
+  },
+  "variables": {
+    "--sidebar": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E7E8E5"
+        },
+        {
+          "value": "#18181b",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#18181b"
+        },
+        {
+          "value": "#18181b",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-primary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#fafafa"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#ffffff1a",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2a2a30",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#18181b"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-ring": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#71717a"
+        },
+        {
+          "value": "#71717a",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--background": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--card": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF"
+        },
+        {
+          "value": "#1A1A1A",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--card-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--popover": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF"
+        },
+        {
+          "value": "#1A1A1A",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FF8400"
+        },
+        {
+          "value": "#FF8400",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--primary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--secondary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E7E8E5"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--secondary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--muted": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--muted-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#B8B9B6",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--accent-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#F2F3F0",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--destructive": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#D93C15"
+        },
+        {
+          "value": "#FF5C33",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--border": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--input": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--ring": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#666666",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--black": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "--font-primary": {
+      "type": "string",
+      "value": "JetBrains Mono"
+    },
+    "--font-secondary": {
+      "type": "string",
+      "value": "Geist"
+    },
+    "--radius-none": {
+      "type": "number",
+      "value": 0
+    },
+    "--radius-pill": {
+      "type": "number",
+      "value": 999
+    },
+    "--color-success": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#DFE6E1"
+        },
+        {
+          "value": "#222924",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-success-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#004D1A"
+        },
+        {
+          "value": "#B6FFCE",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-warning": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E9E3D8"
+        },
+        {
+          "value": "#291C0F",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-warning-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#804200"
+        },
+        {
+          "value": "#FF8400",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-error": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E5DCDA"
+        },
+        {
+          "value": "#24100B",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-error-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#8C1C00"
+        },
+        {
+          "value": "#FF5C33",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-info": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#DFDFE6"
+        },
+        {
+          "value": "#222229",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-info-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#000066"
+        },
+        {
+          "value": "#B2B2FF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--radius-m": {
+      "type": "number",
+      "value": 16
+    }
+  }
+}
