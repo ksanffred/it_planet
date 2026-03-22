@@ -6,7 +6,7 @@ const toggleTheme = () => {
 }
 </script>
 <template>
-  <div>
+  <div class="container">
     <p id="test">Main Page</p>
     <button @click="toggleTheme">
       {{ colorMode.value === 'dark' ? 'Light' : 'Dark' }}

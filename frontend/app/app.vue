@@ -6,7 +6,7 @@ console.log('Preference:', colorMode.preference)
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <NuxtPage />
   </div>
 </template>
