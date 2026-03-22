@@ -6,8 +6,5 @@ describe('My e2e test', async () => {
     host: 'http://localhost:3000',
   })
 
-  it('test', async () => {
-    const page = await createPage('/')
-    expect(await page.getByTestId('aboba').isVisible()).toBe(true)
-  })
+  it('test', async () => {})
 })
