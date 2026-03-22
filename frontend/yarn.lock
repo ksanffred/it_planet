@@ -927,7 +927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/kit@npm:4.4.2, @nuxt/kit@npm:^4.2.2, @nuxt/kit@npm:^4.3.1, @nuxt/kit@npm:^4.4.2":
+"@nuxt/kit@npm:4.4.2, @nuxt/kit@npm:^4.2.1, @nuxt/kit@npm:^4.2.2, @nuxt/kit@npm:^4.3.1, @nuxt/kit@npm:^4.4.2":
   version: 4.4.2
   resolution: "@nuxt/kit@npm:4.4.2"
   dependencies:
@@ -1177,6 +1177,19 @@ __metadata:
     rollup-plugin-visualizer:
       optional: true
   checksum: 10c0/eee449510dce33d32a88acc66092cf61f0a6ff6044edffc14759556c8645a63e089655b5a0491e04e16247398f940a069e832a80baf00c2b26b08585205d894d
+  languageName: node
+  linkType: hard
+
+"@nuxtjs/color-mode@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@nuxtjs/color-mode@npm:4.0.0"
+  dependencies:
+    "@nuxt/kit": "npm:^4.2.1"
+    exsolve: "npm:^1.0.8"
+    pathe: "npm:^2.0.3"
+    pkg-types: "npm:^2.3.0"
+    semver: "npm:^7.7.3"
+  checksum: 10c0/50fb52aad8353bdfb2e8a26769390a2463b1869c167ccc2295b98b8f66e1a517cc239ec1145f952d8a6f0e900678f09c1c89ac881e06cb214571681aad8898bf
   languageName: node
   linkType: hard
 
@@ -4490,6 +4503,7 @@ __metadata:
   resolution: "frontend@workspace:."
   dependencies:
     "@nuxt/test-utils": "npm:^4.0.0"
+    "@nuxtjs/color-mode": "npm:4.0.0"
     "@vitest/ui": "npm:^4.1.0"
     "@vue/test-utils": "npm:^2.4.6"
     happy-dom: "npm:^20.8.4"

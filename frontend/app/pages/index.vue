@@ -1,7 +1,8 @@
 <script setup lang="ts"></script>
-
 <template>
-  <p id="test">Main Page</p>
+  <div>
+    <p id="test">Main Page</p>
+  </div>
 </template>
 
 <style lang="scss" scoped>
