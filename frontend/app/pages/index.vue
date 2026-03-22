@@ -1,5 +1,12 @@
 <script setup lang="ts"></script>
 
-<template>Main Page</template>
+<template>
+  <p id="test">Main Page</p>
+</template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+#test {
+  font-size: 50px;
+  font-weight: 600;
+}
+</style>
