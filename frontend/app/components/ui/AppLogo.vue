@@ -36,10 +36,10 @@ n
     font-weight: 800;
     color: var(--text-inverted-color);
     text-transform: uppercase;
-  }
 
-  .dark &__text {
-    color: var(--text-primary-color);
+    .dark & {
+      color: var(--text-primary-color);
+    }
   }
 
   &__tag {
@@ -47,12 +47,12 @@ n
     font-weight: 600;
     color: var(--tertiary-color);
     text-transform: lowercase;
-  }
 
-  .dark &__tag {
-    font-size: 14px;
-    font-weight: 600;
-    color: #6ee7b7;
+    .dark & {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6ee7b7;
+    }
   }
 }
 </style>
