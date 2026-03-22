@@ -1,7 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const colorMode = useColorMode()
+
+const toggleTheme = () => {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
+</script>
 <template>
   <div>
     <p id="test">Main Page</p>
+    <button @click="toggleTheme">
+      {{ colorMode.value === 'dark' ? 'Light' : 'Dark' }}
+    </button>
   </div>
 </template>
 
