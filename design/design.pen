@@ -137,7 +137,7 @@
               "name": "Hero Intro",
               "width": "fill_container",
               "fill": "#0049B8",
-              "cornerRadius": 26,
+              "cornerRadius": 40,
               "gap": 20,
               "padding": 20,
               "children": [
@@ -280,6 +280,98 @@
           "children": [
             {
               "type": "frame",
+              "id": "SQbgc",
+              "name": "eventFiltersRow",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oFuwE",
+                  "name": "filterMentorship",
+                  "width": "fill_container",
+                  "fill": "#558B6E",
+                  "cornerRadius": 18,
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "dTqyR",
+                      "name": "filterMentorshipTxt",
+                      "fill": "#FCFAEE",
+                      "content": "Стажерские программы",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VjbyK",
+                  "name": "filterCareerEvents",
+                  "width": "fill_container",
+                  "fill": "#0049B8",
+                  "cornerRadius": 18,
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "nBIFs",
+                      "name": "filterCareerEventsTxt",
+                      "fill": "#FCFAEE",
+                      "content": "Карьерные мероприятия",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "1SnSg",
+                  "name": "filterJobs",
+                  "width": "fill_container",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 18,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "C61lL",
+                      "name": "filterJobsTxt",
+                      "fill": "#2F2923",
+                      "content": "Вакансии",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "VOvvx",
               "name": "searchRow",
               "width": "fill_container",
@@ -396,52 +488,6 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "jLepD",
-                  "name": "chip1",
-                  "fill": "#0049B8",
-                  "cornerRadius": 16,
-                  "padding": [
-                    7,
-                    12
-                  ],
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "RJndZ",
-                      "name": "chip1t",
-                      "fill": "#FCFAEE",
-                      "content": "Python",
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "700"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "mP8ZB",
-                  "name": "chip2",
-                  "fill": "#558B6E",
-                  "cornerRadius": 16,
-                  "padding": [
-                    7,
-                    12
-                  ],
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "q1OrX",
-                      "name": "chip2t",
-                      "fill": "#FCFAEE",
-                      "content": "Джуниор",
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "700"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
                   "id": "GQVE7",
                   "name": "chip3",
                   "fill": "#F1EBBB",
@@ -458,6 +504,60 @@
                     {
                       "type": "text",
                       "id": "5uExu",
+                      "name": "chip3t",
+                      "fill": "#2F2923",
+                      "content": "Python",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FNAEw",
+                  "name": "chip3",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "y4vpa",
+                      "name": "chip3t",
+                      "fill": "#2F2923",
+                      "content": "Джуниор",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "tilv0",
+                  "name": "chip3",
+                  "fill": "#F1EBBB",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "padding": [
+                    7,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0F4rd",
                       "name": "chip3t",
                       "fill": "#2F2923",
                       "content": "Гибрид",
@@ -486,7 +586,7 @@
               "y": 20,
               "name": "cardA",
               "width": 390,
-              "fill": "#FCFAEE",
+              "fill": "#fcfaeeff",
               "cornerRadius": 22,
               "stroke": {
                 "thickness": 1,
@@ -506,7 +606,7 @@
                     "link": "https://unsplash.com/@silverkblack",
                     "author": "Vitaly Gariev"
                   },
-                  "width": "fill_container",
+                  "width": 366,
                   "height": 190,
                   "fill": {
                     "type": "image",
@@ -514,7 +614,8 @@
                     "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
                     "mode": "fill"
                   },
-                  "cornerRadius": 16
+                  "cornerRadius": 16,
+                  "layout": "none"
                 },
                 {
                   "type": "text",
@@ -873,6 +974,20 @@
               ]
             },
             {
+              "type": "ellipse",
+              "id": "VgawE",
+              "x": 193.29249308006928,
+              "y": 366.8446358905326,
+              "name": "leftOrangeArch",
+              "rotation": -119.16467568152578,
+              "innerRadius": 0.56,
+              "startAngle": 180,
+              "sweepAngle": 180,
+              "fill": "#FF5F00",
+              "width": 170,
+              "height": 170
+            },
+            {
               "type": "frame",
               "id": "ycDAg",
               "x": 805.5,
@@ -957,6 +1072,17 @@
           "height": 399,
           "layout": "none",
           "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 34,
+              "id": "rhuIi",
+              "x": 705.5,
+              "y": 270,
+              "name": "leftOrangeSquare",
+              "fill": "#FF5F00",
+              "width": 164,
+              "height": 164
+            },
             {
               "type": "frame",
               "id": "2IOS5",
@@ -4209,6 +4335,1968 @@
                   "name": "ftYear",
                   "fill": "#FF8A3D",
                   "content": "2026 Tramplin",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Midd3",
+      "x": 633,
+      "y": -1517,
+      "name": "Brand Geometry Page",
+      "width": 1440,
+      "height": 1024,
+      "fill": "#FCFAEE",
+      "layout": "vertical",
+      "gap": 28,
+      "padding": [
+        36,
+        36,
+        40,
+        36
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "C51RM",
+          "name": "Art Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "children": [
+            {
+              "type": "text",
+              "id": "mUdVL",
+              "name": "artTitle",
+              "fill": "#161413",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Фирменные геометрические формы",
+              "fontFamily": "Plus Jakarta Sans",
+              "fontSize": 40,
+              "fontWeight": "800"
+            },
+            {
+              "type": "text",
+              "id": "H4Xo5",
+              "name": "artSub",
+              "fill": "#423C37",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Абстрактные рисунки и декоративные элементы из простых фигур в фирменной палитре Tramplin.",
+              "lineHeight": 1.35,
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "x0STd",
+          "name": "Art Canvas",
+          "width": "fill_container",
+          "height": "fill_container",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Yfeah",
+              "name": "Left Geometry Zone",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 36,
+                  "id": "p1djz",
+                  "x": 31,
+                  "y": 45,
+                  "name": "leftPanel",
+                  "fill": "#FCFAEE",
+                  "width": 586,
+                  "height": 706,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 32,
+                  "id": "8fudC",
+                  "x": 56,
+                  "y": 88,
+                  "name": "leftBlueBase",
+                  "fill": "#0049B8",
+                  "width": 238,
+                  "height": 186
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 28,
+                  "id": "c4Ezd",
+                  "x": 324,
+                  "y": 110,
+                  "name": "leftCreamBlock",
+                  "fill": "#F1EBBB",
+                  "width": 202,
+                  "height": 132,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "hxsSo",
+                  "x": 430,
+                  "y": 260,
+                  "name": "leftOrangeCircle",
+                  "fill": "#FF5F00",
+                  "width": 126,
+                  "height": 126
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 19,
+                  "id": "xkG27",
+                  "x": 66,
+                  "y": 314,
+                  "name": "leftGreenPill",
+                  "fill": "#558B6E",
+                  "width": 312,
+                  "height": 38
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 14,
+                  "id": "QSfBV",
+                  "x": 92,
+                  "y": 370,
+                  "name": "leftDarkPill",
+                  "fill": "#2F2923",
+                  "width": 212,
+                  "height": 28
+                },
+                {
+                  "type": "ellipse",
+                  "id": "w5ZSu",
+                  "x": 78,
+                  "y": 448,
+                  "name": "leftBlueRing",
+                  "innerRadius": 0.7,
+                  "fill": "#0049B8",
+                  "width": 172,
+                  "height": 172
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 34,
+                  "id": "vSGN7",
+                  "x": 292,
+                  "y": 448,
+                  "name": "leftOrangeSquare",
+                  "fill": "#FF5F00",
+                  "width": 164,
+                  "height": 164
+                },
+                {
+                  "type": "ellipse",
+                  "id": "eVOtI",
+                  "x": 340,
+                  "y": 496,
+                  "name": "leftCutout",
+                  "fill": "#FCFAEE",
+                  "width": 68,
+                  "height": 68
+                },
+                {
+                  "type": "ellipse",
+                  "id": "vCjBh",
+                  "x": 482,
+                  "y": 464,
+                  "name": "leftGreenDot",
+                  "fill": "#558B6E",
+                  "width": 86,
+                  "height": 86
+                },
+                {
+                  "type": "line",
+                  "id": "Dx9uR",
+                  "x": 470,
+                  "y": 602,
+                  "name": "leftDiagLine",
+                  "width": 92,
+                  "height": 92,
+                  "stroke": {
+                    "thickness": 10,
+                    "cap": "round",
+                    "fill": "#0049B8"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "EteIU",
+                  "x": 262,
+                  "y": 652,
+                  "name": "leftOrangeArch",
+                  "innerRadius": 0.56,
+                  "startAngle": 180,
+                  "sweepAngle": 180,
+                  "fill": "#FF5F00",
+                  "width": 170,
+                  "height": 170
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RhiKf",
+              "name": "Right Geometry Zone",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 34,
+                  "id": "zOlkD",
+                  "x": 14,
+                  "y": 18,
+                  "name": "mainPanel",
+                  "fill": "#F8F5DD",
+                  "width": 630,
+                  "height": 760,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "yA9FH",
+                  "x": 58,
+                  "y": 62,
+                  "name": "orangeOrb",
+                  "fill": "#FF5F00",
+                  "width": 170,
+                  "height": 170
+                },
+                {
+                  "type": "ellipse",
+                  "id": "CWTK6",
+                  "x": 330,
+                  "y": 88,
+                  "name": "blueOrb",
+                  "fill": "#0049B8",
+                  "width": 214,
+                  "height": 214
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 23,
+                  "id": "Nr4f7",
+                  "x": 82,
+                  "y": 270,
+                  "name": "greenBar",
+                  "fill": "#558B6E",
+                  "width": 380,
+                  "height": 46
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 16,
+                  "id": "bQCaX",
+                  "x": 162,
+                  "y": 334,
+                  "name": "darkBar",
+                  "fill": "#2F2923",
+                  "width": 286,
+                  "height": 32
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 28,
+                  "id": "CUaNI",
+                  "x": 76,
+                  "y": 418,
+                  "name": "creamCard",
+                  "fill": "#F1EBBB",
+                  "width": 214,
+                  "height": 154,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 30,
+                  "id": "1KDdi",
+                  "x": 330,
+                  "y": 404,
+                  "name": "blueCard",
+                  "fill": "#0049B8",
+                  "width": 236,
+                  "height": 188
+                },
+                {
+                  "type": "ellipse",
+                  "id": "acRCC",
+                  "x": 392,
+                  "y": 436,
+                  "name": "cutCircle",
+                  "fill": "#FCFAEE",
+                  "width": 112,
+                  "height": 112
+                },
+                {
+                  "type": "ellipse",
+                  "id": "P3J2f",
+                  "x": 108,
+                  "y": 452,
+                  "name": "miniDot",
+                  "fill": "#FF5F00",
+                  "width": 28,
+                  "height": 28
+                },
+                {
+                  "type": "line",
+                  "id": "tX5YB",
+                  "x": 506,
+                  "y": 620,
+                  "name": "diagLineA",
+                  "width": 94,
+                  "height": 94,
+                  "stroke": {
+                    "thickness": 8,
+                    "cap": "round",
+                    "fill": "#558B6E"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "GuoLR",
+                  "x": 66,
+                  "y": 624,
+                  "name": "archShape",
+                  "innerRadius": 0.55,
+                  "startAngle": 180,
+                  "sweepAngle": 180,
+                  "fill": "#0049B8",
+                  "width": 184,
+                  "height": 184
+                },
+                {
+                  "type": "ellipse",
+                  "id": "5LPOW",
+                  "x": 278,
+                  "y": 628,
+                  "name": "ringShape",
+                  "innerRadius": 0.68,
+                  "fill": "#FF5F00",
+                  "width": 154,
+                  "height": 154
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 26,
+                  "id": "pn0bg",
+                  "x": 468,
+                  "y": 660,
+                  "name": "greenBlock",
+                  "fill": "#558B6E",
+                  "width": 126,
+                  "height": 92
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "I8ldr",
+      "x": -15,
+      "y": 2002,
+      "name": "Login Page",
+      "width": 1440,
+      "height": 1024,
+      "fill": "#FCFAEE",
+      "children": [
+        {
+          "type": "frame",
+          "id": "w1Kt4",
+          "name": "Right Geometry Zone",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 34,
+              "id": "K3l0g",
+              "x": 90,
+              "y": 140,
+              "name": "mainPanel",
+              "fill": "#F8F5DD",
+              "width": 630,
+              "height": 760,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "BZUae",
+              "x": 134,
+              "y": 184,
+              "name": "orangeOrb",
+              "fill": "#FF5F00",
+              "width": 170,
+              "height": 170
+            },
+            {
+              "type": "ellipse",
+              "id": "88vyU",
+              "x": 406,
+              "y": 210,
+              "name": "blueOrb",
+              "fill": "#0049B8",
+              "width": 214,
+              "height": 214
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 23,
+              "id": "zSo6V",
+              "x": 158,
+              "y": 392,
+              "name": "greenBar",
+              "fill": "#558B6E",
+              "width": 380,
+              "height": 46
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 16,
+              "id": "EhQrO",
+              "x": 238,
+              "y": 456,
+              "name": "darkBar",
+              "fill": "#2F2923",
+              "width": 286,
+              "height": 32
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 28,
+              "id": "5A6Qz",
+              "x": 152,
+              "y": 540,
+              "name": "creamCard",
+              "fill": "#F1EBBB",
+              "width": 214,
+              "height": 154,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#423C37"
+              }
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 30,
+              "id": "IFz6q",
+              "x": 406,
+              "y": 526,
+              "name": "blueCard",
+              "fill": "#0049B8",
+              "width": 236,
+              "height": 188
+            },
+            {
+              "type": "ellipse",
+              "id": "odwDK",
+              "x": 468,
+              "y": 558,
+              "name": "cutCircle",
+              "fill": "#FCFAEE",
+              "width": 112,
+              "height": 112
+            },
+            {
+              "type": "ellipse",
+              "id": "YPfGe",
+              "x": 184,
+              "y": 574,
+              "name": "miniDot",
+              "fill": "#FF5F00",
+              "width": 28,
+              "height": 28
+            },
+            {
+              "type": "line",
+              "id": "xviZn",
+              "x": 582,
+              "y": 742,
+              "name": "diagLineA",
+              "width": 94,
+              "height": 94,
+              "stroke": {
+                "thickness": 8,
+                "cap": "round",
+                "fill": "#558B6E"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "5IJ75",
+              "x": 142,
+              "y": 746,
+              "name": "archShape",
+              "innerRadius": 0.55,
+              "startAngle": 180,
+              "sweepAngle": 180,
+              "fill": "#0049B8",
+              "width": 184,
+              "height": 184
+            },
+            {
+              "type": "ellipse",
+              "id": "c7arL",
+              "x": 354,
+              "y": 750,
+              "name": "ringShape",
+              "innerRadius": 0.68,
+              "fill": "#FF5F00",
+              "width": 154,
+              "height": 154
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 26,
+              "id": "m8AGV",
+              "x": 544,
+              "y": 782,
+              "name": "greenBlock",
+              "fill": "#558B6E",
+              "width": 126,
+              "height": 92
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "lu5ly",
+          "name": "Login Form Zone",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "padding": [
+            80,
+            120,
+            80,
+            40
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "rchk4",
+              "name": "FormOffsetWrap",
+              "width": "fill_container",
+              "height": 666,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DQ3kz",
+                  "name": "Login Card",
+                  "width": 460,
+                  "fill": "#FCFAEE",
+                  "cornerRadius": 32,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": [
+                    34,
+                    34,
+                    30,
+                    34
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wYvCt",
+                      "name": "LoginKicker",
+                      "fill": "#FF5F00",
+                      "content": "ТРАМПЛИН",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 16,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "875hy",
+                      "name": "LoginTitle",
+                      "fill": "#161413",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Вход в аккаунт",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 34,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "51YCo",
+                      "name": "LoginSub",
+                      "fill": "#423C37",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Продолжайте поиск стажировок, вакансий, наставников и карьерных событий.",
+                      "lineHeight": 1.35,
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pfyC4",
+                      "name": "Fields",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "L3nNA",
+                          "name": "EmailField",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "0gtV9",
+                              "name": "EmailLabel",
+                              "fill": "#2F2923",
+                              "content": "Email",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ECfU5",
+                              "name": "EmailInput",
+                              "width": "fill_container",
+                              "fill": "#F8F5DD",
+                              "cornerRadius": 18,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "#2f2923ff"
+                              },
+                              "padding": [
+                                14,
+                                16
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "b2RiY",
+                                  "name": "EmailPlaceholder",
+                                  "fill": "#423C37",
+                                  "content": "you@example.com",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "qP4uq",
+                          "name": "PasswordField",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "7FYEX",
+                              "name": "PasswordLabel",
+                              "fill": "#2F2923",
+                              "content": "Пароль",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "x08qM",
+                              "name": "PasswordInput",
+                              "width": "fill_container",
+                              "fill": "#F8F5DD",
+                              "cornerRadius": 18,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "#423C37"
+                              },
+                              "padding": [
+                                14,
+                                16
+                              ],
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Jg611",
+                                  "name": "PasswordPlaceholder",
+                                  "fill": "#423C37",
+                                  "content": "••••••••••",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ZeVO1",
+                      "name": "ForgotPassword",
+                      "fill": "#0049B8",
+                      "content": "Забыли пароль?",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jJdEi",
+                      "name": "LoginButton",
+                      "width": "fill_container",
+                      "fill": "#0049B8",
+                      "cornerRadius": 20,
+                      "padding": [
+                        15,
+                        18
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "RQQNI",
+                          "name": "LoginButtonText",
+                          "fill": "#FCFAEE",
+                          "content": "Войти",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 15,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "rGOeg",
+                      "name": "SignupPrompt",
+                      "fill": "#558B6E",
+                      "content": "Нет аккаунта? Зарегистрироваться",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "zH7Km",
+      "x": -15,
+      "y": 3425,
+      "name": "Opportunity Detail Page",
+      "width": 1440,
+      "height": 1800,
+      "fill": "#FCFAEE",
+      "layout": "vertical",
+      "gap": 26,
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "KJ6pE",
+          "name": "header",
+          "width": 1180,
+          "fill": "#FCFAEE",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "1hMqp",
+              "name": "Top Nav",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "s187R",
+                  "name": "brandWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "vgtaq",
+                      "name": "brandDot",
+                      "fill": "#FF5F00",
+                      "width": 28,
+                      "height": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "kamej",
+                      "name": "brandText",
+                      "fill": "#161413",
+                      "content": "ТРАМПЛИН",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "bd0Sf",
+                      "name": "brandTag",
+                      "fill": "#558B6E",
+                      "content": "платформа карьеры",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "lAPZQ",
+                  "name": "actionsWrap",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MJNMI",
+                      "name": "loginBtn",
+                      "fill": "#F1EBBB",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "RrEvW",
+                          "name": "loginTxt",
+                          "fill": "#2F2923",
+                          "content": "Войти",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "tO4pS",
+                      "name": "regBtn",
+                      "fill": "#0049B8",
+                      "cornerRadius": 18,
+                      "padding": [
+                        10,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "WY5MM",
+                          "name": "regTxt",
+                          "fill": "#FCFAEE",
+                          "content": "Регистрация",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "6ob0G",
+          "name": "Opportunity Content",
+          "width": 1180,
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "SVM0c",
+              "name": "Opportunity Hero",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 18,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "7HTZY",
+                  "name": "MediaGallery",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "QvaKu",
+                      "name": "HeroImage",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 460,
+                      "cornerRadius": 28,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "uSn3w",
+                          "x": 0,
+                          "y": 0,
+                          "name": "photo",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "silverkblack",
+                            "link": "https://unsplash.com/@silverkblack",
+                            "author": "Vitaly Gariev"
+                          },
+                          "width": 1180,
+                          "height": 460,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1758874383918-d85ea841b4e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzQxMTkzODV8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          },
+                          "cornerRadius": 16,
+                          "layout": "none"
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "Gr1zr",
+                          "x": 0,
+                          "y": 0,
+                          "name": "ImageOverlay",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 180,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "#00000000",
+                                "position": 0
+                              },
+                              {
+                                "color": "#00000099",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "width": 1180,
+                          "height": 460
+                        },
+                        {
+                          "type": "ellipse",
+                          "id": "amemP",
+                          "x": 28,
+                          "y": 206,
+                          "name": "PrevButton",
+                          "fill": "#FCFAEECC",
+                          "width": 48,
+                          "height": 48
+                        },
+                        {
+                          "type": "ellipse",
+                          "id": "9avKF",
+                          "x": 1104,
+                          "y": 206,
+                          "name": "NextButton",
+                          "fill": "#FCFAEECC",
+                          "width": 48,
+                          "height": 48
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QORWs",
+                      "name": "CarouselDots",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "mnlft",
+                          "name": "dot1",
+                          "fill": "#0049B8",
+                          "width": 10,
+                          "height": 10
+                        },
+                        {
+                          "type": "ellipse",
+                          "id": "snFyU",
+                          "name": "dot2",
+                          "fill": "#F1EBBB",
+                          "width": 10,
+                          "height": 10
+                        },
+                        {
+                          "type": "ellipse",
+                          "id": "DTjHt",
+                          "name": "dot3",
+                          "fill": "#F1EBBB",
+                          "width": 10,
+                          "height": 10
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "09j2C",
+                  "name": "SummaryCard",
+                  "width": "fill_container",
+                  "fill": "#568b6eff",
+                  "cornerRadius": 28,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "AIAVP",
+                      "name": "SummaryTitle",
+                      "fill": "#f8f5deff",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Junior Python Engineer Internship",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 30,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "z7km2",
+                      "name": "SummaryDesc",
+                      "fill": "#fcfaeeff",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Стажерская программа с участием в разработке внутренних API, code review, наставничеством и доступом к медиаматериалам компании о команде и процессах.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "yKdtB",
+                  "name": "InfoGrid",
+                  "width": "fill_container",
+                  "gap": 22,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "x9fWL",
+                      "name": "EmployerBlock",
+                      "width": "fill_container",
+                      "fill": "#F8F5DD",
+                      "cornerRadius": 26,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "gap": 18,
+                      "padding": [
+                        20,
+                        22
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "6yAsc",
+                          "name": "EmployerLogo",
+                          "fill": "#0049B8",
+                          "width": 74,
+                          "height": 74
+                        },
+                        {
+                          "type": "frame",
+                          "id": "q101b",
+                          "name": "EmployerInfo",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "H9Auw",
+                              "name": "CompanyName",
+                              "fill": "#161413",
+                              "content": "Orbit Labs",
+                              "fontFamily": "Plus Jakarta Sans",
+                              "fontSize": 24,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "42R6l",
+                              "name": "CompanyMeta",
+                              "fill": "#423C37",
+                              "content": "Продуктовая компания · Алматы · 250+ сотрудников",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "sCaEh",
+                              "name": "CompanyLinks",
+                              "fill": "#0049B8",
+                              "content": "orbitlabs.example · hr@orbitlabs.example · +7 700 123 45 67",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "34ihb",
+                          "name": "ApplyBtn",
+                          "fill": "#FF5F00",
+                          "cornerRadius": 20,
+                          "padding": [
+                            14,
+                            22
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zlnFa",
+                              "name": "ApplyTxt",
+                              "fill": "#FCFAEE",
+                              "content": "Откликнуться",
+                              "fontFamily": "Plus Jakarta Sans",
+                              "fontSize": 15,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "3qL3L",
+              "name": "InfoRight",
+              "width": 360,
+              "layout": "vertical",
+              "gap": 18,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "kXnl2",
+                  "name": "TagsCard",
+                  "width": "fill_container",
+                  "fill": "#F8F5DD",
+                  "cornerRadius": 24,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 22,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "FgrHp",
+                      "name": "TagsTitle",
+                      "fill": "#161413",
+                      "content": "Теги",
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": 22,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "h4vyq",
+                      "name": "TagsWrap",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "SIoKl",
+                          "name": "TagPython",
+                          "fill": "#0049B8",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "CBVOB",
+                              "name": "TagPythonTxt",
+                              "fill": "#FCFAEE",
+                              "content": "Python",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "SAS9F",
+                          "name": "TagSQL",
+                          "fill": "#558B6E",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "G1Su1",
+                              "name": "TagSQLTxt",
+                              "fill": "#FCFAEE",
+                              "content": "SQL",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "hEXqn",
+                          "name": "TagJunior",
+                          "fill": "#F1EBBB",
+                          "cornerRadius": 16,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#423C37"
+                          },
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "yZP9m",
+                              "name": "TagJuniorTxt",
+                              "fill": "#2F2923",
+                              "content": "Junior",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "xnoz7",
+                      "name": "TagRow2",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "XJHsH",
+                          "name": "TagFullTime",
+                          "fill": "#FF5F00",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "4ESqp",
+                              "name": "TagFullTimeTxt",
+                              "fill": "#FCFAEE",
+                              "content": "Полная занятость",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "siUM3",
+                          "name": "TagAPI",
+                          "fill": "#0049B8",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "XpExA",
+                              "name": "TagAPITxt",
+                              "fill": "#FCFAEE",
+                              "content": "REST API",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ISsRJ",
+              "name": "Opportunity Details",
+              "width": 816,
+              "layout": "vertical",
+              "gap": 22,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "OVKPD",
+                  "name": "Opportunity Info Block",
+                  "width": "fill_container",
+                  "fill": "#FCFAEE",
+                  "cornerRadius": 24,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#423C37"
+                  },
+                  "layout": "vertical",
+                  "gap": 18,
+                  "padding": [
+                    22,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "H1mHV",
+                      "name": "headerRow",
+                      "width": "fill_container",
+                      "gap": 16,
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "dvSmD",
+                          "name": "kicker",
+                          "fill": "#FF8400",
+                          "cornerRadius": 999,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "knYiv",
+                              "name": "kickerText",
+                              "fill": "#111111",
+                              "content": "ДЕТАЛИ",
+                              "fontFamily": "JetBrains Mono",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "zEYAW",
+                          "name": "sectionTitleWrap",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "I27ke",
+                              "name": "sectionTitle",
+                              "fill": "$--foreground",
+                              "content": "Информация о возможности",
+                              "fontFamily": "Plus Jakarta Sans",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "CkAXO",
+                              "name": "sectionDesc",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Короткий справочник по формату участия, срокам, месту и тому, что понадобится для отклика.",
+                              "lineHeight": 1.4,
+                              "fontFamily": "Geist",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "rxNZL",
+                      "name": "contentRow",
+                      "width": "fill_container",
+                      "gap": 18,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "3Jwca",
+                          "name": "detailsCol",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 14,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "A8bul",
+                              "name": "rowTwo",
+                              "width": "fill_container",
+                              "gap": 14,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "9FpVd",
+                                  "name": "locationCard",
+                                  "width": "fill_container",
+                                  "fill": "$--card",
+                                  "cornerRadius": 18,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#423C37"
+                                  },
+                                  "layout": "vertical",
+                                  "gap": 10,
+                                  "padding": [
+                                    16,
+                                    18
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "NKkuz",
+                                      "name": "locationLabel",
+                                      "fill": "#0049B8",
+                                      "content": "Краткое описание и требования",
+                                      "fontFamily": "Inter",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "s2kRE",
+                                      "name": "locationValue",
+                                      "fill": "$--foreground",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Требования: Python, FastAPI или Flask, базовый SQL, понимание REST API, аккуратная работа с Git. В программу входят вводные видеоматериалы о компании, запись тех-встреч и медиаконтент о команде.",
+                                      "lineHeight": 1.35,
+                                      "fontFamily": "Geist",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "FsjmZ",
+                              "name": "rowTwo",
+                              "width": "fill_container",
+                              "gap": 14,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "5jzdx",
+                                  "name": "locationCard",
+                                  "width": "fill_container",
+                                  "fill": "$--card",
+                                  "cornerRadius": 18,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#423C37"
+                                  },
+                                  "layout": "vertical",
+                                  "gap": 10,
+                                  "padding": [
+                                    16,
+                                    18
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "FLxxk",
+                                      "name": "locationLabel",
+                                      "fill": "#0049B8",
+                                      "content": "МЕСТО",
+                                      "fontFamily": "JetBrains Mono",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "hmGeO",
+                                      "name": "locationValue",
+                                      "fill": "$--foreground",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Офис, онлайн-платформа или площадка проведения с точным адресом и ссылкой",
+                                      "lineHeight": 1.35,
+                                      "fontFamily": "Geist",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "V4qOt",
+                                  "name": "datesCard",
+                                  "width": "fill_container",
+                                  "fill": "$--card",
+                                  "cornerRadius": 18,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#423C37"
+                                  },
+                                  "layout": "vertical",
+                                  "gap": 10,
+                                  "padding": [
+                                    16,
+                                    18
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "0VoBo",
+                                      "name": "datesLabel",
+                                      "fill": "#0049B8",
+                                      "content": "ДАТЫ",
+                                      "fontFamily": "JetBrains Mono",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "7Jp6S",
+                                      "name": "datesValue",
+                                      "fill": "$--foreground",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Старт, дедлайн подачи и важные этапы отбора в одном месте без лишнего текста",
+                                      "lineHeight": 1.35,
+                                      "fontFamily": "Geist",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "5FvZL",
+                              "name": "rowOne",
+                              "width": "fill_container",
+                              "gap": 14,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Yd2QZ",
+                                  "name": "formatCard",
+                                  "width": "fill_container",
+                                  "fill": "$--card",
+                                  "cornerRadius": 18,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#423C37"
+                                  },
+                                  "layout": "vertical",
+                                  "gap": 10,
+                                  "padding": [
+                                    16,
+                                    18
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "nfCGO",
+                                      "name": "formatLabel",
+                                      "fill": "#0049B8",
+                                      "content": "ФОРМАТ РАБОТЫ",
+                                      "fontFamily": "JetBrains Mono",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "xW1gt",
+                                      "name": "formatValue",
+                                      "fill": "$--foreground",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Удаленно или гибридно, с понятным расписанием и точкой входа для участника",
+                                      "lineHeight": 1.35,
+                                      "fontFamily": "Geist",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "iaVap",
+                                  "name": "contactsCard",
+                                  "width": "fill_container",
+                                  "fill": "$--card",
+                                  "cornerRadius": 18,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#423C37"
+                                  },
+                                  "layout": "vertical",
+                                  "gap": 10,
+                                  "padding": [
+                                    16,
+                                    18
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "9hADs",
+                                      "name": "contactsLabel",
+                                      "fill": "#0049B8",
+                                      "content": "КОНТАКТЫ",
+                                      "fontFamily": "JetBrains Mono",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "1a3Gt",
+                                      "name": "contactsValue",
+                                      "fill": "$--foreground",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Сайт работодателя: orbitlabs.example\nФорма отклика: orbitlabs.example/jobs/junior-python\nEmail: hr@orbitlabs.example\nTelegram: @orbitlabs_hr\nТелефон: +7 700 123 45 67",
+                                      "lineHeight": 1.35,
+                                      "fontFamily": "Geist",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "xBefu",
+                      "name": "levelCard",
+                      "width": "fill_container",
+                      "fill": "$--card",
+                      "cornerRadius": 18,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#423C37"
+                      },
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        16,
+                        18
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Xtluw",
+                          "name": "levelLabel",
+                          "fill": "#0049B8",
+                          "content": "УРОВЕНЬ",
+                          "fontFamily": "JetBrains Mono",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XJIy4",
+                          "name": "levelChips",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "9m0ll",
+                              "name": "juniorChip",
+                              "fill": "$--secondary",
+                              "cornerRadius": 999,
+                              "padding": [
+                                8,
+                                12
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TFB17",
+                                  "name": "juniorText",
+                                  "fill": "$--foreground",
+                                  "content": "Junior",
+                                  "fontFamily": "JetBrains Mono",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "MI5AQ",
+                              "name": "middleChip",
+                              "fill": "$--secondary",
+                              "cornerRadius": 999,
+                              "padding": [
+                                8,
+                                12
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "cyS1c",
+                                  "name": "middleText",
+                                  "fill": "$--foreground",
+                                  "content": "Middle",
+                                  "fontFamily": "JetBrains Mono",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Mz5uH",
+                          "name": "levelNote",
+                          "fill": "$--muted-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Укажи актуальный порог входа, чтобы кандидат сразу понимал, подходит ли ему эта возможность.",
+                          "lineHeight": 1.35,
+                          "fontFamily": "Geist",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pb1Xt",
+          "name": "footer",
+          "width": "fill_container",
+          "fill": "#2F2923",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            24,
+            36
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "u8KPu",
+              "name": "footerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "o1PPH",
+                  "name": "ftBrand",
+                  "fill": "#F8F5DD",
+                  "content": "ТРАМПЛИН",
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "ZeDd3",
+                  "name": "ftLinks",
+                  "gap": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "WTGKb",
+                      "name": "link1",
+                      "fill": "#F1EBBB",
+                      "content": "Возможности",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "TxH4a",
+                      "name": "link2",
+                      "fill": "#F1EBBB",
+                      "content": "Наставники",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "uYHNV",
+                      "name": "link3",
+                      "fill": "#F1EBBB",
+                      "content": "События",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zcI3Q",
+                      "name": "link4",
+                      "fill": "#F1EBBB",
+                      "content": "Контакты",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "O2sGy",
+              "name": "ftBottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ff0Uh",
+                  "name": "ftCaption",
+                  "fill": "#F8F5DD",
+                  "content": "Поиск IT-возможностей на карте и в списке: стажировки, вакансии, наставничество и события.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "JmyZc",
+                  "name": "ftYear",
+                  "fill": "#FF5F00",
+                  "content": "2026 Трамплин",
                   "fontFamily": "Inter",
                   "fontSize": 12,
                   "fontWeight": "700"
