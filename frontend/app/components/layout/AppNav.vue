@@ -15,7 +15,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-block: 24px;
+  padding-top: 24px;
+  padding-bottom: 12px;
+  padding-inline: 36px;
 
   &__actions {
     display: flex;
