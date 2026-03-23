@@ -5145,7 +5145,7 @@
       "y": 3425,
       "name": "Opportunity Detail Page",
       "width": 1440,
-      "height": 1800,
+      "height": 1434,
       "fill": "#FCFAEE",
       "layout": "vertical",
       "gap": 26,
@@ -5423,37 +5423,59 @@
                   "fill": "#568b6eff",
                   "cornerRadius": 28,
                   "stroke": {
-                    "thickness": 1,
-                    "fill": "#423C37"
+                    "thickness": 1
                   },
                   "layout": "vertical",
                   "gap": 14,
                   "padding": 24,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "AIAVP",
-                      "name": "SummaryTitle",
-                      "fill": "#f8f5deff",
-                      "textGrowth": "fixed-width",
+                      "type": "frame",
+                      "id": "0fv7B",
+                      "name": "SummaryHeader",
                       "width": "fill_container",
-                      "content": "Junior Python Engineer Internship",
-                      "fontFamily": "Plus Jakarta Sans",
-                      "fontSize": 30,
-                      "fontWeight": "800"
-                    },
-                    {
-                      "type": "text",
-                      "id": "z7km2",
-                      "name": "SummaryDesc",
-                      "fill": "#fcfaeeff",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Стажерская программа с участием в разработке внутренних API, code review, наставничеством и доступом к медиаматериалам компании о команде и процессах.",
-                      "lineHeight": 1.4,
-                      "fontFamily": "Inter",
-                      "fontSize": 15,
-                      "fontWeight": "500"
+                      "gap": 16,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "AIAVP",
+                          "name": "SummaryTitle",
+                          "fill": "#f8f5deff",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Junior Python Engineer Internship",
+                          "fontFamily": "Plus Jakarta Sans",
+                          "fontSize": 28,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "34ihb",
+                          "name": "ApplyBtn",
+                          "fill": "#ff5f00ff",
+                          "cornerRadius": 999,
+                          "padding": [
+                            12,
+                            18
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zlnFa",
+                              "name": "ApplyTxt",
+                              "fill": "#fcfaeeff",
+                              "content": "Откликнуться",
+                              "fontFamily": "JetBrains Mono",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 },
@@ -5475,10 +5497,10 @@
                         "thickness": 1,
                         "fill": "#423C37"
                       },
-                      "gap": 18,
+                      "gap": 20,
                       "padding": [
-                        20,
-                        22
+                        22,
+                        24
                       ],
                       "alignItems": "center",
                       "children": [
@@ -5487,8 +5509,8 @@
                           "id": "6yAsc",
                           "name": "EmployerLogo",
                           "fill": "#0049B8",
-                          "width": 74,
-                          "height": 74
+                          "width": 68,
+                          "height": 68
                         },
                         {
                           "type": "frame",
@@ -5496,26 +5518,28 @@
                           "name": "EmployerInfo",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 6,
+                          "gap": 8,
                           "children": [
                             {
                               "type": "text",
                               "id": "H9Auw",
                               "name": "CompanyName",
-                              "fill": "#161413",
+                              "fill": "$--foreground",
                               "content": "Orbit Labs",
-                              "fontFamily": "Plus Jakarta Sans",
-                              "fontSize": 24,
+                              "fontFamily": "JetBrains Mono",
+                              "fontSize": 22,
                               "fontWeight": "800"
                             },
                             {
                               "type": "text",
                               "id": "42R6l",
                               "name": "CompanyMeta",
-                              "fill": "#423C37",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Продуктовая компания · Алматы · 250+ сотрудников",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
                               "fontWeight": "500"
                             },
                             {
@@ -5523,209 +5547,191 @@
                               "id": "sCaEh",
                               "name": "CompanyLinks",
                               "fill": "#0049B8",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "orbitlabs.example · hr@orbitlabs.example · +7 700 123 45 67",
-                              "fontFamily": "Inter",
-                              "fontSize": 13,
-                              "fontWeight": "700"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "34ihb",
-                          "name": "ApplyBtn",
-                          "fill": "#FF5F00",
-                          "cornerRadius": 20,
-                          "padding": [
-                            14,
-                            22
-                          ],
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "zlnFa",
-                              "name": "ApplyTxt",
-                              "fill": "#FCFAEE",
-                              "content": "Откликнуться",
-                              "fontFamily": "Plus Jakarta Sans",
-                              "fontSize": 15,
-                              "fontWeight": "800"
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "600"
                             }
                           ]
                         }
                       ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "3qL3L",
-              "name": "InfoRight",
-              "width": 360,
-              "layout": "vertical",
-              "gap": 18,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "kXnl2",
-                  "name": "TagsCard",
-                  "width": "fill_container",
-                  "fill": "#F8F5DD",
-                  "cornerRadius": 24,
-                  "stroke": {
-                    "thickness": 1,
-                    "fill": "#423C37"
-                  },
-                  "layout": "vertical",
-                  "gap": 12,
-                  "padding": 22,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "FgrHp",
-                      "name": "TagsTitle",
-                      "fill": "#161413",
-                      "content": "Теги",
-                      "fontFamily": "Plus Jakarta Sans",
-                      "fontSize": 22,
-                      "fontWeight": "800"
                     },
                     {
                       "type": "frame",
-                      "id": "h4vyq",
-                      "name": "TagsWrap",
-                      "width": "fill_container",
-                      "gap": 8,
+                      "id": "3qL3L",
+                      "name": "InfoRight",
+                      "width": 330,
+                      "layout": "vertical",
+                      "gap": 14,
                       "children": [
                         {
                           "type": "frame",
-                          "id": "SIoKl",
-                          "name": "TagPython",
-                          "fill": "#0049B8",
-                          "cornerRadius": 16,
-                          "padding": [
-                            8,
-                            12
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "CBVOB",
-                              "name": "TagPythonTxt",
-                              "fill": "#FCFAEE",
-                              "content": "Python",
-                              "fontFamily": "Inter",
-                              "fontSize": 12,
-                              "fontWeight": "700"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "SAS9F",
-                          "name": "TagSQL",
-                          "fill": "#558B6E",
-                          "cornerRadius": 16,
-                          "padding": [
-                            8,
-                            12
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "G1Su1",
-                              "name": "TagSQLTxt",
-                              "fill": "#FCFAEE",
-                              "content": "SQL",
-                              "fontFamily": "Inter",
-                              "fontSize": 12,
-                              "fontWeight": "700"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "hEXqn",
-                          "name": "TagJunior",
-                          "fill": "#F1EBBB",
-                          "cornerRadius": 16,
+                          "id": "kXnl2",
+                          "name": "TagsCard",
+                          "width": "fill_container",
+                          "fill": "#f8f5deff",
+                          "cornerRadius": 20,
                           "stroke": {
                             "thickness": 1,
-                            "fill": "#423C37"
+                            "fill": "#8A847D"
                           },
+                          "layout": "vertical",
+                          "gap": 12,
                           "padding": [
-                            8,
-                            12
+                            20,
+                            20,
+                            16,
+                            20
                           ],
                           "children": [
                             {
                               "type": "text",
-                              "id": "yZP9m",
-                              "name": "TagJuniorTxt",
-                              "fill": "#2F2923",
-                              "content": "Junior",
-                              "fontFamily": "Inter",
-                              "fontSize": 12,
-                              "fontWeight": "700"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "xnoz7",
-                      "name": "TagRow2",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "XJHsH",
-                          "name": "TagFullTime",
-                          "fill": "#FF5F00",
-                          "cornerRadius": 16,
-                          "padding": [
-                            8,
-                            12
-                          ],
-                          "children": [
+                              "id": "FgrHp",
+                              "name": "TagsTitle",
+                              "fill": "#161413",
+                              "content": "Теги",
+                              "fontFamily": "Plus Jakarta Sans",
+                              "fontSize": 19,
+                              "fontWeight": "800"
+                            },
                             {
-                              "type": "text",
-                              "id": "4ESqp",
-                              "name": "TagFullTimeTxt",
-                              "fill": "#FCFAEE",
-                              "content": "Полная занятость",
-                              "fontFamily": "Inter",
-                              "fontSize": 12,
-                              "fontWeight": "700"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "siUM3",
-                          "name": "TagAPI",
-                          "fill": "#0049B8",
-                          "cornerRadius": 16,
-                          "padding": [
-                            8,
-                            12
-                          ],
-                          "children": [
+                              "type": "frame",
+                              "id": "h4vyq",
+                              "name": "TagsWrap",
+                              "width": "fill_container",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "SIoKl",
+                                  "name": "TagPython",
+                                  "fill": "#0049B8",
+                                  "cornerRadius": 14,
+                                  "padding": [
+                                    7,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "CBVOB",
+                                      "name": "TagPythonTxt",
+                                      "fill": "#FCFAEE",
+                                      "content": "Python",
+                                      "fontFamily": "Inter",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "SAS9F",
+                                  "name": "TagSQL",
+                                  "fill": "#558B6E",
+                                  "cornerRadius": 14,
+                                  "padding": [
+                                    7,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "G1Su1",
+                                      "name": "TagSQLTxt",
+                                      "fill": "#FCFAEE",
+                                      "content": "SQL",
+                                      "fontFamily": "Inter",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "hEXqn",
+                                  "name": "TagJunior",
+                                  "fill": "#F1EBBB",
+                                  "cornerRadius": 14,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#423C37"
+                                  },
+                                  "padding": [
+                                    7,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "yZP9m",
+                                      "name": "TagJuniorTxt",
+                                      "fill": "#2F2923",
+                                      "content": "Junior",
+                                      "fontFamily": "Inter",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
                             {
-                              "type": "text",
-                              "id": "XpExA",
-                              "name": "TagAPITxt",
-                              "fill": "#FCFAEE",
-                              "content": "REST API",
-                              "fontFamily": "Inter",
-                              "fontSize": 12,
-                              "fontWeight": "700"
+                              "type": "frame",
+                              "id": "xnoz7",
+                              "name": "TagRow2",
+                              "width": "fill_container",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "XJHsH",
+                                  "name": "TagFullTime",
+                                  "fill": "#FF5F00",
+                                  "cornerRadius": 14,
+                                  "padding": [
+                                    7,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "4ESqp",
+                                      "name": "TagFullTimeTxt",
+                                      "fill": "#FCFAEE",
+                                      "content": "Полная занятость",
+                                      "fontFamily": "Inter",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "siUM3",
+                                  "name": "TagAPI",
+                                  "fill": "#0049B8",
+                                  "cornerRadius": 14,
+                                  "padding": [
+                                    7,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "XpExA",
+                                      "name": "TagAPITxt",
+                                      "fill": "#FCFAEE",
+                                      "content": "REST API",
+                                      "fontFamily": "Inter",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
                             }
                           ]
                         }
@@ -5739,7 +5745,7 @@
               "type": "frame",
               "id": "ISsRJ",
               "name": "Opportunity Details",
-              "width": 816,
+              "width": 1063,
               "layout": "vertical",
               "gap": 22,
               "children": [
@@ -5773,7 +5779,7 @@
                           "type": "frame",
                           "id": "dvSmD",
                           "name": "kicker",
-                          "fill": "#FF8400",
+                          "fill": "#ff5f00",
                           "cornerRadius": 999,
                           "padding": [
                             8,
@@ -5784,9 +5790,9 @@
                               "type": "text",
                               "id": "knYiv",
                               "name": "kickerText",
-                              "fill": "#111111",
-                              "content": "ДЕТАЛИ",
-                              "fontFamily": "JetBrains Mono",
+                              "fill": "#fcfaeeff",
+                              "content": "Детали",
+                              "fontFamily": "Plus Jakarta Sans",
                               "fontSize": 11,
                               "fontWeight": "600"
                             }
@@ -5836,6 +5842,104 @@
                       "children": [
                         {
                           "type": "frame",
+                          "id": "xBefu",
+                          "name": "levelCard",
+                          "width": 196,
+                          "fill": "#f8f5dfff",
+                          "cornerRadius": 18,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#423C37"
+                          },
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": [
+                            16,
+                            18
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Xtluw",
+                              "name": "levelLabel",
+                              "fill": "#0049B8",
+                              "content": "УРОВЕНЬ",
+                              "fontFamily": "JetBrains Mono",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "XJIy4",
+                              "name": "levelChips",
+                              "width": "fill_container",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "9m0ll",
+                                  "name": "juniorChip",
+                                  "fill": "$--secondary",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    8,
+                                    12
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "TFB17",
+                                      "name": "juniorText",
+                                      "fill": "$--foreground",
+                                      "content": "Junior",
+                                      "fontFamily": "JetBrains Mono",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "MI5AQ",
+                                  "name": "middleChip",
+                                  "fill": "$--secondary",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    8,
+                                    12
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "cyS1c",
+                                      "name": "middleText",
+                                      "fill": "$--foreground",
+                                      "content": "Middle",
+                                      "fontFamily": "JetBrains Mono",
+                                      "fontSize": 11,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Mz5uH",
+                              "name": "levelNote",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Укажи актуальный порог входа, чтобы кандидат сразу понимал, подходит ли ему эта возможность.",
+                              "lineHeight": 1.35,
+                              "fontFamily": "Geist",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
                           "id": "3Jwca",
                           "name": "detailsCol",
                           "width": "fill_container",
@@ -5854,7 +5958,7 @@
                                   "id": "9FpVd",
                                   "name": "locationCard",
                                   "width": "fill_container",
-                                  "fill": "$--card",
+                                  "fill": "#fcfaeeff",
                                   "cornerRadius": 18,
                                   "stroke": {
                                     "thickness": 1,
@@ -5884,7 +5988,7 @@
                                       "fill": "$--foreground",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Требования: Python, FastAPI или Flask, базовый SQL, понимание REST API, аккуратная работа с Git. В программу входят вводные видеоматериалы о компании, запись тех-встреч и медиаконтент о команде.",
+                                      "content": "Требования: Python, FastAPI или Flask, базовый SQL, понимание REST API, аккуратная работа с Git. В программу входят вводные видеоматериалы о компании, запись тех-встреч и медиаконтент о команде. \nFastAPI или Flask, базовый SQL, понимание REST API, аккуратная работа с Git. В программу входят вводные видеоматериалы о компании, запись тех-встреч и медиаконтент о команде.",
                                       "lineHeight": 1.35,
                                       "fontFamily": "Geist",
                                       "fontSize": 15,
@@ -5906,7 +6010,7 @@
                                   "id": "5jzdx",
                                   "name": "locationCard",
                                   "width": "fill_container",
-                                  "fill": "$--card",
+                                  "fill": "#0049b9ff",
                                   "cornerRadius": 18,
                                   "stroke": {
                                     "thickness": 1,
@@ -5923,22 +6027,22 @@
                                       "type": "text",
                                       "id": "FLxxk",
                                       "name": "locationLabel",
-                                      "fill": "#0049B8",
-                                      "content": "МЕСТО",
-                                      "fontFamily": "JetBrains Mono",
-                                      "fontSize": 11,
+                                      "fill": "#fcfaeeff",
+                                      "content": "Формат",
+                                      "fontFamily": "Plus Jakarta Sans",
+                                      "fontSize": 17,
                                       "fontWeight": "600"
                                     },
                                     {
                                       "type": "text",
                                       "id": "hmGeO",
                                       "name": "locationValue",
-                                      "fill": "$--foreground",
+                                      "fill": "#fcfaeeff",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Офис, онлайн-платформа или площадка проведения с точным адресом и ссылкой",
+                                      "content": "Офлайн",
                                       "lineHeight": 1.35,
-                                      "fontFamily": "Geist",
+                                      "fontFamily": "Inter",
                                       "fontSize": 15,
                                       "fontWeight": "normal"
                                     }
@@ -5949,7 +6053,7 @@
                                   "id": "V4qOt",
                                   "name": "datesCard",
                                   "width": "fill_container",
-                                  "fill": "$--card",
+                                  "fill": "#f8f5deff",
                                   "cornerRadius": 18,
                                   "stroke": {
                                     "thickness": 1,
@@ -5967,7 +6071,7 @@
                                       "id": "0VoBo",
                                       "name": "datesLabel",
                                       "fill": "#0049B8",
-                                      "content": "ДАТЫ",
+                                      "content": "Место",
                                       "fontFamily": "JetBrains Mono",
                                       "fontSize": 11,
                                       "fontWeight": "600"
@@ -5986,65 +6090,13 @@
                                       "fontWeight": "normal"
                                     }
                                   ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "5FvZL",
-                              "name": "rowOne",
-                              "width": "fill_container",
-                              "gap": 14,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "Yd2QZ",
-                                  "name": "formatCard",
-                                  "width": "fill_container",
-                                  "fill": "$--card",
-                                  "cornerRadius": 18,
-                                  "stroke": {
-                                    "thickness": 1,
-                                    "fill": "#423C37"
-                                  },
-                                  "layout": "vertical",
-                                  "gap": 10,
-                                  "padding": [
-                                    16,
-                                    18
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "nfCGO",
-                                      "name": "formatLabel",
-                                      "fill": "#0049B8",
-                                      "content": "ФОРМАТ РАБОТЫ",
-                                      "fontFamily": "JetBrains Mono",
-                                      "fontSize": 11,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "xW1gt",
-                                      "name": "formatValue",
-                                      "fill": "$--foreground",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "Удаленно или гибридно, с понятным расписанием и точкой входа для участника",
-                                      "lineHeight": 1.35,
-                                      "fontFamily": "Geist",
-                                      "fontSize": 15,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "iaVap",
-                                  "name": "contactsCard",
+                                  "id": "EQAEV",
+                                  "name": "locationCard",
                                   "width": "fill_container",
-                                  "fill": "$--card",
+                                  "fill": "#fcfaeeff",
                                   "cornerRadius": 18,
                                   "stroke": {
                                     "thickness": 1,
@@ -6059,22 +6111,22 @@
                                   "children": [
                                     {
                                       "type": "text",
-                                      "id": "9hADs",
-                                      "name": "contactsLabel",
+                                      "id": "ONDpP",
+                                      "name": "locationLabel",
                                       "fill": "#0049B8",
-                                      "content": "КОНТАКТЫ",
+                                      "content": "Дата",
                                       "fontFamily": "JetBrains Mono",
                                       "fontSize": 11,
                                       "fontWeight": "600"
                                     },
                                     {
                                       "type": "text",
-                                      "id": "1a3Gt",
-                                      "name": "contactsValue",
+                                      "id": "AzOFf",
+                                      "name": "locationValue",
                                       "fill": "$--foreground",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Сайт работодателя: orbitlabs.example\nФорма отклика: orbitlabs.example/jobs/junior-python\nEmail: hr@orbitlabs.example\nTelegram: @orbitlabs_hr\nТелефон: +7 700 123 45 67",
+                                      "content": "Офис, онлайн-платформа или площадка проведения с точным адресом и ссылкой",
                                       "lineHeight": 1.35,
                                       "fontFamily": "Geist",
                                       "fontSize": 15,
@@ -6085,104 +6137,6 @@
                               ]
                             }
                           ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "xBefu",
-                      "name": "levelCard",
-                      "width": "fill_container",
-                      "fill": "$--card",
-                      "cornerRadius": 18,
-                      "stroke": {
-                        "thickness": 1,
-                        "fill": "#423C37"
-                      },
-                      "layout": "vertical",
-                      "gap": 12,
-                      "padding": [
-                        16,
-                        18
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Xtluw",
-                          "name": "levelLabel",
-                          "fill": "#0049B8",
-                          "content": "УРОВЕНЬ",
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 11,
-                          "fontWeight": "600"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "XJIy4",
-                          "name": "levelChips",
-                          "width": "fill_container",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "9m0ll",
-                              "name": "juniorChip",
-                              "fill": "$--secondary",
-                              "cornerRadius": 999,
-                              "padding": [
-                                8,
-                                12
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "TFB17",
-                                  "name": "juniorText",
-                                  "fill": "$--foreground",
-                                  "content": "Junior",
-                                  "fontFamily": "JetBrains Mono",
-                                  "fontSize": 11,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "MI5AQ",
-                              "name": "middleChip",
-                              "fill": "$--secondary",
-                              "cornerRadius": 999,
-                              "padding": [
-                                8,
-                                12
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "cyS1c",
-                                  "name": "middleText",
-                                  "fill": "$--foreground",
-                                  "content": "Middle",
-                                  "fontFamily": "JetBrains Mono",
-                                  "fontSize": 11,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "Mz5uH",
-                          "name": "levelNote",
-                          "fill": "$--muted-foreground",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Укажи актуальный порог входа, чтобы кандидат сразу понимал, подходит ли ему эта возможность.",
-                          "lineHeight": 1.35,
-                          "fontFamily": "Geist",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
                         }
                       ]
                     }
