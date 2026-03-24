@@ -10,7 +10,7 @@ const { backgroundColor, bordered, textColor } = defineProps<Props>()
 
 <template>
   <span
-    :class="['app-tag', { 'app-tag--bordered': bordered }]"
+    :class="['app-tag', { bordered: bordered }]"
     :style="{
       backgroundColor: backgroundColor ?? 'var(--primary-color)',
       color: textColor ? textColor : 'inherit',
@@ -29,9 +29,5 @@ const { backgroundColor, bordered, textColor } = defineProps<Props>()
   font-size: 12px;
   text-transform: capitalize;
   border-radius: 50vw;
-
-  &--bordered {
-    border: 1px solid var(--border-color);
-  }
 }
 </style>

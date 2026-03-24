@@ -2,6 +2,7 @@
 <template>
   <div class="container">
     <AppHero />
+    <AppSearch />
   </div>
 </template>
 

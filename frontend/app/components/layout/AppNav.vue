@@ -4,7 +4,7 @@
   <nav class="app-nav container">
     <UiAppLogo dot tag />
     <div class="app-nav__actions">
-      <UiAppButton variant="secondary">Войти</UiAppButton>
+      <UiAppButton variant="secondary" bordered>Войти</UiAppButton>
       <UiAppButton variant="primary">Регистрация</UiAppButton>
     </div>
   </nav>

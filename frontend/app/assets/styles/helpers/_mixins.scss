@@ -1,0 +1,6 @@
+@mixin u-base($bordered: false, $background: var(--background-secondary-color)) {
+  @if $bordered {
+    border: 1px solid var(--border-color);
+  }
+  background-color: $background;
+}

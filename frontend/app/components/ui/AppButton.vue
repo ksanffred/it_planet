@@ -1,16 +1,15 @@
 <script setup lang="ts">
 interface Props {
   variant: 'primary' | 'secondary'
+  bordered?: boolean
   to?: string
 }
 const { variant } = defineProps<Props>()
 </script>
 
 <template>
-  <button :class="['reset-button', 'app-button', `app-button--${variant}`]">
-    <NuxtLink class="reset-link" :to="to ? to : '/'">
-      <slot></slot>
-    </NuxtLink>
+  <button :class="['reset-button', { bordered: bordered }, 'app-button', `app-button--${variant}`]">
+    <slot></slot>
   </button>
 </template>
 
@@ -22,7 +21,6 @@ const { variant } = defineProps<Props>()
 
   &--secondary {
     background-color: var(--background-secondary-color);
-    border: 1px solid var(--border-color);
 
     .light & {
       color: var(--text-inverted-color);
