@@ -41,7 +41,7 @@ public class EmailVerificationService {
         redisTemplate.opsForValue().set(key, String.valueOf(userId), Duration.ofHours(ttlHours));
         log.info("Stored verification token for userId={} with TTL={}h", userId, ttlHours);
 
-        String verificationLink = baseUrl + "/verify?token=" + token;
+        String verificationLink = baseUrl + "/auth/verify?token=" + token;
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
