@@ -8,7 +8,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.tramplin_itplanet.tramplin.domain.exception.FileStorageException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
+import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException;
 
@@ -47,6 +49,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", 401,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidFile(InvalidFileException ex) {
+        log.warn("Invalid file upload: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<Map<String, Object>> handleFileStorage(FileStorageException ex) {
+        log.error("File storage failed: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 500,
                 "error", ex.getMessage()
         ));
     }
