@@ -1,6 +1,7 @@
 package ru.tramplin_itplanet.tramplin.web;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,11 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import ru.tramplin_itplanet.tramplin.domain.service.AuthService;
 import ru.tramplin_itplanet.tramplin.web.dto.AuthResponse;
+import ru.tramplin_itplanet.tramplin.web.dto.CurrentUserResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.LoginRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.RegisterRequest;
 
@@ -58,6 +63,23 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         log.info("POST /auth/login: email={}", request.email());
         return ResponseEntity.ok(authService.login(request.email(), request.password()));
+    }
+
+    @Operation(summary = "Get current user", description = "Returns data for the currently authenticated user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Current user returned"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token",
+                    content = @Content(schema = @Schema(example = "{\"status\":401,\"error\":\"Unauthorized\"}")))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/me")
+    public ResponseEntity<CurrentUserResponse> me() {
+        log.info("GET /auth/me");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName() == null || "anonymousUser".equals(authentication.getName())) {
+            throw new BadCredentialsException("Unauthorized");
+        }
+        return ResponseEntity.ok(authService.getCurrentUser(authentication.getName()));
     }
 
     @Operation(summary = "Verify email address")
