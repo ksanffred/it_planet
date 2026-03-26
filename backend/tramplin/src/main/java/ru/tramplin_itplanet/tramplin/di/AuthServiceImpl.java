@@ -13,6 +13,7 @@ import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.repository.UserRepository;
 import ru.tramplin_itplanet.tramplin.domain.service.AuthService;
 import ru.tramplin_itplanet.tramplin.web.dto.AuthResponse;
+import ru.tramplin_itplanet.tramplin.web.dto.CurrentUserResponse;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -65,6 +66,20 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(email).orElseThrow();
         log.info("User logged in successfully: email={}", email);
         return new AuthResponse(token, user.id(), user.email(), user.displayName(), user.role().name());
+    }
+
+    @Override
+    public CurrentUserResponse getCurrentUser(String email) {
+        log.debug("Fetching current user by email={}", email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid authentication token"));
+        return new CurrentUserResponse(
+                user.id(),
+                user.email(),
+                user.displayName(),
+                user.role().name(),
+                user.isVerified()
+        );
     }
 
     @Override
