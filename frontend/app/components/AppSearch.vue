@@ -27,7 +27,7 @@
   &__map-button {
     display: flex;
     align-items: center;
-
+    min-width: fit-content;
     border-radius: 20px;
     gap: 10px;
     padding-block: 6px;
