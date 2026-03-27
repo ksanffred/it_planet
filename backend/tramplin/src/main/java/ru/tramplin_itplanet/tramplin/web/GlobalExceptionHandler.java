@@ -1,5 +1,6 @@
 package ru.tramplin_itplanet.tramplin.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import ru.tramplin_itplanet.tramplin.domain.exception.FileStorageException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
@@ -16,6 +18,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -60,6 +63,29 @@ public class GlobalExceptionHandler {
                 "timestamp", LocalDateTime.now(),
                 "status", 400,
                 "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex,
+                                                                   HttpServletRequest request) {
+        long maxBytes = ex.getMaxUploadSize();
+        String readableLimit = maxBytes > 0
+                ? String.format(Locale.ROOT, "%.2f MB", maxBytes / (1024.0 * 1024.0))
+                : "configured limit";
+
+        log.warn(
+                "Upload size limit reached: method={}, path={}, maxBytes={}, limit={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                maxBytes,
+                readableLimit
+        );
+
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 413,
+                "error", "Uploaded file exceeds the maximum allowed size (" + readableLimit + ")"
         ));
     }
 

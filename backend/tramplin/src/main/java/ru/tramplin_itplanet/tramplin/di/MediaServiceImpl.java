@@ -73,6 +73,17 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    public MediaUploadResponse uploadOpportunityDraftMedia(MultipartFile file) {
+        validateImageFile(file);
+
+        String objectPath = buildObjectPath("opportunities/drafts", file.getOriginalFilename());
+        uploadToS3(objectPath, file);
+
+        log.info("Opportunity draft media uploaded: path={}", objectPath);
+        return new MediaUploadResponse(objectPath, toPublicUrl(objectPath));
+    }
+
+    @Override
     @Transactional
     public MediaUploadResponse uploadOpportunityMedia(Long opportunityId, MultipartFile file) {
         validateImageFile(file);
