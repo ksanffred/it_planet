@@ -21,5 +21,3 @@ logs
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
-
-.qwen/settings.json.orig

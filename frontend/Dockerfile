@@ -1,12 +1,16 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 
+RUN corepack enable
+
 COPY package.json .yarnrc.yml yarn.lock* ./
-# HUSKY=0 prevents postinstall from running git hooks inside Docker
-RUN HUSKY=0 npm install -g yarn && yarn install --ignore-scripts
-RUN yarn nuxt prepare
+
+RUN corepack install
+
+RUN yarn 
 
 COPY . .
+RUN yarn nuxt prepare
 RUN yarn build
 
 FROM node:22-alpine
