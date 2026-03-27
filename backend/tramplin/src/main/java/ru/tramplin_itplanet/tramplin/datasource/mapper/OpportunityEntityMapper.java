@@ -41,7 +41,7 @@ public final class OpportunityEntityMapper {
                 entity.getName(),
                 entity.getLogoUrl(),
                 entity.getWebsite(),
-                entity.getContacts()
+                entity.getSocials()
         );
     }
 
