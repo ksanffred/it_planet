@@ -11,10 +11,10 @@ const isDark = computed({
 
 <template>
   <nav class="app-nav container">
-    <UiAppLogo dot tag />
+    <BaseAppLogo dot tag />
 
     <div class="app-nav__actions">
-      <UiAppButton
+      <BaseAppButton
         class="app-nav__theme-toggle"
         @click="isDark = !isDark"
         :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
@@ -23,9 +23,9 @@ const isDark = computed({
       >
         <NuxtIcon v-if="!isDark" size="24px" name="material-symbols:wb-sunny-rounded" />
         <NuxtIcon size="24px" name="material-symbols:moon-stars-rounded" v-else />
-      </UiAppButton>
-      <UiAppButton variant="secondary" bordered>Войти</UiAppButton>
-      <UiAppButton variant="primary">Регистрация</UiAppButton>
+      </BaseAppButton>
+      <BaseAppButton variant="secondary" bordered>Войти</BaseAppButton>
+      <BaseAppButton variant="primary">Регистрация</BaseAppButton>
     </div>
   </nav>
 </template>

@@ -1,24 +1,24 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="app-search container">
-    <UiAppInput placeholder="Поиск стажировок, компаний, технологий..." />
-    <UiAppButton variant="secondary" class="app-search__map-button">
+  <div class="search-section container">
+    <BaseAppInput placeholder="Поиск стажировок, компаний, технологий..." />
+    <BaseAppButton variant="secondary" class="search-section__map-button">
       <img
-        class="app-search__map-thumb"
+        class="search-section__map-thumb"
         src="/media/images/mapThumb.webp"
         alt="Map demonstration"
       />
-      <div class="app-search__text">
-        <span class="app-search__text-title">Открыть карту</span>
-        <span class="app-search__text-subtitle">Смотрите возможности по локации</span>
+      <div class="search-section__text">
+        <span class="search-section__text-title">Открыть карту</span>
+        <span class="search-section__text-subtitle">Смотрите возможности по локации</span>
       </div>
-    </UiAppButton>
+    </BaseAppButton>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.app-search {
+.search-section {
   display: flex;
   align-items: center;
   justify-content: center;

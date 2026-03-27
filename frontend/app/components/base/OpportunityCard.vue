@@ -24,6 +24,9 @@ const { title, description, image, type, tags } = defineProps<OpportunityCard>()
 .opportunity-card {
   $b: #{&};
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   border-radius: 22px;
   color: var(--text-inverted-color);
 

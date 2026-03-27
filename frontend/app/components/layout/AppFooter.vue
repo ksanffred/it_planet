@@ -3,7 +3,7 @@
 <template>
   <footer class="app-footer">
     <nav class="app-footer__nav container">
-      <UiAppLogo />
+      <BaseAppLogo />
 
       <div class="app-footer__nav-actions">
         <NuxtLink class="reset-link" to="/">Возможности</NuxtLink>

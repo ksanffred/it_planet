@@ -1,32 +1,32 @@
 <script setup lang="ts"></script>
 
 <template>
-  <header class="app-hero">
-    <div class="app-hero__left">
-      <hgroup class="app-hero__title-group">
-        <h1 class="app-hero__title">
+  <header class="hero-section">
+    <div class="hero-section__left">
+      <hgroup class="hero-section__title-group">
+        <h1 class="hero-section__title">
           Найдите стажировки, вакансии, наставников и карьерные события в одной интерактивной ленте
         </h1>
-        <p class="app-hero__description">
+        <p class="hero-section__description">
           Исследуйте возможности по стеку, уровню и формату. Мгновенно переключайтесь между картой и
           списком.
         </p>
       </hgroup>
-      <div class="app-hero__tags">
-        <UiAppTag background-color="var(--secondary-color)">Карта + лента</UiAppTag>
-        <UiAppTag
+      <div class="hero-section__tags">
+        <BaseAppTag background-color="var(--secondary-color)">Карта + лента</BaseAppTag>
+        <BaseAppTag
           background-color="var(--background-secondary-color)"
           text-color="var(--text-inverted-color)"
-          >Умные теги</UiAppTag
+          >Умные теги</BaseAppTag
         >
       </div>
     </div>
-    <img class="app-hero__art" src="/media/images/heroArt.webp" alt="Hero art" />
+    <img class="hero-section__art" src="/media/images/heroArt.webp" alt="Hero art" />
   </header>
 </template>
 
 <style lang="scss" scoped>
-.app-hero {
+.hero-section {
   display: flex;
   align-items: center;
 
