@@ -4,6 +4,16 @@ CREATE TABLE IF NOT EXISTS tags (
     category   VARCHAR(50)  NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id            BIGSERIAL PRIMARY KEY,
+    email         VARCHAR(255) NOT NULL UNIQUE,
+    display_name  VARCHAR(255),
+    password_hash VARCHAR(255) NOT NULL,
+    role          VARCHAR(50)  NOT NULL,
+    is_verified   BOOLEAN      NOT NULL,
+    created_at    TIMESTAMP    NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS employers (
     id             BIGSERIAL PRIMARY KEY,
     user_id        BIGINT,
@@ -14,6 +24,8 @@ CREATE TABLE IF NOT EXISTS employers (
     socials        TEXT,
     logo_url       VARCHAR(255),
     status         VARCHAR(50)  NOT NULL,
+    CONSTRAINT fk_employers_user
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
     CONSTRAINT chk_employers_status
         CHECK (status IN ('pending', 'verified', 'rejected'))
 );

@@ -19,6 +19,33 @@ BEGIN
     END IF;
 END $$;
 
+-- Keep only valid user_id values before adding foreign key.
+UPDATE employers e
+SET user_id = NULL
+WHERE user_id IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1
+      FROM users u
+      WHERE u.id = e.user_id
+  );
+
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_name = 'users'
+    ) AND NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'fk_employers_user'
+    ) THEN
+        ALTER TABLE employers
+            ADD CONSTRAINT fk_employers_user
+            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
 ALTER TABLE employers
     ADD COLUMN IF NOT EXISTS user_id BIGINT,
     ADD COLUMN IF NOT EXISTS description TEXT,
