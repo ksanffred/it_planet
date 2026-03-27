@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
 import ru.tramplin_itplanet.tramplin.web.dto.CreateOpportunityRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityCardResponse;
+import ru.tramplin_itplanet.tramplin.web.dto.OpportunityMiniCardResponse;
 import ru.tramplin_itplanet.tramplin.web.mapper.CreateOpportunityRequestMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityCardMapper;
+import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityMiniCardMapper;
+
+import java.util.List;
 
 @Tag(name = "Opportunities", description = "Career opportunities: vacancies, internships, mentorships, and events")
 @RestController
@@ -30,6 +34,22 @@ public class OpportunityController {
 
     public OpportunityController(OpportunityService opportunityService) {
         this.opportunityService = opportunityService;
+    }
+
+    @Operation(
+            summary = "Get mini-cards for home page",
+            description = "Returns opportunity mini-cards with first media, title, description, employer name, format, and first three tags."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Mini-cards returned successfully")
+    })
+    @GetMapping("/mini-cards")
+    public ResponseEntity<List<OpportunityMiniCardResponse>> getMiniCards() {
+        log.info("GET /opportunities/mini-cards");
+        List<OpportunityMiniCardResponse> response = opportunityService.findAll().stream()
+                .map(OpportunityMiniCardMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

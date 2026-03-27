@@ -11,6 +11,8 @@ import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
 import ru.tramplin_itplanet.tramplin.domain.repository.OpportunityRepository;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 public class OpportunityServiceImpl implements OpportunityService {
@@ -21,6 +23,12 @@ public class OpportunityServiceImpl implements OpportunityService {
 
     public OpportunityServiceImpl(OpportunityRepository opportunityRepository) {
         this.opportunityRepository = opportunityRepository;
+    }
+
+    @Override
+    public List<Opportunity> findAll() {
+        log.info("Fetching all opportunities");
+        return opportunityRepository.findAll();
     }
 
     @Override

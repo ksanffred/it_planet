@@ -53,6 +53,24 @@ class OpportunityControllerTest {
     }
 
     @Test
+    void getMiniCards_returns200WithMiniCardFields() throws Exception {
+        when(opportunityService.findAll()).thenReturn(List.of(buildOpportunityForMiniCard(1L)));
+
+        mockMvc.perform(get("/opportunities/mini-cards"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].media").value("https://cdn.tramplin.ru/media/1.png"))
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].description").value("Backend role"))
+                .andExpect(jsonPath("$[0].employerName").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].format").value("REMOTE"))
+                .andExpect(jsonPath("$[0].tags.length()").value(3))
+                .andExpect(jsonPath("$[0].tags[0]").value("Java"))
+                .andExpect(jsonPath("$[0].tags[1]").value("Spring"))
+                .andExpect(jsonPath("$[0].tags[2]").value("Docker"));
+    }
+
+    @Test
     void getCard_nonExistingId_returns404() throws Exception {
         when(opportunityService.getById(99L)).thenThrow(new OpportunityNotFoundException(99L));
 
@@ -134,6 +152,33 @@ class OpportunityControllerTest {
                 OpportunityStatus.ACTIVE,
                 List.of(),
                 List.of()
+        );
+    }
+
+    private Opportunity buildOpportunityForMiniCard(Long id) {
+        return new Opportunity(
+                id,
+                new Employer(1L, "Acme Corp", null, "https://acme.com", "hr@acme.com"),
+                "Java Developer",
+                "Backend role",
+                OpportunityType.VACANCY,
+                OpportunityFormat.REMOTE,
+                null,
+                "Moscow",
+                null,
+                null,
+                BigDecimal.valueOf(100_000),
+                BigDecimal.valueOf(150_000),
+                LocalDateTime.of(2026, 1, 1, 0, 0),
+                LocalDateTime.of(2026, 6, 1, 0, 0),
+                OpportunityStatus.ACTIVE,
+                List.of("https://cdn.tramplin.ru/media/1.png", "https://cdn.tramplin.ru/media/2.png"),
+                List.of(
+                        new Tag(1L, "Java", TagCategory.TECHNOLOGY),
+                        new Tag(2L, "Spring", TagCategory.TECHNOLOGY),
+                        new Tag(3L, "Docker", TagCategory.TECHNOLOGY),
+                        new Tag(4L, "Junior", TagCategory.LEVEL)
+                )
         );
     }
 }
