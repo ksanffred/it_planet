@@ -61,7 +61,7 @@ public record CreateOpportunityRequest(
         @Schema(description = "Initial status", example = "ACTIVE")
         OpportunityStatus status,
 
-        @Schema(description = "List of media URLs (images, videos)")
+        @Schema(description = "List of pre-uploaded media object paths or public URLs")
         List<String> media,
 
         @Schema(description = "IDs of tags to assign (technologies, level, employment type)")

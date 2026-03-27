@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,6 +87,22 @@ class MediaServiceImplTest {
         assertEquals(1, opportunity.getMedia().size());
         assertEquals(response.path(), opportunity.getMedia().getFirst());
         verify(jpaOpportunityRepository).save(opportunity);
+    }
+
+    @Test
+    void uploadOpportunityDraftMedia_validImage_uploadsToS3WithoutPersistingInDb() {
+        MockMultipartFile file = new MockMultipartFile("file", "photo.webp", "image/webp", "img".getBytes());
+
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().eTag("etag").build());
+
+        MediaUploadResponse response = mediaService.uploadOpportunityDraftMedia(file);
+
+        assertNotNull(response.path());
+        assertTrue(response.path().startsWith("opportunities/drafts/"));
+        assertTrue(response.path().endsWith(".webp"));
+        assertEquals("https://cdn.test/" + response.path(), response.url());
+        verify(jpaOpportunityRepository, never()).save(any());
     }
 
     @Test

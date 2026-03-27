@@ -22,8 +22,6 @@ public final class OpportunityCardMapper {
                 opportunity.format().name(),
                 opportunity.address(),
                 opportunity.city(),
-                opportunity.lat(),
-                opportunity.lng(),
                 opportunity.salaryFrom(),
                 opportunity.salaryTo(),
                 opportunity.publishedAt(),
