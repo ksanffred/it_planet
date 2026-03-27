@@ -1,6 +1,6 @@
 -- Seed employers
-INSERT INTO employers (id, user_id, company_name, description, inn, website, socials, logo_url, status)
-VALUES (1, NULL, 'Acme Corp', 'Global software company', '7701234567', 'https://acme.com', 'hr@acme.com', 'https://acme.com/logo.png', 'full_verified')
+INSERT INTO employers (id, user_id, company_name, description, inn, website, socials, logo_url, verified_org_name, status)
+VALUES (1, NULL, 'Acme Corp', 'Global software company', '7701234567', 'https://acme.com', 'hr@acme.com', 'https://acme.com/logo.png', 'Acme Corp', 'full_verified')
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed tags: technologies

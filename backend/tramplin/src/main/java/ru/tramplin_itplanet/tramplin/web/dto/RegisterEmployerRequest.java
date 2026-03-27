@@ -8,6 +8,7 @@ public record RegisterEmployerRequest(
         @Schema(description = "Related user id", example = "12")
         Long userId,
 
+        @NotBlank
         @Schema(description = "Employer company name", example = "Acme Corp")
         String companyName,
 
