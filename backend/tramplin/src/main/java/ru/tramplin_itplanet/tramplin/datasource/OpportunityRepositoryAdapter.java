@@ -37,6 +37,15 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
     }
 
     @Override
+    public List<Opportunity> findAll() {
+        log.debug("Querying database for all opportunities");
+        return jpaOpportunityRepository.findAllWithDetailsOrderByPublishedAtDesc()
+                .stream()
+                .map(OpportunityEntityMapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<Opportunity> findById(Long id) {
         log.debug("Querying database for opportunity with id: {}", id);
         return jpaOpportunityRepository.findByIdWithDetails(id)

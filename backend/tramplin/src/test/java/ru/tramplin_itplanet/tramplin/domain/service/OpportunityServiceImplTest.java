@@ -29,6 +29,17 @@ class OpportunityServiceImplTest {
     private OpportunityServiceImpl opportunityService;
 
     @Test
+    void findAll_returnsOpportunities() {
+        List<Opportunity> expected = List.of(buildOpportunity(1L), buildOpportunity(2L));
+        when(opportunityRepository.findAll()).thenReturn(expected);
+
+        List<Opportunity> result = opportunityService.findAll();
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).findAll();
+    }
+
+    @Test
     void getById_existingId_returnsOpportunity() {
         Opportunity expected = buildOpportunity(1L);
         when(opportunityRepository.findById(1L)).thenReturn(Optional.of(expected));
