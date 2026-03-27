@@ -6,7 +6,7 @@ const { title, description, image, type, tags } = defineProps<OpportunityCard>()
 
 <template>
   <div :class="['opportunity-card', `opportunity-card--${type}`, type === 'job' ? 'bordered' : '']">
-    <img :src="image" lazy alt="Opportunity image" />
+    <NuxtImg :src="image" lazy alt="Opportunity image" />
     <h2 class="opportunity-card__title">{{ title }}</h2>
     <p class="opportunity-card__description">{{ description }}</p>
     <div class="opportunity-card__tags">
@@ -22,7 +22,7 @@ const { title, description, image, type, tags } = defineProps<OpportunityCard>()
   border-radius: 22px;
   color: var(--text-inverted-color);
 
-  &__title {
+  &__ &__title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     text-transform: capitalize;
     line-height: 1.1;

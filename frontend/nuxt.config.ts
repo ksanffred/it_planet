@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['oxc-nuxt', '@nuxt/test-utils/module', '@nuxtjs/color-mode'],
+  modules: ['oxc-nuxt', '@nuxt/test-utils/module', '@nuxtjs/color-mode', '@nuxt/image'],
   devtools: { enabled: true },
   compatibilityDate: '2025-07-15',
   vite: {
@@ -12,5 +12,9 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'system',
     fallback: 'light',
+  },
+  image: {
+    format: ['webp'],
+    quality: 80,
   },
 })
