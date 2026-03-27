@@ -54,7 +54,17 @@ class OpportunityControllerTest {
 
     @Test
     void getMiniCards_returns200WithMiniCardFields() throws Exception {
-        when(opportunityService.findAll()).thenReturn(List.of(buildOpportunityForMiniCard(1L)));
+        when(opportunityService.findActiveMiniCards()).thenReturn(List.of(
+                new OpportunityMiniCard(
+                        1L,
+                        "https://cdn.tramplin.ru/media/1.png",
+                        "Java Developer",
+                        "Backend role",
+                        "Acme Corp",
+                        "REMOTE",
+                        List.of("Java", "Spring", "Docker")
+                )
+        ));
 
         mockMvc.perform(get("/opportunities/mini-cards"))
                 .andExpect(status().isOk())
@@ -155,30 +165,4 @@ class OpportunityControllerTest {
         );
     }
 
-    private Opportunity buildOpportunityForMiniCard(Long id) {
-        return new Opportunity(
-                id,
-                new Employer(1L, "Acme Corp", null, "https://acme.com", "hr@acme.com"),
-                "Java Developer",
-                "Backend role",
-                OpportunityType.VACANCY,
-                OpportunityFormat.REMOTE,
-                null,
-                "Moscow",
-                null,
-                null,
-                BigDecimal.valueOf(100_000),
-                BigDecimal.valueOf(150_000),
-                LocalDateTime.of(2026, 1, 1, 0, 0),
-                LocalDateTime.of(2026, 6, 1, 0, 0),
-                OpportunityStatus.ACTIVE,
-                List.of("https://cdn.tramplin.ru/media/1.png", "https://cdn.tramplin.ru/media/2.png"),
-                List.of(
-                        new Tag(1L, "Java", TagCategory.TECHNOLOGY),
-                        new Tag(2L, "Spring", TagCategory.TECHNOLOGY),
-                        new Tag(3L, "Docker", TagCategory.TECHNOLOGY),
-                        new Tag(4L, "Junior", TagCategory.LEVEL)
-                )
-        );
-    }
 }

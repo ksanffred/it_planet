@@ -4,10 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityMiniCard;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
 import ru.tramplin_itplanet.tramplin.domain.repository.OpportunityRepository;
 
@@ -32,6 +35,12 @@ public class OpportunityServiceImpl implements OpportunityService {
     }
 
     @Override
+    public List<OpportunityMiniCard> findActiveMiniCards() {
+        log.info("Fetching active opportunity mini-cards");
+        return opportunityRepository.findActiveMiniCards();
+    }
+
+    @Override
     @Cacheable(value = "opportunities", key = "#id")
     public Opportunity getById(Long id) {
         log.info("Fetching opportunity with id: {} (cache miss)", id);
@@ -44,7 +53,10 @@ public class OpportunityServiceImpl implements OpportunityService {
 
     @Override
     @Transactional
-    @CachePut(value = "opportunities", key = "#result.id()")
+    @Caching(
+            put = @CachePut(value = "opportunities", key = "#result.id()"),
+            evict = @CacheEvict(value = "opportunity-feed", allEntries = true)
+    )
     public Opportunity create(CreateOpportunityCommand command) {
         log.info("Creating opportunity: title={}, type={}, employerId={}", command.title(), command.type(), command.employerId());
         Opportunity saved = opportunityRepository.save(command);
