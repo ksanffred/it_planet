@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
@@ -16,23 +17,28 @@ import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 public class EmployerServiceImpl implements EmployerService {
 
     private static final Logger log = LoggerFactory.getLogger(EmployerServiceImpl.class);
+    private static final String STATUS_PENDING = "pending";
+    private static final String STATUS_AUTO_VERIFIED = "auto_verified";
+    private static final String STATUS_AUTO_REJECTED = "auto_rejected";
 
     private final JpaEmployerRepository jpaEmployerRepository;
     private final JpaUserRepository jpaUserRepository;
+    private final WhoisClient whoisClient;
 
     public EmployerServiceImpl(JpaEmployerRepository jpaEmployerRepository,
-                               JpaUserRepository jpaUserRepository) {
+                               JpaUserRepository jpaUserRepository,
+                               WhoisClient whoisClient) {
         this.jpaEmployerRepository = jpaEmployerRepository;
         this.jpaUserRepository = jpaUserRepository;
+        this.whoisClient = whoisClient;
     }
 
     @Override
     public EmployerProfile register(CreateEmployerCommand command) {
         log.info("Registering employer with inn={}", command.inn());
-        if (command.userId() != null && !jpaUserRepository.existsById(command.userId())) {
-            log.warn("Employer registration failed: user not found, userId={}", command.userId());
-            throw new UserNotFoundException(command.userId());
-        }
+
+        UserEntity user = resolveUser(command.userId());
+        String status = evaluateAutoVerificationStatus(user, command.inn());
 
         EmployerEntity entity = new EmployerEntity();
         entity.setUserId(command.userId());
@@ -42,7 +48,7 @@ public class EmployerServiceImpl implements EmployerService {
         entity.setWebsite(command.website());
         entity.setSocials(command.socials());
         entity.setLogoUrl(command.logoUrl());
-        entity.setStatus("pending");
+        entity.setStatus(status);
 
         EmployerEntity saved = jpaEmployerRepository.save(entity);
         return toProfile(saved);
@@ -68,5 +74,46 @@ public class EmployerServiceImpl implements EmployerService {
                 entity.getLogoUrl(),
                 entity.getStatus()
         );
+    }
+
+    private UserEntity resolveUser(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return jpaUserRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.warn("Employer registration failed: user not found, userId={}", userId);
+                    return new UserNotFoundException(userId);
+                });
+    }
+
+    private String evaluateAutoVerificationStatus(UserEntity user, String inn) {
+        if (user == null) {
+            return STATUS_PENDING;
+        }
+        if (!user.isVerified()) {
+            log.info("User email is not verified yet, keeping employer status pending: userId={}", user.getId());
+            return STATUS_PENDING;
+        }
+        String domain = extractDomain(user.getEmail());
+        if (domain == null) {
+            log.warn("Cannot extract domain from user email, auto-rejecting employer: userId={}", user.getId());
+            return STATUS_AUTO_REJECTED;
+        }
+        return whoisClient.findTaxpayerIdByDomain(domain)
+                .filter(taxpayerId -> taxpayerId.equals(inn))
+                .map(ignored -> STATUS_AUTO_VERIFIED)
+                .orElse(STATUS_AUTO_REJECTED);
+    }
+
+    private static String extractDomain(String email) {
+        if (email == null) {
+            return null;
+        }
+        int atIndex = email.indexOf('@');
+        if (atIndex < 0 || atIndex == email.length() - 1) {
+            return null;
+        }
+        return email.substring(atIndex + 1).trim().toLowerCase();
     }
 }
