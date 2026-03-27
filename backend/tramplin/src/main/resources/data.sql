@@ -1,6 +1,6 @@
 -- Seed employers for restructured employers table
 INSERT INTO employers (id, user_id, company_name, description, inn, website, socials, logo_url, status)
-SELECT 1, NULL, 'Acme Corp', 'Global software company', '7701234567', 'https://acme.com', 'hr@acme.com', 'https://acme.com/logo.png', 'verified'
+SELECT 1, NULL, 'Acme Corp', 'Global software company', '7701234567', 'https://acme.com', 'hr@acme.com', 'https://acme.com/logo.png', 'full_verified'
 WHERE EXISTS (
     SELECT 1
     FROM information_schema.columns

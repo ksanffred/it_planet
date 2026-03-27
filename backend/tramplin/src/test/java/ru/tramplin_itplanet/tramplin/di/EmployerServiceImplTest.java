@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
@@ -29,6 +30,9 @@ class EmployerServiceImplTest {
 
     @Mock
     private JpaUserRepository jpaUserRepository;
+
+    @Mock
+    private WhoisClient whoisClient;
 
     @InjectMocks
     private EmployerServiceImpl employerService;
@@ -61,7 +65,7 @@ class EmployerServiceImplTest {
 
     @Test
     void register_withUnknownUserId_throwsNotFound() {
-        when(jpaUserRepository.existsById(999L)).thenReturn(false);
+        when(jpaUserRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> employerService.register(new CreateEmployerCommand(
                 999L,
@@ -74,6 +78,62 @@ class EmployerServiceImplTest {
         )))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining("999");
+    }
+
+    @Test
+    void register_withVerifiedUserAndMatchingTaxpayerId_setsAutoVerified() {
+        UserEntity user = new UserEntity();
+        user.setEmail("zakharov@ranepa.ru");
+        user.setVerified(true);
+
+        EmployerEntity saved = new EmployerEntity();
+        saved.setId(11L);
+        saved.setInn("7729050901");
+        saved.setStatus("auto_verified");
+
+        when(jpaUserRepository.findById(11L)).thenReturn(Optional.of(user));
+        when(whoisClient.findTaxpayerIdByDomain("ranepa.ru")).thenReturn(Optional.of("7729050901"));
+        when(jpaEmployerRepository.save(any(EmployerEntity.class))).thenReturn(saved);
+
+        EmployerProfile result = employerService.register(new CreateEmployerCommand(
+                11L,
+                "RANEPA",
+                null,
+                "7729050901",
+                null,
+                null,
+                null
+        ));
+
+        assertThat(result.status()).isEqualTo("auto_verified");
+    }
+
+    @Test
+    void register_withVerifiedUserAndMismatchedTaxpayerId_setsAutoRejected() {
+        UserEntity user = new UserEntity();
+        user.setEmail("zakharov@ranepa.ru");
+        user.setVerified(true);
+
+        EmployerEntity saved = new EmployerEntity();
+        saved.setId(12L);
+        saved.setInn("7701234567");
+        saved.setStatus("auto_rejected");
+
+        when(jpaUserRepository.findById(12L)).thenReturn(Optional.of(user));
+        when(whoisClient.findTaxpayerIdByDomain("ranepa.ru")).thenReturn(Optional.of("7729050901"));
+        when(jpaEmployerRepository.save(any(EmployerEntity.class))).thenReturn(saved);
+
+        EmployerProfile result = employerService.register(new CreateEmployerCommand(
+                12L,
+                "Acme",
+                null,
+                "7701234567",
+                null,
+                null,
+                null
+        ));
+
+        assertThat(result.status()).isEqualTo("auto_rejected");
     }
 
     @Test

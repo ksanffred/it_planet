@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS employers (
     CONSTRAINT fk_employers_user
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
     CONSTRAINT chk_employers_status
-        CHECK (status IN ('pending', 'verified', 'rejected'))
+        CHECK (status IN ('pending', 'auto_verified', 'full_verified', 'auto_rejected', 'full_rejected'))
 );
 
 CREATE TABLE IF NOT EXISTS opportunities (
