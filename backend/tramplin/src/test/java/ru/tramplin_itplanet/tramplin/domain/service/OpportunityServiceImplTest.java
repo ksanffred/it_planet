@@ -52,12 +52,12 @@ class OpportunityServiceImplTest {
                         List.of("Java", "Spring", "Docker")
                 )
         );
-        when(opportunityRepository.findActiveMiniCards()).thenReturn(expected);
+        when(opportunityRepository.findActiveMiniCards("java")).thenReturn(expected);
 
-        List<OpportunityMiniCard> result = opportunityService.findActiveMiniCards();
+        List<OpportunityMiniCard> result = opportunityService.findActiveMiniCards("java");
 
         assertThat(result).isEqualTo(expected);
-        verify(opportunityRepository).findActiveMiniCards();
+        verify(opportunityRepository).findActiveMiniCards("java");
     }
 
     @Test

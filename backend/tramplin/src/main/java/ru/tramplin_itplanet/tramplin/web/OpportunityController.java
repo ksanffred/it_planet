@@ -38,15 +38,18 @@ public class OpportunityController {
 
     @Operation(
             summary = "Get mini-cards for home page",
-            description = "Returns opportunity mini-cards with first media, title, description, employer name, format, and first three tags."
+            description = "Returns opportunity mini-cards with first media, title, description, employer name, format, and first three tags. Optional full-text search is supported."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Mini-cards returned successfully")
     })
     @GetMapping("/mini-cards")
-    public ResponseEntity<List<OpportunityMiniCardResponse>> getMiniCards() {
-        log.info("GET /opportunities/mini-cards");
-        List<OpportunityMiniCardResponse> response = opportunityService.findActiveMiniCards().stream()
+    public ResponseEntity<List<OpportunityMiniCardResponse>> getMiniCards(
+            @Parameter(description = "Optional full-text search query (Russian/English). Searches title, description, company name, and tags.",
+                    example = "java стажировка remote")
+            @RequestParam(required = false) String search) {
+        log.info("GET /opportunities/mini-cards: search={}", search);
+        List<OpportunityMiniCardResponse> response = opportunityService.findActiveMiniCards(search).stream()
                 .map(OpportunityMiniCardMapper::toResponse)
                 .toList();
         return ResponseEntity.ok(response);
