@@ -38,7 +38,7 @@ public class EmployerServiceImpl implements EmployerService {
         log.info("Registering employer with inn={}", command.inn());
 
         UserEntity user = resolveUser(command.userId());
-        String status = evaluateAutoVerificationStatus(user, command.inn());
+        VerificationDecision verificationDecision = evaluateAutoVerification(user, command.inn());
 
         EmployerEntity entity = new EmployerEntity();
         entity.setUserId(command.userId());
@@ -48,7 +48,8 @@ public class EmployerServiceImpl implements EmployerService {
         entity.setWebsite(command.website());
         entity.setSocials(command.socials());
         entity.setLogoUrl(command.logoUrl());
-        entity.setStatus(status);
+        entity.setVerifiedOrgName(verificationDecision.verifiedOrgName());
+        entity.setStatus(verificationDecision.status());
 
         EmployerEntity saved = jpaEmployerRepository.save(entity);
         return toProfile(saved);
@@ -72,6 +73,7 @@ public class EmployerServiceImpl implements EmployerService {
                 entity.getWebsite(),
                 entity.getSocials(),
                 entity.getLogoUrl(),
+                entity.getVerifiedOrgName(),
                 entity.getStatus()
         );
     }
@@ -87,23 +89,27 @@ public class EmployerServiceImpl implements EmployerService {
                 });
     }
 
-    private String evaluateAutoVerificationStatus(UserEntity user, String inn) {
+    private VerificationDecision evaluateAutoVerification(UserEntity user, String inn) {
         if (user == null) {
-            return STATUS_PENDING;
+            return new VerificationDecision(STATUS_PENDING, null);
         }
         if (!user.isVerified()) {
             log.info("User email is not verified yet, keeping employer status pending: userId={}", user.getId());
-            return STATUS_PENDING;
+            return new VerificationDecision(STATUS_PENDING, null);
         }
         String domain = extractDomain(user.getEmail());
         if (domain == null) {
             log.warn("Cannot extract domain from user email, auto-rejecting employer: userId={}", user.getId());
-            return STATUS_AUTO_REJECTED;
+            return new VerificationDecision(STATUS_AUTO_REJECTED, null);
         }
-        return whoisClient.findTaxpayerIdByDomain(domain)
-                .filter(taxpayerId -> taxpayerId.equals(inn))
-                .map(ignored -> STATUS_AUTO_VERIFIED)
-                .orElse(STATUS_AUTO_REJECTED);
+        return whoisClient.findVerificationDataByDomain(domain)
+                .map(whoisData -> {
+                    if (whoisData.taxpayerId().equals(inn)) {
+                        return new VerificationDecision(STATUS_AUTO_VERIFIED, whoisData.organizationName());
+                    }
+                    return new VerificationDecision(STATUS_AUTO_REJECTED, whoisData.organizationName());
+                })
+                .orElseGet(() -> new VerificationDecision(STATUS_AUTO_REJECTED, null));
     }
 
     private static String extractDomain(String email) {
@@ -116,4 +122,6 @@ public class EmployerServiceImpl implements EmployerService {
         }
         return email.substring(atIndex + 1).trim().toLowerCase();
     }
+
+    private record VerificationDecision(String status, String verifiedOrgName) {}
 }

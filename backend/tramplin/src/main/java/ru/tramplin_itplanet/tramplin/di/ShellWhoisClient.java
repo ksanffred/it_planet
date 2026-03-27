@@ -17,10 +17,11 @@ public class ShellWhoisClient implements WhoisClient {
 
     private static final Logger log = LoggerFactory.getLogger(ShellWhoisClient.class);
     private static final Pattern TAXPAYER_ID_PATTERN = Pattern.compile("(?im)^taxpayer-id\\s*:\\s*([0-9]+)\\s*$");
+    private static final Pattern ORG_PATTERN = Pattern.compile("(?im)^org\\s*:\\s*(.+)\\s*$");
     private static final long WHOIS_TIMEOUT_SECONDS = 10L;
 
     @Override
-    public Optional<String> findTaxpayerIdByDomain(String domain) {
+    public Optional<WhoisVerificationData> findVerificationDataByDomain(String domain) {
         Process process = null;
         try {
             process = new ProcessBuilder("whois", domain).start();
@@ -31,11 +32,15 @@ public class ShellWhoisClient implements WhoisClient {
                 return Optional.empty();
             }
             String output = readOutput(process);
-            Matcher matcher = TAXPAYER_ID_PATTERN.matcher(output);
-            if (matcher.find()) {
-                return Optional.of(matcher.group(1));
+            Matcher taxpayerMatcher = TAXPAYER_ID_PATTERN.matcher(output);
+            Matcher orgMatcher = ORG_PATTERN.matcher(output);
+            if (taxpayerMatcher.find() && orgMatcher.find()) {
+                return Optional.of(new WhoisVerificationData(
+                        taxpayerMatcher.group(1).trim(),
+                        orgMatcher.group(1).trim()
+                ));
             }
-            log.warn("taxpayer-id not found in whois output for domain={}", domain);
+            log.warn("Required whois fields not found (taxpayer-id or org) for domain={}", domain);
             return Optional.empty();
         } catch (IOException e) {
             log.error("Failed to execute whois for domain={}: {}", domain, e.getMessage());

@@ -28,6 +28,9 @@ public record EmployerProfileResponse(
         @Schema(description = "Logo URL", example = "https://acme.com/logo.png")
         String logoUrl,
 
+        @Schema(description = "Organization name extracted from Whois", example = "RANEPA")
+        String verifiedOrgName,
+
         @Schema(description = "Verification status", example = "pending")
         String status
 ) {}

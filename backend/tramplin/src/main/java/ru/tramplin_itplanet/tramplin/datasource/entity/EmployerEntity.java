@@ -16,10 +16,6 @@ public class EmployerEntity {
     @Column(name = "company_name")
     private String name;
 
-    // Transitional compatibility for legacy schema where column "name" still exists.
-    @Column(name = "name")
-    private String legacyName;
-
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -28,12 +24,11 @@ public class EmployerEntity {
     @Column(columnDefinition = "TEXT")
     private String socials;
 
-    // Transitional compatibility for legacy schema where column "contacts" still exists.
-    @Column(name = "contacts")
-    private String legacyContacts;
-
     private String logoUrl;
     private String website;
+
+    @Column(name = "verified_org_name")
+    private String verifiedOrgName;
 
     @Column
     private String status = "pending";
@@ -44,11 +39,8 @@ public class EmployerEntity {
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public String getName() { return name != null ? name : legacyName; }
-    public void setName(String name) {
-        this.name = name;
-        this.legacyName = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -56,17 +48,17 @@ public class EmployerEntity {
     public String getInn() { return inn; }
     public void setInn(String inn) { this.inn = inn; }
 
-    public String getSocials() { return socials != null ? socials : legacyContacts; }
-    public void setSocials(String socials) {
-        this.socials = socials;
-        this.legacyContacts = socials;
-    }
+    public String getSocials() { return socials; }
+    public void setSocials(String socials) { this.socials = socials; }
 
     public String getLogoUrl() { return logoUrl; }
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
 
     public String getWebsite() { return website; }
     public void setWebsite(String website) { this.website = website; }
+
+    public String getVerifiedOrgName() { return verifiedOrgName; }
+    public void setVerifiedOrgName(String verifiedOrgName) { this.verifiedOrgName = verifiedOrgName; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS employers (
     website        VARCHAR(255),
     socials        TEXT,
     logo_url       VARCHAR(255),
+    verified_org_name TEXT,
     status         VARCHAR(50)  NOT NULL,
     CONSTRAINT fk_employers_user
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,

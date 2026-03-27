@@ -69,6 +69,20 @@ class EmployerControllerTest {
     }
 
     @Test
+    void register_missingCompanyName_returns400() throws Exception {
+        mockMvc.perform(post("/employers/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "inn": "7701234567"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
     void register_unknownUser_returns404() throws Exception {
         when(employerService.register(any(CreateEmployerCommand.class))).thenThrow(new UserNotFoundException(999L));
 
@@ -77,6 +91,7 @@ class EmployerControllerTest {
                         .content("""
                                 {
                                   "userId": 999,
+                                  "companyName": "Acme Corp",
                                   "inn": "7701234567"
                                 }
                                 """))
@@ -114,6 +129,7 @@ class EmployerControllerTest {
                 "https://acme.com",
                 "@acme_hr",
                 null,
+                "Acme Corp",
                 "pending"
         );
     }

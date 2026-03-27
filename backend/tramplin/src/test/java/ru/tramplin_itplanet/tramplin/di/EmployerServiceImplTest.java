@@ -89,10 +89,12 @@ class EmployerServiceImplTest {
         EmployerEntity saved = new EmployerEntity();
         saved.setId(11L);
         saved.setInn("7729050901");
+        saved.setVerifiedOrgName("RANEPA");
         saved.setStatus("auto_verified");
 
         when(jpaUserRepository.findById(11L)).thenReturn(Optional.of(user));
-        when(whoisClient.findTaxpayerIdByDomain("ranepa.ru")).thenReturn(Optional.of("7729050901"));
+        when(whoisClient.findVerificationDataByDomain("ranepa.ru"))
+                .thenReturn(Optional.of(new WhoisVerificationData("7729050901", "RANEPA")));
         when(jpaEmployerRepository.save(any(EmployerEntity.class))).thenReturn(saved);
 
         EmployerProfile result = employerService.register(new CreateEmployerCommand(
@@ -106,6 +108,7 @@ class EmployerServiceImplTest {
         ));
 
         assertThat(result.status()).isEqualTo("auto_verified");
+        assertThat(result.verifiedOrgName()).isEqualTo("RANEPA");
     }
 
     @Test
@@ -117,10 +120,12 @@ class EmployerServiceImplTest {
         EmployerEntity saved = new EmployerEntity();
         saved.setId(12L);
         saved.setInn("7701234567");
+        saved.setVerifiedOrgName("RANEPA");
         saved.setStatus("auto_rejected");
 
         when(jpaUserRepository.findById(12L)).thenReturn(Optional.of(user));
-        when(whoisClient.findTaxpayerIdByDomain("ranepa.ru")).thenReturn(Optional.of("7729050901"));
+        when(whoisClient.findVerificationDataByDomain("ranepa.ru"))
+                .thenReturn(Optional.of(new WhoisVerificationData("7729050901", "RANEPA")));
         when(jpaEmployerRepository.save(any(EmployerEntity.class))).thenReturn(saved);
 
         EmployerProfile result = employerService.register(new CreateEmployerCommand(
@@ -134,6 +139,36 @@ class EmployerServiceImplTest {
         ));
 
         assertThat(result.status()).isEqualTo("auto_rejected");
+        assertThat(result.verifiedOrgName()).isEqualTo("RANEPA");
+    }
+
+    @Test
+    void register_withVerifiedUserAndMissingWhoisFields_setsAutoRejected() {
+        UserEntity user = new UserEntity();
+        user.setEmail("zakharov@ranepa.ru");
+        user.setVerified(true);
+
+        EmployerEntity saved = new EmployerEntity();
+        saved.setId(13L);
+        saved.setInn("7701234567");
+        saved.setStatus("auto_rejected");
+
+        when(jpaUserRepository.findById(13L)).thenReturn(Optional.of(user));
+        when(whoisClient.findVerificationDataByDomain("ranepa.ru")).thenReturn(Optional.empty());
+        when(jpaEmployerRepository.save(any(EmployerEntity.class))).thenReturn(saved);
+
+        EmployerProfile result = employerService.register(new CreateEmployerCommand(
+                13L,
+                "Acme",
+                null,
+                "7701234567",
+                null,
+                null,
+                null
+        ));
+
+        assertThat(result.status()).isEqualTo("auto_rejected");
+        assertThat(result.verifiedOrgName()).isNull();
     }
 
     @Test

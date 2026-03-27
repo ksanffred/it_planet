@@ -31,6 +31,7 @@ public final class EmployerMapper {
                 profile.website(),
                 profile.socials(),
                 profile.logoUrl(),
+                profile.verifiedOrgName(),
                 profile.status()
         );
     }

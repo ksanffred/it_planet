@@ -11,5 +11,6 @@ public record EmployerProfile(
         String website,
         String socials,
         String logoUrl,
+        String verifiedOrgName,
         String status
 ) implements Serializable {}
