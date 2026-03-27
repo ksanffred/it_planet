@@ -6,12 +6,16 @@ const { title, description, image, type, tags } = defineProps<OpportunityCard>()
 
 <template>
   <div :class="['opportunity-card', `opportunity-card--${type}`, type === 'job' ? 'bordered' : '']">
-    <NuxtImg
-      class="opportunity-card__image"
-      :src="'/media/images/heroArt.webp'"
-      lazy
-      alt="Opportunity image"
-    />
+    <NuxtLink to="/">
+      <NuxtIcon class="opportunity-card__icon" name="material-symbols:open-in-new" size="24px" />
+      <NuxtImg
+        class="opportunity-card__image"
+        :src="'/media/images/heroArt.webp'"
+        lazy
+        alt="Opportunity image"
+      />
+    </NuxtLink>
+
     <h2 class="opportunity-card__title">{{ title }}</h2>
     <p class="opportunity-card__description">{{ description }}</p>
     <div class="opportunity-card__tags">
@@ -29,6 +33,18 @@ const { title, description, image, type, tags } = defineProps<OpportunityCard>()
   gap: 10px;
   border-radius: 22px;
   color: var(--text-inverted-color);
+  position: relative;
+
+  &__icon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: var(--text-inverted-color);
+
+    .dark & {
+      color: var(--background-primary-color);
+    }
+  }
 
   &__image {
     width: 100%;

@@ -17,7 +17,7 @@ import { opportunities } from '~/data/opportunities'
   &__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 40px;
   }
 }
 </style>
