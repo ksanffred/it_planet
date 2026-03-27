@@ -14,6 +14,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.FileStorageException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
+import ru.tramplin_itplanet.tramplin.domain.exception.TagAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException;
 
 import java.time.LocalDateTime;
@@ -38,6 +39,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, Object>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(TagAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleTagAlreadyExists(TagAlreadyExistsException ex) {
         log.warn("Conflict: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "timestamp", LocalDateTime.now(),
