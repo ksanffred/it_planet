@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
@@ -68,8 +69,8 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
     }
 
     @Override
-    public List<OpportunityMiniCard> findActiveMiniCards() {
-        List<Long> activeIds = jpaOpportunityRepository.findIdsByStatusOrderByPublishedAtDesc(OpportunityStatus.ACTIVE);
+    public List<OpportunityMiniCard> findActiveMiniCards(String search) {
+        List<Long> activeIds = resolveActiveIds(search);
         if (activeIds.isEmpty()) {
             return List.of();
         }
@@ -209,5 +210,18 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
 
     private String miniCardKey(Long id) {
         return MINI_CARD_KEY_PREFIX + id;
+    }
+
+    private List<Long> resolveActiveIds(String search) {
+        if (!StringUtils.hasText(search)) {
+            return jpaOpportunityRepository.findIdsByStatusOrderByPublishedAtDesc(OpportunityStatus.ACTIVE);
+        }
+
+        String normalizedSearch = search.trim();
+        log.debug("Searching active opportunities with full-text query: {}", normalizedSearch);
+        return jpaOpportunityRepository.findIdsByStatusAndSearchOrderByPublishedAtDesc(
+                OpportunityStatus.ACTIVE.name(),
+                normalizedSearch
+        );
     }
 }

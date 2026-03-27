@@ -35,9 +35,9 @@ public class OpportunityServiceImpl implements OpportunityService {
     }
 
     @Override
-    public List<OpportunityMiniCard> findActiveMiniCards() {
-        log.info("Fetching active opportunity mini-cards");
-        return opportunityRepository.findActiveMiniCards();
+    public List<OpportunityMiniCard> findActiveMiniCards(String search) {
+        log.info("Fetching active opportunity mini-cards, search={}", search);
+        return opportunityRepository.findActiveMiniCards(search);
     }
 
     @Override

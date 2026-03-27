@@ -10,7 +10,7 @@ public interface OpportunityService {
 
     List<Opportunity> findAll();
 
-    List<OpportunityMiniCard> findActiveMiniCards();
+    List<OpportunityMiniCard> findActiveMiniCards(String search);
 
     Opportunity getById(Long id);
 
