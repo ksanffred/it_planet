@@ -46,7 +46,7 @@ public class OpportunityController {
     @GetMapping("/mini-cards")
     public ResponseEntity<List<OpportunityMiniCardResponse>> getMiniCards() {
         log.info("GET /opportunities/mini-cards");
-        List<OpportunityMiniCardResponse> response = opportunityService.findAll().stream()
+        List<OpportunityMiniCardResponse> response = opportunityService.findActiveMiniCards().stream()
                 .map(OpportunityMiniCardMapper::toResponse)
                 .toList();
         return ResponseEntity.ok(response);
