@@ -5,7 +5,7 @@
     <UiAppInput placeholder="Поиск стажировок, компаний, технологий..." />
     <UiAppButton variant="secondary" class="app-search__map-button">
       <img
-        class="app-search__map-thumb bordered"
+        class="app-search__map-thumb"
         src="/media/images/mapThumb.webp"
         alt="Map demonstration"
       />
@@ -28,6 +28,8 @@
     display: flex;
     align-items: center;
     min-width: fit-content;
+    color: var(--text-primary-color) !important;
+    background-color: var(--background-tertiary-color);
     border-radius: 20px;
     gap: 10px;
     padding-block: 6px;
@@ -36,6 +38,11 @@
 
   &__map-thumb {
     border-radius: 12px;
+    border: 1px solid var(--text-primary-color);
+
+    .dark & {
+      border: 1px solid var(--border-color);
+    }
   }
 
   &__text {

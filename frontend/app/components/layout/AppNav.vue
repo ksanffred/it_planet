@@ -21,8 +21,8 @@ const isDark = computed({
         variant="secondary"
         bordered
       >
-        <IconsSunIcon v-if="!isDark" />
-        <IconsMoonIcon v-else />
+        <NuxtIcon v-if="!isDark" size="24px" name="material-symbols:wb-sunny-rounded" />
+        <NuxtIcon size="24px" name="material-symbols:moon-stars-rounded" v-else />
       </UiAppButton>
       <UiAppButton variant="secondary" bordered>Войти</UiAppButton>
       <UiAppButton variant="primary">Регистрация</UiAppButton>

@@ -14,7 +14,11 @@
       </hgroup>
       <div class="app-hero__tags">
         <UiAppTag background-color="var(--secondary-color)">Карта + лента</UiAppTag>
-        <UiAppTag background-color="var(--background-secondary-color)">Умные теги</UiAppTag>
+        <UiAppTag
+          background-color="var(--background-secondary-color)"
+          text-color="var(--text-inverted-color)"
+          >Умные теги</UiAppTag
+        >
       </div>
     </div>
     <img class="app-hero__art" src="/media/images/heroArt.webp" alt="Hero art" />
