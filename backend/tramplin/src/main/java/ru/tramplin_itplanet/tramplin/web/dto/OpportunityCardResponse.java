@@ -36,12 +36,6 @@ public record OpportunityCardResponse(
         @Schema(description = "City of the opportunity or event", example = "Moscow")
         String city,
 
-        @Schema(description = "Latitude coordinate for map display", example = "55.7558")
-        Double lat,
-
-        @Schema(description = "Longitude coordinate for map display", example = "37.6173")
-        Double lng,
-
         @Schema(description = "Minimum salary in RUB", example = "100000")
         BigDecimal salaryFrom,
 

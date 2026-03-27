@@ -53,6 +53,55 @@ class OpportunityControllerTest {
     }
 
     @Test
+    void getMiniCards_returns200WithMiniCardFields() throws Exception {
+        when(opportunityService.findActiveMiniCards(null)).thenReturn(List.of(
+                new OpportunityMiniCard(
+                        1L,
+                        "https://cdn.tramplin.ru/media/1.png",
+                        "Java Developer",
+                        "Backend role",
+                        "Acme Corp",
+                        "REMOTE",
+                        List.of("Java", "Spring", "Docker")
+                )
+        ));
+
+        mockMvc.perform(get("/opportunities/mini-cards"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].media").value("https://cdn.tramplin.ru/media/1.png"))
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].description").value("Backend role"))
+                .andExpect(jsonPath("$[0].employerName").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].format").value("REMOTE"))
+                .andExpect(jsonPath("$[0].tags.length()").value(3))
+                .andExpect(jsonPath("$[0].tags[0]").value("Java"))
+                .andExpect(jsonPath("$[0].tags[1]").value("Spring"))
+                .andExpect(jsonPath("$[0].tags[2]").value("Docker"));
+    }
+
+    @Test
+    void getMiniCards_withSearch_returns200WithFilteredMiniCards() throws Exception {
+        when(opportunityService.findActiveMiniCards("java")).thenReturn(List.of(
+                new OpportunityMiniCard(
+                        2L,
+                        "https://cdn.tramplin.ru/media/2.png",
+                        "Java Intern",
+                        "Internship for backend team",
+                        "Beta Corp",
+                        "REMOTE",
+                        List.of("Java", "Intern", "Spring")
+                )
+        ));
+
+        mockMvc.perform(get("/opportunities/mini-cards").param("search", "java"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(2))
+                .andExpect(jsonPath("$[0].title").value("Java Intern"))
+                .andExpect(jsonPath("$[0].employerName").value("Beta Corp"));
+    }
+
+    @Test
     void getCard_nonExistingId_returns404() throws Exception {
         when(opportunityService.getById(99L)).thenThrow(new OpportunityNotFoundException(99L));
 
@@ -136,4 +185,5 @@ class OpportunityControllerTest {
                 List.of()
         );
     }
+
 }

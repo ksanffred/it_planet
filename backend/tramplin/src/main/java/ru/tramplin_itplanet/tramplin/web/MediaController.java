@@ -45,7 +45,21 @@ public class MediaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mediaService.uploadEmployerLogo(employerId, file));
     }
 
-    @Operation(summary = "Upload opportunity media", description = "Uploads an image to S3 and appends object path to opportunity_media table")
+    @Operation(summary = "Upload opportunity draft media", description = "Uploads an image to S3 before opportunity creation and returns object path/url for later usage in POST /opportunities media[]")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Opportunity draft media uploaded"),
+            @ApiResponse(responseCode = "400", description = "Invalid image file",
+                    content = @Content(schema = @Schema(example = "{\"status\":400,\"error\":\"Only image files are allowed\"}"))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping(value = "/opportunities/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MediaUploadResponse> uploadOpportunityDraftMedia(@RequestParam("file") MultipartFile file) {
+        log.info("POST /opportunities/media");
+        return ResponseEntity.status(HttpStatus.CREATED).body(mediaService.uploadOpportunityDraftMedia(file));
+    }
+
+    @Operation(summary = "Upload opportunity media", description = "Uploads an image to S3 and immediately appends object path to opportunity_media for an existing opportunity")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Opportunity media uploaded"),
             @ApiResponse(responseCode = "400", description = "Invalid image file",

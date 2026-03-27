@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
@@ -61,6 +62,18 @@ class MediaControllerTest {
 
     @Test
     @WithMockUser
+    void uploadOpportunityDraftMedia_validImage_returns201() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "photo.webp", "image/webp", "img".getBytes());
+        when(mediaService.uploadOpportunityDraftMedia(file))
+                .thenReturn(new MediaUploadResponse("opportunities/drafts/test.webp", "https://cdn.test/opportunities/drafts/test.webp"));
+
+        mockMvc.perform(multipart("/opportunities/media").file(file))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.path").value("opportunities/drafts/test.webp"));
+    }
+
+    @Test
+    @WithMockUser
     void uploadOpportunityMedia_invalidFile_returns400() throws Exception {
         MockMultipartFile file = new MockMultipartFile("file", "file.txt", MediaType.TEXT_PLAIN_VALUE, "bad".getBytes());
         when(mediaService.uploadOpportunityMedia(10L, file))
@@ -69,5 +82,17 @@ class MediaControllerTest {
         mockMvc.perform(multipart("/opportunities/10/media").file(file))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Only image files are allowed"));
+    }
+
+    @Test
+    @WithMockUser
+    void uploadOpportunityDraftMedia_whenFileTooLarge_returns413() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "large.png", MediaType.IMAGE_PNG_VALUE, "img".getBytes());
+        when(mediaService.uploadOpportunityDraftMedia(file))
+                .thenThrow(new MaxUploadSizeExceededException(10 * 1024 * 1024));
+
+        mockMvc.perform(multipart("/opportunities/media").file(file))
+                .andExpect(status().isPayloadTooLarge())
+                .andExpect(jsonPath("$.error").value("Uploaded file exceeds the maximum allowed size (10.00 MB)"));
     }
 }

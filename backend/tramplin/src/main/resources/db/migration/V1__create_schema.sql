@@ -4,12 +4,31 @@ CREATE TABLE IF NOT EXISTS tags (
     category   VARCHAR(50)  NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id            BIGSERIAL PRIMARY KEY,
+    email         VARCHAR(255) NOT NULL UNIQUE,
+    display_name  VARCHAR(255),
+    password_hash VARCHAR(255) NOT NULL,
+    role          VARCHAR(50)  NOT NULL,
+    is_verified   BOOLEAN      NOT NULL,
+    created_at    TIMESTAMP    NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS employers (
-    id         BIGSERIAL PRIMARY KEY,
-    name       VARCHAR(255) NOT NULL,
-    logo_url   VARCHAR(255),
-    website    VARCHAR(255),
-    contacts   VARCHAR(255)
+    id             BIGSERIAL PRIMARY KEY,
+    user_id        BIGINT,
+    company_name   VARCHAR(255) NOT NULL,
+    description    TEXT,
+    inn            VARCHAR(20),
+    website        VARCHAR(255),
+    socials        TEXT,
+    logo_url       VARCHAR(255),
+    verified_org_name TEXT,
+    status         VARCHAR(50)  NOT NULL,
+    CONSTRAINT fk_employers_user
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT chk_employers_status
+        CHECK (status IN ('pending', 'auto_verified', 'full_verified', 'auto_rejected', 'full_rejected'))
 );
 
 CREATE TABLE IF NOT EXISTS opportunities (

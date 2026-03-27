@@ -29,6 +29,38 @@ class OpportunityServiceImplTest {
     private OpportunityServiceImpl opportunityService;
 
     @Test
+    void findAll_returnsOpportunities() {
+        List<Opportunity> expected = List.of(buildOpportunity(1L), buildOpportunity(2L));
+        when(opportunityRepository.findAll()).thenReturn(expected);
+
+        List<Opportunity> result = opportunityService.findAll();
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).findAll();
+    }
+
+    @Test
+    void findActiveMiniCards_returnsMiniCards() {
+        List<OpportunityMiniCard> expected = List.of(
+                new OpportunityMiniCard(
+                        1L,
+                        "https://cdn.tramplin.ru/media/1.png",
+                        "Java Developer",
+                        "Backend role",
+                        "Acme Corp",
+                        "REMOTE",
+                        List.of("Java", "Spring", "Docker")
+                )
+        );
+        when(opportunityRepository.findActiveMiniCards("java")).thenReturn(expected);
+
+        List<OpportunityMiniCard> result = opportunityService.findActiveMiniCards("java");
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).findActiveMiniCards("java");
+    }
+
+    @Test
     void getById_existingId_returnsOpportunity() {
         Opportunity expected = buildOpportunity(1L);
         when(opportunityRepository.findById(1L)).thenReturn(Optional.of(expected));
