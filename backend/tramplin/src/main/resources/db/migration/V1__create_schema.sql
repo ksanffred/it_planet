@@ -5,11 +5,17 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 
 CREATE TABLE IF NOT EXISTS employers (
-    id         BIGSERIAL PRIMARY KEY,
-    name       VARCHAR(255) NOT NULL,
-    logo_url   VARCHAR(255),
-    website    VARCHAR(255),
-    contacts   VARCHAR(255)
+    id             BIGSERIAL PRIMARY KEY,
+    user_id        BIGINT,
+    company_name   VARCHAR(255) NOT NULL,
+    description    TEXT,
+    inn            VARCHAR(20),
+    website        VARCHAR(255),
+    socials        TEXT,
+    logo_url       VARCHAR(255),
+    status         VARCHAR(50)  NOT NULL,
+    CONSTRAINT chk_employers_status
+        CHECK (status IN ('pending', 'verified', 'rejected'))
 );
 
 CREATE TABLE IF NOT EXISTS opportunities (
