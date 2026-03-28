@@ -12,6 +12,7 @@ import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
@@ -25,6 +26,7 @@ import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 
@@ -178,12 +180,26 @@ class OpportunityResponseServiceImplTest {
 
         ApplicantEntity applicant = buildApplicant(3L, 12L);
         applicant.setName("Ivan Ivanov");
+        applicant.setUniversity("RANEPA");
+        applicant.setDesiredPosition("Backend Developer Intern");
+
+        TagEntity javaTag = new TagEntity();
+        javaTag.setId(2L);
+        javaTag.setName("Java");
+        javaTag.setCategory(TagCategory.TECHNOLOGY);
+
+        TagEntity jsTag = new TagEntity();
+        jsTag.setId(5L);
+        jsTag.setName("JavaScript");
+        jsTag.setCategory(TagCategory.TECHNOLOGY);
+        applicant.setSkills(List.of(javaTag, jsTag));
 
         OpportunityEntity opportunity = buildOpportunity(10L);
         opportunity.setTitle("Java Developer");
         opportunity.setType(OpportunityType.VACANCY);
         opportunity.setStatus(OpportunityStatus.ACTIVE);
         opportunity.setEmployer(employer);
+        opportunity.setTags(List.of(javaTag));
 
         OpportunityResponseEntity response = new OpportunityResponseEntity();
         response.setId(15L);
@@ -201,12 +217,12 @@ class OpportunityResponseServiceImplTest {
                 opportunityResponseService.getApplicationsForOpportunity(10L, "employer@example.com");
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().responseId()).isEqualTo(15L);
-        assertThat(result.getFirst().opportunityId()).isEqualTo(10L);
-        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
-        assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
         assertThat(result.getFirst().applicantId()).isEqualTo(3L);
         assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
+        assertThat(result.getFirst().university()).isEqualTo("RANEPA");
+        assertThat(result.getFirst().desiredPosition()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().matchingTags()).hasSize(1);
+        assertThat(result.getFirst().matchingTags().getFirst().name()).isEqualTo("Java");
     }
 
     @Test
@@ -220,12 +236,21 @@ class OpportunityResponseServiceImplTest {
 
         ApplicantEntity applicant = buildApplicant(3L, 12L);
         applicant.setName("Ivan Ivanov");
+        applicant.setUniversity("RANEPA");
+        applicant.setDesiredPosition("Backend Developer Intern");
+
+        TagEntity javaTag = new TagEntity();
+        javaTag.setId(2L);
+        javaTag.setName("Java");
+        javaTag.setCategory(TagCategory.TECHNOLOGY);
+        applicant.setSkills(List.of(javaTag));
 
         OpportunityEntity opportunity = buildOpportunity(10L);
         opportunity.setTitle("Java Developer");
         opportunity.setType(OpportunityType.VACANCY);
         opportunity.setStatus(OpportunityStatus.ACTIVE);
         opportunity.setEmployer(employer);
+        opportunity.setTags(List.of(javaTag));
 
         OpportunityResponseEntity response = new OpportunityResponseEntity();
         response.setId(15L);
@@ -242,9 +267,10 @@ class OpportunityResponseServiceImplTest {
                 opportunityResponseService.getApplicationsForMyOpportunities("employer@example.com");
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().opportunityId()).isEqualTo(10L);
-        assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
         assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
+        assertThat(result.getFirst().university()).isEqualTo("RANEPA");
+        assertThat(result.getFirst().desiredPosition()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().matchingTags()).hasSize(1);
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {

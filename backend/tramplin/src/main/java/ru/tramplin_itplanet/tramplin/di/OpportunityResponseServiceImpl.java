@@ -10,6 +10,7 @@ import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
@@ -24,11 +25,13 @@ import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCa
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.Tag;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
 
 import java.util.Objects;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -167,17 +170,21 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     private EmployerOpportunityApplication toEmployerApplication(OpportunityResponseEntity response) {
         OpportunityEntity opportunity = response.getOpportunity();
         ApplicantEntity applicant = response.getApplicant();
+        Set<Long> applicantSkillIds = applicant.getSkills().stream()
+                .map(TagEntity::getId)
+                .collect(java.util.stream.Collectors.toSet());
+
+        List<Tag> matchingTags = opportunity.getTags().stream()
+                .filter(tag -> applicantSkillIds.contains(tag.getId()))
+                .map(tag -> new Tag(tag.getId(), tag.getName(), tag.getCategory()))
+                .toList();
+
         return new EmployerOpportunityApplication(
-                response.getId(),
-                opportunity.getId(),
-                opportunity.getTitle(),
-                opportunity.getEmployer().getName(),
-                opportunity.getType(),
-                opportunity.getStatus(),
                 applicant.getId(),
                 applicant.getName(),
-                response.getStatus(),
-                response.getCreatedAt()
+                applicant.getUniversity(),
+                applicant.getDesiredPosition(),
+                matchingTags
         );
     }
 }

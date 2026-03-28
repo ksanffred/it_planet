@@ -14,6 +14,8 @@ import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.Tag;
+import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
 
@@ -129,30 +131,21 @@ class OpportunityResponseControllerTest {
         when(opportunityResponseService.getApplicationsForOpportunity(10L, "employer@example.com"))
                 .thenReturn(List.of(
                         new EmployerOpportunityApplication(
-                                15L,
-                                10L,
-                                "Java Developer",
-                                "Acme Corp",
-                                OpportunityType.VACANCY,
-                                OpportunityStatus.ACTIVE,
                                 3L,
                                 "Ivan Ivanov",
-                                OpportunityResponseStatus.NOT_REVIEWED,
-                                LocalDateTime.of(2026, 3, 28, 14, 0)
+                                "RANEPA",
+                                "Backend Developer Intern",
+                                List.of(new Tag(2L, "Java", TagCategory.TECHNOLOGY))
                         )
                 ));
 
         mockMvc.perform(get("/opportunities/10/responses"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].responseId").value(15))
-                .andExpect(jsonPath("$[0].opportunityId").value(10))
-                .andExpect(jsonPath("$[0].title").value("Java Developer"))
-                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
-                .andExpect(jsonPath("$[0].response_status").value("NOT_REVIEWED"))
-                .andExpect(jsonPath("$[0].opportunity_type").value("VACANCY"))
-                .andExpect(jsonPath("$[0].opportunity_status").value("ACTIVE"))
                 .andExpect(jsonPath("$[0].applicant_id").value(3))
-                .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"));
+                .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"))
+                .andExpect(jsonPath("$[0].university").value("RANEPA"))
+                .andExpect(jsonPath("$[0].desired_position").value("Backend Developer Intern"))
+                .andExpect(jsonPath("$[0].matching_tags[0].name").value("Java"));
     }
 
     @Test
@@ -161,24 +154,18 @@ class OpportunityResponseControllerTest {
         when(opportunityResponseService.getApplicationsForMyOpportunities("employer@example.com"))
                 .thenReturn(List.of(
                         new EmployerOpportunityApplication(
-                                15L,
-                                10L,
-                                "Java Developer",
-                                "Acme Corp",
-                                OpportunityType.VACANCY,
-                                OpportunityStatus.ACTIVE,
                                 3L,
                                 "Ivan Ivanov",
-                                OpportunityResponseStatus.NOT_REVIEWED,
-                                LocalDateTime.of(2026, 3, 28, 14, 0)
+                                "RANEPA",
+                                "Backend Developer Intern",
+                                List.of(new Tag(2L, "Java", TagCategory.TECHNOLOGY))
                         )
                 ));
 
         mockMvc.perform(get("/opportunities/responses/employer"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].responseId").value(15))
-                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
-                .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"));
+                .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"))
+                .andExpect(jsonPath("$[0].matching_tags[0].name").value("Java"));
     }
 
     @Test

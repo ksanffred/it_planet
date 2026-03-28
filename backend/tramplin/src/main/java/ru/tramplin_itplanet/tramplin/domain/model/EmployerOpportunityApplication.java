@@ -1,16 +1,11 @@
 package ru.tramplin_itplanet.tramplin.domain.model;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public record EmployerOpportunityApplication(
-        Long responseId,
-        Long opportunityId,
-        String title,
-        String companyName,
-        OpportunityType opportunityType,
-        OpportunityStatus opportunityStatus,
         Long applicantId,
         String applicantName,
-        OpportunityResponseStatus responseStatus,
-        LocalDateTime appliedAt
+        String university,
+        String desiredPosition,
+        List<Tag> matchingTags
 ) {}
