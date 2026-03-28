@@ -9,6 +9,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
@@ -38,11 +40,14 @@ class MediaServiceImplTest {
     @Mock
     private JpaOpportunityRepository jpaOpportunityRepository;
 
+    @Mock
+    private JpaApplicantRepository jpaApplicantRepository;
+
     private MediaServiceImpl mediaService;
 
     @BeforeEach
     void setUp() {
-        mediaService = new MediaServiceImpl(s3Client, jpaEmployerRepository, jpaOpportunityRepository);
+        mediaService = new MediaServiceImpl(s3Client, jpaEmployerRepository, jpaOpportunityRepository, jpaApplicantRepository);
         ReflectionTestUtils.setField(mediaService, "bucket", "test-bucket");
         ReflectionTestUtils.setField(mediaService, "publicBaseUrl", "https://cdn.test");
     }
@@ -113,5 +118,25 @@ class MediaServiceImplTest {
                 () -> mediaService.uploadEmployerLogo(1L, file));
 
         assertEquals("Only image files are allowed", exception.getMessage());
+    }
+
+    @Test
+    void uploadApplicantResume_validPdf_uploadsToS3AndSavesPath() {
+        ApplicantEntity applicant = new ApplicantEntity();
+        applicant.setId(9L);
+
+        MockMultipartFile file = new MockMultipartFile("file", "resume.pdf", "application/pdf", "pdf".getBytes());
+
+        when(jpaApplicantRepository.findById(9L)).thenReturn(Optional.of(applicant));
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().eTag("etag").build());
+
+        MediaUploadResponse response = mediaService.uploadApplicantResume(9L, file);
+
+        assertNotNull(response.path());
+        assertTrue(response.path().startsWith("applicants/9/resume/"));
+        assertTrue(response.path().endsWith(".pdf"));
+        assertEquals(response.path(), applicant.getResumeUrl());
+        verify(jpaApplicantRepository).save(applicant);
     }
 }

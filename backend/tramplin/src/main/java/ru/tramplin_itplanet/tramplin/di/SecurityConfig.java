@@ -37,6 +37,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/employers/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/employers/me").hasRole("EMPLOYER")
+                        .requestMatchers(HttpMethod.POST, "/applicants").hasRole("APPLICANT")
+                        .requestMatchers(HttpMethod.POST, "/applicants/*/resume").hasRole("APPLICANT")
+                        .requestMatchers(HttpMethod.GET, "/applicants/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/opportunities").hasRole("EMPLOYER")
                         .requestMatchers(HttpMethod.PUT, "/opportunities/**").hasRole("EMPLOYER")
                         .requestMatchers(HttpMethod.GET, "/opportunities/**").permitAll()

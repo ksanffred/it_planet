@@ -74,4 +74,20 @@ public class MediaController {
         log.info("POST /opportunities/{}/media", opportunityId);
         return ResponseEntity.status(HttpStatus.CREATED).body(mediaService.uploadOpportunityMedia(opportunityId, file));
     }
+
+    @Operation(summary = "Upload applicant resume", description = "Uploads a PDF resume to S3 and saves object path to applicants.resume_url")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Applicant resume uploaded"),
+            @ApiResponse(responseCode = "400", description = "Invalid PDF file",
+                    content = @Content(schema = @Schema(example = "{\"status\":400,\"error\":\"Only PDF files are allowed\"}"))),
+            @ApiResponse(responseCode = "404", description = "Applicant not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping(value = "/applicants/{applicantId}/resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MediaUploadResponse> uploadApplicantResume(@PathVariable Long applicantId,
+                                                                     @RequestParam("file") MultipartFile file) {
+        log.info("POST /applicants/{}/resume", applicantId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mediaService.uploadApplicantResume(applicantId, file));
+    }
 }

@@ -7,4 +7,5 @@ public interface MediaService {
     MediaUploadResponse uploadEmployerLogo(Long employerId, MultipartFile file);
     MediaUploadResponse uploadOpportunityDraftMedia(MultipartFile file);
     MediaUploadResponse uploadOpportunityMedia(Long opportunityId, MultipartFile file);
+    MediaUploadResponse uploadApplicantResume(Long applicantId, MultipartFile file);
 }
