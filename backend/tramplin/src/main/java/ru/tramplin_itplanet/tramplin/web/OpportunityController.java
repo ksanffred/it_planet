@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -17,9 +18,11 @@ import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
 import ru.tramplin_itplanet.tramplin.web.dto.CreateOpportunityRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityCardResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityMiniCardResponse;
+import ru.tramplin_itplanet.tramplin.web.dto.UpdateOpportunityRequest;
 import ru.tramplin_itplanet.tramplin.web.mapper.CreateOpportunityRequestMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityCardMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityMiniCardMapper;
+import ru.tramplin_itplanet.tramplin.web.mapper.UpdateOpportunityRequestMapper;
 
 import java.util.List;
 
@@ -80,9 +83,12 @@ public class OpportunityController {
             @ApiResponse(responseCode = "201", description = "Opportunity created successfully"),
             @ApiResponse(responseCode = "400", description = "Validation failed — required fields missing or invalid",
                     content = @Content(schema = @Schema(example = "{\"status\":400,\"errors\":[\"title: must not be blank\"]}"))),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token",
+                    content = @Content(schema = @Schema(example = "{\"status\":401,\"error\":\"Unauthorized\"}"))),
             @ApiResponse(responseCode = "404", description = "Referenced employer not found",
                     content = @Content(schema = @Schema(example = "{\"status\":404,\"error\":\"Employer not found with id: 5\"}")))
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<OpportunityCardResponse> create(@Valid @RequestBody CreateOpportunityRequest request) {
         log.info("POST /opportunities: title={}, type={}, employerId={}", request.title(), request.type(), request.employerId());
@@ -90,5 +96,31 @@ public class OpportunityController {
                 opportunityService.create(CreateOpportunityRequestMapper.toCommand(request))
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(
+            summary = "Update opportunity card by ID",
+            description = "Updates all editable opportunity fields. The card ID is immutable."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Opportunity updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation failed — required fields missing or invalid",
+                    content = @Content(schema = @Schema(example = "{\"status\":400,\"errors\":[\"title: must not be blank\"]}"))),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token",
+                    content = @Content(schema = @Schema(example = "{\"status\":401,\"error\":\"Unauthorized\"}"))),
+            @ApiResponse(responseCode = "404", description = "Opportunity or referenced employer not found",
+                    content = @Content(schema = @Schema(example = "{\"status\":404,\"error\":\"Opportunity not found with id: 5\"}")))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/{id}")
+    public ResponseEntity<OpportunityCardResponse> update(
+            @Parameter(description = "ID of the opportunity", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateOpportunityRequest request) {
+        log.info("PUT /opportunities/{}: title={}, type={}, employerId={}", id, request.title(), request.type(), request.employerId());
+        OpportunityCardResponse response = OpportunityCardMapper.toResponse(
+                opportunityService.update(id, UpdateOpportunityRequestMapper.toCommand(request))
+        );
+        return ResponseEntity.ok(response);
     }
 }
