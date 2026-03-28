@@ -10,14 +10,10 @@ definePageMeta({
 <template>
   <BaseBackButton class="back-button" />
   <AuthWrapper>
-    <div class="auth__card bordered">
-      <BaseAppLogo class="auth__logo" />
-      <hgroup class="auth__title-group">
-        <h1 class="auth__title">Вход в аккаунт</h1>
-        <p class="auth__description">
-          Продолжайте поиск стажировок, вакансий, наставников и карьерных событий.
-        </p>
-      </hgroup>
+    <AuthCard
+      title="Вход в аккаунт"
+      description="Продолжайте поиск стажировок, вакансий, наставников и карьерных событий."
+    >
       <form class="auth__form">
         <label class="auth__label" for="email">
           Email
@@ -53,9 +49,10 @@ definePageMeta({
         >
       </form>
       <p class="auth__registration-link">
-        Нет аккаунта? <NuxtLink to="/registration">Зарегестрироваться</NuxtLink>
+        Нет аккаунта?
+        <NuxtLink to="/auth/register">Зарегестрироваться</NuxtLink>
       </p>
-    </div>
+    </AuthCard>
   </AuthWrapper>
 </template>
 
@@ -83,10 +80,6 @@ definePageMeta({
     font-size: 13px;
   }
 
-  &__title-group {
-    color: var(--text-inverted-color);
-  }
-
   &__registration-link {
     color: var(--tertiary-color);
     font-weight: 700;
@@ -99,27 +92,10 @@ definePageMeta({
     }
   }
 
-  &__card {
-    border-radius: 32px;
-    padding: 34px 34px 30px 34px;
-    width: 460px;
-  }
-
-  &__title-group,
-  &__card,
   &__form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-  }
-
-  &__logo {
-    color: var(--secondary-color);
-    font-size: 16px;
-
-    .dark & {
-      color: var(--secondary-color);
-    }
   }
 }
 

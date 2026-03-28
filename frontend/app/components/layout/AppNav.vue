@@ -24,10 +24,10 @@ const isDark = computed({
         <NuxtIcon v-if="!isDark" size="24px" name="material-symbols:wb-sunny-rounded" />
         <NuxtIcon size="24px" name="material-symbols:moon-stars-rounded" v-else />
       </BaseAppButton>
-      <BaseAppButton @click="navigateTo('/login')" variant="secondary" bordered
+      <BaseAppButton @click="navigateTo('/auth/login')" variant="secondary" bordered
         >Войти</BaseAppButton
       >
-      <BaseAppButton @click="navigateTo('/registration')" variant="primary"
+      <BaseAppButton @click="navigateTo('/auth/register')" variant="primary"
         >Регистрация</BaseAppButton
       >
     </div>

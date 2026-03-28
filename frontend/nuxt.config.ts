@@ -26,4 +26,9 @@ export default defineNuxtConfig({
   icon: {
     componentName: 'NuxtIcon',
   },
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://localhost:8080',
+    },
+  },
 })
