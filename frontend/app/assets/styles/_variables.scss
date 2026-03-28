@@ -1,5 +1,7 @@
 html.light {
   --primary-color: #0049b8;
+  --primary-color-disabled: #003b94;
+
   --secondary-color: #ff5f00;
   --tertiary-color: #558b6e;
 
@@ -17,6 +19,8 @@ html.light {
 
 html.dark {
   --primary-color: #1e3a8a;
+  --primary-color-disabled: #132558;
+
   --secondary-color: #f97316;
   --tertiary-color: #14532d;
 

@@ -3,7 +3,7 @@
 <template>
   <footer class="app-footer">
     <nav class="app-footer__nav container">
-      <BaseAppLogo />
+      <BaseAppLogo class="app-footer__logo" />
 
       <div class="app-footer__nav-actions">
         <NuxtLink class="reset-link" to="/">Возможности</NuxtLink>
@@ -26,6 +26,11 @@
   background-color: var(--background-tertiary-color);
   padding: 24px;
   margin-top: 100vh;
+
+  &__logo {
+    color: var(--text-primary-color);
+    font-size: 30px;
+  }
 
   &__nav {
     display: flex;

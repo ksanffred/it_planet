@@ -11,7 +11,7 @@ const isDark = computed({
 
 <template>
   <nav class="app-nav container">
-    <BaseAppLogo dot tag />
+    <BaseAppLogo class="app-nav__logo" dot tag />
 
     <div class="app-nav__actions">
       <BaseAppButton
@@ -42,6 +42,11 @@ const isDark = computed({
   padding-top: 24px;
   padding-bottom: 12px;
   padding-inline: 36px;
+
+  &__logo {
+    color: var(--text-inverted-color);
+    font-size: 30px;
+  }
 
   &__actions {
     display: flex;

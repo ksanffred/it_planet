@@ -22,6 +22,11 @@ const { variant, bordered } = defineProps<Props>()
 
   &--primary {
     background-color: var(--primary-color);
+
+    &:disabled {
+      background-color: var(--primary-color-disabled);
+      cursor: not-allowed;
+    }
   }
 
   &--secondary {

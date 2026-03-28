@@ -31,15 +31,11 @@ n
   }
 
   &__text {
-    font-size: 30px;
+    font-size: inherit;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
-    color: var(--text-inverted-color);
+    color: inherit;
     text-transform: uppercase;
-
-    .dark & {
-      color: var(--text-primary-color);
-    }
   }
 
   &__tag {

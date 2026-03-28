@@ -1,13 +1,9 @@
 <script setup lang="ts">
-interface Props {
-  placeholder?: string
-}
-
-const { placeholder } = defineProps<Props>()
+const model = defineModel()
 </script>
 
 <template>
-  <input class="app-input reset-input bordered" type="text" :placeholder="placeholder" />
+  <input class="app-input reset-input bordered" type="text" v-model="model" />
 </template>
 
 <style lang="scss" scoped>
