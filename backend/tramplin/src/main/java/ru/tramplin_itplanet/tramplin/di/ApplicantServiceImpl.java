@@ -3,6 +3,7 @@ package ru.tramplin_itplanet.tramplin.di;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
@@ -17,10 +18,13 @@ import ru.tramplin_itplanet.tramplin.domain.exception.UserNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantProfile;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateApplicantCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateCurrentApplicantCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateApplicantCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantService;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -85,6 +89,98 @@ public class ApplicantServiceImpl implements ApplicantService {
         ApplicantEntity entity = jpaApplicantRepository.findByIdWithSkills(id)
                 .orElseThrow(() -> new ApplicantNotFoundException(id));
         return toProfile(entity);
+    }
+
+    @Override
+    public ApplicantProfile getCurrentByUserEmail(String email) {
+        log.info("Loading current applicant profile by email={}", email);
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+        ApplicantEntity entity = findApplicantByUserId(user.getId());
+        return toProfile(entity);
+    }
+
+    @Override
+    @Transactional
+    public ApplicantProfile update(Long id, UpdateApplicantCommand command) {
+        log.info("Updating applicant profile id={}, userId={}", id, command.userId());
+
+        ApplicantEntity entity = jpaApplicantRepository.findByIdWithSkills(id)
+                .orElseThrow(() -> new ApplicantNotFoundException(id));
+
+        UserEntity user = jpaUserRepository.findById(command.userId())
+                .orElseThrow(() -> new UserNotFoundException(command.userId()));
+
+        if (user.getRole() != UserRole.APPLICANT) {
+            log.warn("Applicant profile update forbidden: userId={}, role={}", user.getId(), user.getRole());
+            throw new AccessDeniedException("User role must be APPLICANT");
+        }
+
+        jpaApplicantRepository.findByUserIdWithSkills(user.getId())
+                .filter(existing -> !Objects.equals(existing.getId(), id))
+                .ifPresent(existing -> {
+                    throw new ApplicantAlreadyExistsException(user.getId());
+                });
+
+        List<TagEntity> skills = command.skillTagIds().isEmpty()
+                ? List.of()
+                : jpaTagRepository.findAllById(command.skillTagIds());
+
+        entity.setUserId(user.getId());
+        entity.setName(command.name());
+        entity.setUniversity(command.university());
+        entity.setFaculty(command.faculty());
+        entity.setCurrentFieldOfStudy(command.currentFieldOfStudy());
+        entity.setMajor(command.major());
+        entity.setGraduationYear(command.graduationYear());
+        entity.setAdditionalEducationDetails(command.additionalEducationDetails());
+        entity.setPortfolioUrl(command.portfolioUrl());
+        entity.setResumeUrl(command.resumeUrl());
+        entity.setSkills(skills);
+
+        ApplicantEntity updated = jpaApplicantRepository.save(entity);
+        return toProfile(updated);
+    }
+
+    @Override
+    @Transactional
+    public ApplicantProfile updateCurrentByUserEmail(String email, UpdateCurrentApplicantCommand command) {
+        log.info("Updating current applicant profile by email={}", email);
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+        ApplicantEntity entity = findApplicantByUserId(user.getId());
+
+        List<TagEntity> skills = command.skillTagIds().isEmpty()
+                ? List.of()
+                : jpaTagRepository.findAllById(command.skillTagIds());
+
+        entity.setName(command.name());
+        entity.setUniversity(command.university());
+        entity.setFaculty(command.faculty());
+        entity.setCurrentFieldOfStudy(command.currentFieldOfStudy());
+        entity.setMajor(command.major());
+        entity.setGraduationYear(command.graduationYear());
+        entity.setAdditionalEducationDetails(command.additionalEducationDetails());
+        entity.setPortfolioUrl(command.portfolioUrl());
+        entity.setResumeUrl(command.resumeUrl());
+        entity.setSkills(skills);
+
+        ApplicantEntity updated = jpaApplicantRepository.save(entity);
+        return toProfile(updated);
+    }
+
+    private UserEntity resolveAuthenticatedUserByEmail(String email) {
+        return jpaUserRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.warn("Authenticated user not found by email={}", email);
+                    return new BadCredentialsException("Invalid authentication token");
+                });
+    }
+
+    private ApplicantEntity findApplicantByUserId(Long userId) {
+        return jpaApplicantRepository.findByUserIdWithSkills(userId)
+                .orElseThrow(() -> {
+                    log.warn("Applicant profile not found for userId={}", userId);
+                    return new ApplicantNotFoundException(userId);
+                });
     }
 
     private static ApplicantProfile toProfile(ApplicantEntity entity) {

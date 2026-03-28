@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,6 +87,90 @@ class ApplicantControllerTest {
         mockMvc.perform(get("/applicants/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Applicant not found with id: 999"));
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void update_validRequest_returns200() throws Exception {
+        when(applicantService.update(any(), any())).thenReturn(buildProfile(1L));
+
+        mockMvc.perform(post("/applicants/1")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userId": 12,
+                                  "name": "Ivan Ivanov",
+                                  "university": "RANEPA",
+                                  "faculty": "IT",
+                                  "currentFieldOfStudy": "Software Engineering",
+                                  "major": "Applied Informatics",
+                                  "graduationYear": 2027,
+                                  "additionalEducationDetails": "ML course",
+                                  "portfolioUrl": "https://github.com/user",
+                                  "resumeUrl": "applicants/1/resume/cv.pdf",
+                                  "skillTagIds": [1, 2]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Ivan Ivanov"))
+                .andExpect(jsonPath("$.skills[0].name").value("Java"));
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com")
+    void getCurrent_authenticatedUser_returns200() throws Exception {
+        when(applicantService.getCurrentByUserEmail("applicant@example.com")).thenReturn(buildProfile(1L));
+
+        mockMvc.perform(get("/applicants/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Ivan Ivanov"));
+    }
+
+    @Test
+    void getCurrent_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(get("/applicants/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void updateCurrent_validRequest_returns200() throws Exception {
+        when(applicantService.updateCurrentByUserEmail(any(), any())).thenReturn(buildProfile(1L));
+
+        mockMvc.perform(put("/applicants/me")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Ivan Ivanov",
+                                  "university": "RANEPA",
+                                  "faculty": "IT",
+                                  "currentFieldOfStudy": "Software Engineering",
+                                  "major": "Applied Informatics",
+                                  "graduationYear": 2027,
+                                  "additionalEducationDetails": "ML course",
+                                  "portfolioUrl": "https://github.com/user",
+                                  "resumeUrl": "applicants/1/resume/cv.pdf",
+                                  "skillTagIds": [1, 2]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Ivan Ivanov"));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com")
+    void updateCurrent_nonApplicantRole_returns403() throws Exception {
+        mockMvc.perform(put("/applicants/me")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Ivan Ivanov"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
     }
 
     private ApplicantProfile buildProfile(Long id) {
