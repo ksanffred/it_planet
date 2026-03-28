@@ -2,6 +2,7 @@ package ru.tramplin_itplanet.tramplin.web.mapper;
 
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.web.dto.EmployerOpportunityApplicationItem;
+import ru.tramplin_itplanet.tramplin.web.dto.TagResponse;
 
 public final class EmployerOpportunityApplicationMapper {
 
@@ -10,16 +11,13 @@ public final class EmployerOpportunityApplicationMapper {
 
     public static EmployerOpportunityApplicationItem toResponse(EmployerOpportunityApplication application) {
         return new EmployerOpportunityApplicationItem(
-                application.responseId(),
-                application.opportunityId(),
-                application.title(),
-                application.companyName(),
-                application.responseStatus().name(),
-                application.opportunityType().name(),
-                application.opportunityStatus().name(),
                 application.applicantId(),
                 application.applicantName(),
-                application.appliedAt()
+                application.university(),
+                application.desiredPosition(),
+                application.matchingTags().stream()
+                        .map(tag -> new TagResponse(tag.id(), tag.name(), tag.category().name()))
+                        .toList()
         );
     }
 }
