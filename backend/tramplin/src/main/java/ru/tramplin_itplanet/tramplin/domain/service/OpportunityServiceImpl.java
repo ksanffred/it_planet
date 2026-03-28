@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityPosting;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityMiniCard;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateOpportunityCommand;
@@ -39,6 +40,12 @@ public class OpportunityServiceImpl implements OpportunityService {
     public List<OpportunityMiniCard> findActiveMiniCards(String search) {
         log.info("Fetching active opportunity mini-cards, search={}", search);
         return opportunityRepository.findActiveMiniCards(search);
+    }
+
+    @Override
+    public List<EmployerOpportunityPosting> findByEmployerId(Long employerId) {
+        log.info("Fetching opportunities by employerId={}", employerId);
+        return opportunityRepository.findByEmployerId(employerId);
     }
 
     @Override

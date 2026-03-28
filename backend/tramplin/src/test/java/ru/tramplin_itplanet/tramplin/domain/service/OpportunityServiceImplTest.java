@@ -62,6 +62,27 @@ class OpportunityServiceImplTest {
     }
 
     @Test
+    void findByEmployerId_returnsEmployerOpportunities() {
+        List<EmployerOpportunityPosting> expected = List.of(
+                new EmployerOpportunityPosting(
+                        1L,
+                        "Java Developer",
+                        OpportunityStatus.ACTIVE,
+                        OpportunityType.VACANCY,
+                        LocalDateTime.of(2026, 1, 1, 0, 0),
+                        LocalDateTime.of(2026, 6, 1, 0, 0),
+                        7L
+                )
+        );
+        when(opportunityRepository.findByEmployerId(3L)).thenReturn(expected);
+
+        List<EmployerOpportunityPosting> result = opportunityService.findByEmployerId(3L);
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).findByEmployerId(3L);
+    }
+
+    @Test
     void getById_existingId_returnsOpportunity() {
         Opportunity expected = buildOpportunity(1L);
         when(opportunityRepository.findById(1L)).thenReturn(Optional.of(expected));

@@ -6,10 +6,21 @@ import org.springframework.data.repository.query.Param;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface JpaOpportunityRepository extends JpaRepository<OpportunityEntity, Long> {
+
+    interface EmployerOpportunityPostingProjection {
+        Long getId();
+        String getTitle();
+        String getStatus();
+        String getType();
+        LocalDateTime getPublishedAt();
+        LocalDateTime getExpiresAt();
+        Long getApplicationsCount();
+    }
 
     @Query("SELECT o.id FROM OpportunityEntity o " +
            "WHERE o.status = :status " +
@@ -61,4 +72,22 @@ public interface JpaOpportunityRepository extends JpaRepository<OpportunityEntit
            "LEFT JOIN FETCH o.tags " +
            "WHERE o.id = :id")
     Optional<OpportunityEntity> findByIdWithDetails(@Param("id") Long id);
+
+    @Query(value = """
+            SELECT o.id AS id,
+                   o.title AS title,
+                   o.status AS status,
+                   o.type AS type,
+                   o.published_at AS publishedAt,
+                   o.expires_at AS expiresAt,
+                   COUNT(r.id) AS applicationsCount
+            FROM opportunities o
+            LEFT JOIN opportunity_responses r ON r.opportunity_id = o.id
+            WHERE o.employer_id = :employerId
+            GROUP BY o.id, o.title, o.status, o.type, o.published_at, o.expires_at
+            ORDER BY o.published_at DESC NULLS LAST, o.id DESC
+            """, nativeQuery = true)
+    List<EmployerOpportunityPostingProjection> findEmployerPostingsWithApplicationsCount(
+            @Param("employerId") Long employerId
+    );
 }

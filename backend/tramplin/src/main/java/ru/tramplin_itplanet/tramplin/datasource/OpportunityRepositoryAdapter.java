@@ -19,9 +19,11 @@ import ru.tramplin_itplanet.tramplin.datasource.mapper.OpportunityEntityMapper;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityPosting;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityMiniCard;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.repository.OpportunityRepository;
 
@@ -103,6 +105,14 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
         return activeIds.stream()
                 .map(byId::get)
                 .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public List<EmployerOpportunityPosting> findByEmployerId(Long employerId) {
+        log.debug("Querying opportunities for employerId={}", employerId);
+        return jpaOpportunityRepository.findEmployerPostingsWithApplicationsCount(employerId).stream()
+                .map(this::toEmployerPosting)
                 .toList();
     }
 
@@ -268,6 +278,19 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
                 entity.getType().name(),
                 entity.getFormat().name(),
                 entity.getTags().stream().limit(3).map(TagEntity::getName).toList()
+        );
+    }
+
+    private EmployerOpportunityPosting toEmployerPosting(JpaOpportunityRepository.EmployerOpportunityPostingProjection row) {
+        long applicationsCount = row.getApplicationsCount() != null ? row.getApplicationsCount() : 0L;
+        return new EmployerOpportunityPosting(
+                row.getId(),
+                row.getTitle(),
+                OpportunityStatus.valueOf(row.getStatus()),
+                OpportunityType.valueOf(row.getType()),
+                row.getPublishedAt(),
+                row.getExpiresAt(),
+                applicationsCount
         );
     }
 
