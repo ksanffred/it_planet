@@ -61,6 +61,27 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
 
     @Override
     @Transactional
+    public ApplicantFavorites removeOneByUserEmail(String email, Long opportunityId) {
+        log.info("Removing one favorite for email={}, opportunityId={}", email, opportunityId);
+
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+        ensureApplicantRole(user);
+
+        ApplicantEntity applicant = jpaApplicantRepository.findByUserIdWithSkills(user.getId())
+                .orElseThrow(() -> {
+                    log.warn("Applicant profile not found for userId={}", user.getId());
+                    return new ApplicantNotFoundException(user.getId());
+                });
+
+        jpaApplicantFavoriteOpportunityRepository.deleteById(
+                new ApplicantFavoriteOpportunityId(applicant.getId(), opportunityId)
+        );
+
+        return currentFavorites(applicant.getId());
+    }
+
+    @Override
+    @Transactional
     public ApplicantFavorites addManyByUserEmail(String email, List<Long> opportunityIds) {
         int requestedCount = opportunityIds != null ? opportunityIds.size() : 0;
         log.info("Adding many favorites for email={}, requestedCount={}", email, requestedCount);

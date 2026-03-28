@@ -15,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -91,6 +92,33 @@ public class ApplicantFavoriteController {
 
         ApplicantFavoritesResponse response = ApplicantFavoritesMapper.toResponse(
                 applicantFavoriteService.addManyByUserEmail(email, request.opportunityIds())
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Remove one opportunity from current applicant favorites",
+            description = "Available only for APPLICANT users."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Opportunity removed from favorites"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an applicant"),
+            @ApiResponse(responseCode = "404", description = "Applicant profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{opportunityId}")
+    public ResponseEntity<ApplicantFavoritesResponse> removeOne(
+            @Parameter(description = "Opportunity card id", example = "42")
+            @PathVariable Long opportunityId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureApplicantRole(authentication);
+
+        log.info("DELETE /applicants/me/favorites/opportunities/{}: email={}", opportunityId, email);
+
+        ApplicantFavoritesResponse response = ApplicantFavoritesMapper.toResponse(
+                applicantFavoriteService.removeOneByUserEmail(email, opportunityId)
         );
         return ResponseEntity.ok(response);
     }

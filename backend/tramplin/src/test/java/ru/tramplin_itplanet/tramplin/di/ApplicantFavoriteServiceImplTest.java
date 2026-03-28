@@ -156,6 +156,25 @@ class ApplicantFavoriteServiceImplTest {
                 .saveAll(org.mockito.ArgumentMatchers.<ApplicantFavoriteOpportunityEntity>anyList());
     }
 
+    @Test
+    void removeOneByUserEmail_existingFavorite_returnsUpdatedSnapshot() {
+        UserEntity user = buildUser(12L, "applicant@example.com", UserRole.APPLICANT);
+        ApplicantEntity applicant = buildApplicant(1L, 12L);
+
+        when(jpaUserRepository.findByEmail("applicant@example.com")).thenReturn(Optional.of(user));
+        when(jpaApplicantRepository.findByUserIdWithSkills(12L)).thenReturn(Optional.of(applicant));
+        when(jpaApplicantFavoriteOpportunityRepository.findOpportunityIdsByApplicantId(1L))
+                .thenReturn(List.of(5L, 3L));
+
+        ApplicantFavorites result = applicantFavoriteService.removeOneByUserEmail("applicant@example.com", 10L);
+
+        assertThat(result.opportunityIds()).containsExactly(5L, 3L);
+        verify(jpaApplicantFavoriteOpportunityRepository)
+                .deleteById(org.mockito.ArgumentMatchers.argThat(id ->
+                        id.getApplicantId().equals(1L) && id.getOpportunityId().equals(10L)
+                ));
+    }
+
     private static UserEntity buildUser(Long id, String email, UserRole role) {
         UserEntity user = new UserEntity();
         ReflectionTestUtils.setField(user, "id", id);

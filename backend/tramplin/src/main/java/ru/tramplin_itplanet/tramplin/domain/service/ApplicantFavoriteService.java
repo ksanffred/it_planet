@@ -7,4 +7,5 @@ import java.util.List;
 public interface ApplicantFavoriteService {
     ApplicantFavorites addOneByUserEmail(String email, Long opportunityId);
     ApplicantFavorites addManyByUserEmail(String email, List<Long> opportunityIds);
+    ApplicantFavorites removeOneByUserEmail(String email, Long opportunityId);
 }

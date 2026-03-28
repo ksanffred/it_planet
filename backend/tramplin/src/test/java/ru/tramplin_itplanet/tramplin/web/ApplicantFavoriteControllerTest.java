@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,5 +105,24 @@ class ApplicantFavoriteControllerTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void removeOne_validApplicant_returns200() throws Exception {
+        when(applicantFavoriteService.removeOneByUserEmail("applicant@example.com", 10L))
+                .thenReturn(new ApplicantFavorites(1L, List.of(5L)));
+
+        mockMvc.perform(delete("/applicants/me/favorites/opportunities/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applicantId").value(1))
+                .andExpect(jsonPath("$.opportunityIds[0]").value(5));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com")
+    void removeOne_nonApplicantRole_returns403() throws Exception {
+        mockMvc.perform(delete("/applicants/me/favorites/opportunities/10"))
+                .andExpect(status().isForbidden());
     }
 }
