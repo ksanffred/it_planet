@@ -6,7 +6,6 @@ definePageMeta({
 
 <template>
   <div>Login Page</div>
-  <BaseBackButton />
 </template>
 
 <style lang="scss" scoped></style>

@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import type { OpportunityCard } from '@/types/opportunityCard'
+import type { OpportunityMiniCard } from '@/types/opportunity'
 
-const { title, description, image, type, tags } = defineProps<OpportunityCard>()
+const { id, media, title, description, employerName, format, tags } =
+  defineProps<OpportunityMiniCard>()
 </script>
 
 <template>
-  <div :class="['opportunity-card', `opportunity-card--${type}`, type === 'job' ? 'bordered' : '']">
+  <div
+    :class="[
+      'opportunity-card',
+      // `opportunity-card--${type}`,
+      // type === 'job' ? 'bordered' : '',
+    ]"
+  >
     <NuxtLink to="/" class="opportunity-card__image-wrapper">
       <NuxtIcon class="opportunity-card__icon" name="material-symbols:open-in-new" size="24px" />
       <NuxtImg

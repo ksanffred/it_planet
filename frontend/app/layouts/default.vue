@@ -2,8 +2,8 @@
 
 <template>
   <LayoutAppNav />
-  <div>
-    <slot />
-  </div>
+  <slot />
   <LayoutAppFooter />
 </template>
+
+<style lang="scss" scoped></style>

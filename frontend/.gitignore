@@ -21,3 +21,5 @@ logs
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
+
+app/api.md

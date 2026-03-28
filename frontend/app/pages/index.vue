@@ -2,8 +2,11 @@
 <template>
   <div class="container">
     <SectionsHeroSection />
-    <SectionsSearchSection />
-    <SectionsOpportunitiesSection />
+
+    <main>
+      <SectionsSearchSection />
+      <SectionsOpportunitiesSection />
+    </main>
   </div>
 </template>
 

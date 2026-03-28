@@ -1,16 +1,14 @@
-<script setup lang="ts">
-import { opportunities } from '~/data/opportunities'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="opportunities-section container">
     <div class="opportunities-section__grid">
-      <BaseOpportunityCard
+      <!-- <BaseOpportunityCard
         class="opportunities-section__card"
-        v-for="item in opportunities"
+        v-for="item in [' ',]"
         :key="item.id"
         v-bind="item"
-      />
+      /> -->
     </div>
   </div>
 </template>

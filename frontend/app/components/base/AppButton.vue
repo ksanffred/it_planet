@@ -4,7 +4,7 @@ interface Props {
   bordered?: boolean
   to?: string
 }
-const { variant } = defineProps<Props>()
+const { variant, bordered } = defineProps<Props>()
 </script>
 
 <template>
@@ -15,6 +15,11 @@ const { variant } = defineProps<Props>()
 
 <style lang="scss" scoped>
 .app-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
   &--primary {
     background-color: var(--primary-color);
   }
