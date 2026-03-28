@@ -13,17 +13,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
 import ru.tramplin_itplanet.tramplin.web.dto.CreateOpportunityRequest;
+import ru.tramplin_itplanet.tramplin.web.dto.EmployerOpportunityPostingResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityCardResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityMiniCardResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.UpdateOpportunityRequest;
 import ru.tramplin_itplanet.tramplin.web.mapper.CreateOpportunityRequestMapper;
+import ru.tramplin_itplanet.tramplin.web.mapper.EmployerOpportunityPostingMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityCardMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityMiniCardMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.UpdateOpportunityRequestMapper;
@@ -79,6 +83,32 @@ public class OpportunityController {
             @PathVariable Long id) {
         log.info("GET /opportunities/{}", id);
         return ResponseEntity.ok(OpportunityCardMapper.toResponse(opportunityService.getById(id)));
+    }
+
+    @Operation(
+            summary = "Get current employer opportunities",
+            description = "Returns opportunities created by the authenticated employer with applications count."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Employer opportunities returned"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an employer"),
+            @ApiResponse(responseCode = "404", description = "Employer profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/me")
+    public ResponseEntity<List<EmployerOpportunityPostingResponse>> getMyOpportunities() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail();
+        ensureEmployerRole(authentication);
+
+        Long employerId = employerService.getCurrentByUserEmail(email).id();
+        log.info("GET /opportunities/me: email={}, employerId={}", email, employerId);
+
+        List<EmployerOpportunityPostingResponse> response = opportunityService.findByEmployerId(employerId).stream()
+                .map(EmployerOpportunityPostingMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -146,5 +176,14 @@ public class OpportunityController {
             throw new BadCredentialsException("Unauthorized");
         }
         return authentication.getName();
+    }
+
+    private static void ensureEmployerRole(Authentication authentication) {
+        boolean isEmployer = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_EMPLOYER"::equals);
+        if (!isEmployer) {
+            throw new AccessDeniedException("Forbidden");
+        }
     }
 }

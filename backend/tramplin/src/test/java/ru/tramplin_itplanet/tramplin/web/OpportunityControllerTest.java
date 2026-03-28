@@ -273,6 +273,50 @@ class OpportunityControllerTest {
                 .andExpect(jsonPath("$.error").value("Employer must have full_verified status"));
     }
 
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void getMyOpportunities_employer_returns200() throws Exception {
+        when(employerService.getCurrentByUserEmail("employer@example.com")).thenReturn(
+                new EmployerProfile(
+                        1L,
+                        10L,
+                        "Acme Corp",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "full_verified"
+                )
+        );
+        when(opportunityService.findByEmployerId(1L)).thenReturn(List.of(
+                new EmployerOpportunityPosting(
+                        12L,
+                        "Java Developer",
+                        OpportunityStatus.ACTIVE,
+                        OpportunityType.VACANCY,
+                        LocalDateTime.of(2026, 1, 1, 0, 0),
+                        LocalDateTime.of(2026, 6, 1, 0, 0),
+                        3L
+                )
+        ));
+
+        mockMvc.perform(get("/opportunities/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(12))
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
+                .andExpect(jsonPath("$[0].type").value("VACANCY"))
+                .andExpect(jsonPath("$[0].applications_count").value(3));
+    }
+
+    @Test
+    void getMyOpportunities_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(get("/opportunities/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
     private Opportunity buildOpportunity(Long id) {
         return new Opportunity(
                 id,
