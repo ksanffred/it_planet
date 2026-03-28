@@ -20,6 +20,9 @@ public record CreateApplicantRequest(
         @Schema(description = "Current field of study", example = "Software Engineering")
         String currentFieldOfStudy,
 
+        @Schema(description = "Desired position", example = "Backend Developer Intern")
+        String desiredPosition,
+
         @Schema(description = "Major", example = "Applied Informatics")
         String major,
 

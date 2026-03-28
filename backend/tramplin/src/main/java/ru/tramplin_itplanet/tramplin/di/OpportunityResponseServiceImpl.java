@@ -7,22 +7,27 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityResponseRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
+import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
 
+import java.util.Objects;
 import java.util.List;
 
 @Service
@@ -32,17 +37,20 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     private static final Logger log = LoggerFactory.getLogger(OpportunityResponseServiceImpl.class);
 
     private final JpaUserRepository jpaUserRepository;
+    private final JpaEmployerRepository jpaEmployerRepository;
     private final JpaApplicantRepository jpaApplicantRepository;
     private final JpaOpportunityRepository jpaOpportunityRepository;
     private final JpaOpportunityResponseRepository jpaOpportunityResponseRepository;
 
     public OpportunityResponseServiceImpl(
             JpaUserRepository jpaUserRepository,
+            JpaEmployerRepository jpaEmployerRepository,
             JpaApplicantRepository jpaApplicantRepository,
             JpaOpportunityRepository jpaOpportunityRepository,
             JpaOpportunityResponseRepository jpaOpportunityResponseRepository
     ) {
         this.jpaUserRepository = jpaUserRepository;
+        this.jpaEmployerRepository = jpaEmployerRepository;
         this.jpaApplicantRepository = jpaApplicantRepository;
         this.jpaOpportunityRepository = jpaOpportunityRepository;
         this.jpaOpportunityResponseRepository = jpaOpportunityResponseRepository;
@@ -93,6 +101,32 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
                 .toList();
     }
 
+    @Override
+    public List<EmployerOpportunityApplication> getApplicationsForOpportunity(Long opportunityId, String userEmail) {
+        log.info("Loading applications for opportunityId={}, userEmail={}", opportunityId, userEmail);
+        EmployerEntity employer = resolveEmployerByUserEmail(userEmail);
+
+        OpportunityEntity opportunity = jpaOpportunityRepository.findById(opportunityId)
+                .orElseThrow(() -> new OpportunityNotFoundException(opportunityId));
+
+        if (!Objects.equals(opportunity.getEmployer().getId(), employer.getId())) {
+            throw new AccessDeniedException("You can view only applications for your opportunities");
+        }
+
+        return jpaOpportunityResponseRepository.findAllByOpportunityIdWithDetails(opportunityId).stream()
+                .map(this::toEmployerApplication)
+                .toList();
+    }
+
+    @Override
+    public List<EmployerOpportunityApplication> getApplicationsForMyOpportunities(String userEmail) {
+        log.info("Loading applications for all employer opportunities, userEmail={}", userEmail);
+        EmployerEntity employer = resolveEmployerByUserEmail(userEmail);
+        return jpaOpportunityResponseRepository.findAllByEmployerIdWithDetails(employer.getId()).stream()
+                .map(this::toEmployerApplication)
+                .toList();
+    }
+
     private ApplicantEntity resolveApplicantByUserEmail(String userEmail) {
         UserEntity user = jpaUserRepository.findByEmail(userEmail)
                 .orElseThrow(() -> {
@@ -110,5 +144,40 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
                     return new ApplicantNotFoundException(user.getId());
                 });
         return applicant;
+    }
+
+    private EmployerEntity resolveEmployerByUserEmail(String userEmail) {
+        UserEntity user = jpaUserRepository.findByEmail(userEmail)
+                .orElseThrow(() -> {
+                    log.warn("Authenticated user not found by email={}", userEmail);
+                    return new BadCredentialsException("Invalid authentication token");
+                });
+
+        if (user.getRole() != UserRole.EMPLOYER) {
+            throw new AccessDeniedException("User role must be EMPLOYER");
+        }
+
+        return jpaEmployerRepository.findByUserId(user.getId())
+                .orElseThrow(() -> {
+                    log.warn("Employer profile not found for userId={}", user.getId());
+                    return new EmployerNotFoundException(user.getId());
+                });
+    }
+
+    private EmployerOpportunityApplication toEmployerApplication(OpportunityResponseEntity response) {
+        OpportunityEntity opportunity = response.getOpportunity();
+        ApplicantEntity applicant = response.getApplicant();
+        return new EmployerOpportunityApplication(
+                response.getId(),
+                opportunity.getId(),
+                opportunity.getTitle(),
+                opportunity.getEmployer().getName(),
+                opportunity.getType(),
+                opportunity.getStatus(),
+                applicant.getId(),
+                applicant.getName(),
+                response.getStatus(),
+                response.getCreatedAt()
+        );
     }
 }

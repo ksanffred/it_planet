@@ -7,6 +7,7 @@ public record CreateApplicantCommand(
         String university,
         String faculty,
         String currentFieldOfStudy,
+        String desiredPosition,
         String major,
         Integer graduationYear,
         String additionalEducationDetails,

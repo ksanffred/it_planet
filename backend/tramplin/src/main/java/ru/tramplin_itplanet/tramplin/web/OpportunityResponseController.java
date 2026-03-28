@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
+import ru.tramplin_itplanet.tramplin.web.dto.EmployerOpportunityApplicationItem;
 import ru.tramplin_itplanet.tramplin.web.dto.MyOpportunityResponseItem;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityResponseCreatedResponse;
+import ru.tramplin_itplanet.tramplin.web.mapper.EmployerOpportunityApplicationMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.MyOpportunityResponseItemMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityResponseMapper;
 
@@ -95,6 +97,58 @@ public class OpportunityResponseController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "Get applications for one employer opportunity",
+            description = "Returns all applications for a specific opportunity owned by current employer."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Applications returned"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an employer or not owner of opportunity"),
+            @ApiResponse(responseCode = "404", description = "Opportunity or employer profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{opportunityId}/responses")
+    public ResponseEntity<List<EmployerOpportunityApplicationItem>> applicationsByOpportunity(
+            @Parameter(description = "Opportunity id", example = "10")
+            @PathVariable Long opportunityId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureEmployerRole(authentication);
+
+        log.info("GET /opportunities/{}/responses: email={}", opportunityId, email);
+        List<EmployerOpportunityApplicationItem> response =
+                opportunityResponseService.getApplicationsForOpportunity(opportunityId, email).stream()
+                        .map(EmployerOpportunityApplicationMapper::toResponse)
+                        .toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Get applications for all current employer opportunities",
+            description = "Returns all applications across all opportunities owned by current employer."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Applications returned"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an employer"),
+            @ApiResponse(responseCode = "404", description = "Employer profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/responses/employer")
+    public ResponseEntity<List<EmployerOpportunityApplicationItem>> applicationsForEmployer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureEmployerRole(authentication);
+
+        log.info("GET /opportunities/responses/employer: email={}", email);
+        List<EmployerOpportunityApplicationItem> response =
+                opportunityResponseService.getApplicationsForMyOpportunities(email).stream()
+                        .map(EmployerOpportunityApplicationMapper::toResponse)
+                        .toList();
+        return ResponseEntity.ok(response);
+    }
+
     private static String authenticatedEmail(Authentication authentication) {
         if (authentication == null
                 || authentication.getName() == null
@@ -109,6 +163,15 @@ public class OpportunityResponseController {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("ROLE_APPLICANT"::equals);
         if (!isApplicant) {
+            throw new AccessDeniedException("Forbidden");
+        }
+    }
+
+    private static void ensureEmployerRole(Authentication authentication) {
+        boolean isEmployer = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_EMPLOYER"::equals);
+        if (!isEmployer) {
             throw new AccessDeniedException("Forbidden");
         }
     }

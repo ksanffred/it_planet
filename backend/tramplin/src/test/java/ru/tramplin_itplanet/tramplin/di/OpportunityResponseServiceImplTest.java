@@ -14,12 +14,14 @@ import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityResponseRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
@@ -43,6 +45,9 @@ class OpportunityResponseServiceImplTest {
 
     @Mock
     private JpaApplicantRepository jpaApplicantRepository;
+
+    @Mock
+    private JpaEmployerRepository jpaEmployerRepository;
 
     @Mock
     private JpaOpportunityRepository jpaOpportunityRepository;
@@ -160,6 +165,86 @@ class OpportunityResponseServiceImplTest {
         assertThat(result.getFirst().responseStatus()).isEqualTo(OpportunityResponseStatus.NOT_REVIEWED);
         assertThat(result.getFirst().opportunityType()).isEqualTo(OpportunityType.VACANCY);
         assertThat(result.getFirst().opportunityStatus()).isEqualTo(OpportunityStatus.ACTIVE);
+    }
+
+    @Test
+    void getApplicationsForOpportunity_ownedOpportunity_returnsApplications() {
+        UserEntity user = buildUser(21L, "employer@example.com", UserRole.EMPLOYER);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(7L);
+        employer.setUserId(21L);
+        employer.setName("Acme Corp");
+
+        ApplicantEntity applicant = buildApplicant(3L, 12L);
+        applicant.setName("Ivan Ivanov");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setEmployer(employer);
+
+        OpportunityResponseEntity response = new OpportunityResponseEntity();
+        response.setId(15L);
+        response.setOpportunity(opportunity);
+        response.setApplicant(applicant);
+        response.setStatus(OpportunityResponseStatus.NOT_REVIEWED);
+        response.setCreatedAt(LocalDateTime.of(2026, 3, 28, 14, 0));
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
+        when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
+        when(jpaOpportunityRepository.findById(10L)).thenReturn(Optional.of(opportunity));
+        when(jpaOpportunityResponseRepository.findAllByOpportunityIdWithDetails(10L)).thenReturn(List.of(response));
+
+        List<EmployerOpportunityApplication> result =
+                opportunityResponseService.getApplicationsForOpportunity(10L, "employer@example.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().responseId()).isEqualTo(15L);
+        assertThat(result.getFirst().opportunityId()).isEqualTo(10L);
+        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
+        assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
+        assertThat(result.getFirst().applicantId()).isEqualTo(3L);
+        assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
+    }
+
+    @Test
+    void getApplicationsForMyOpportunities_employer_returnsApplications() {
+        UserEntity user = buildUser(21L, "employer@example.com", UserRole.EMPLOYER);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(7L);
+        employer.setUserId(21L);
+        employer.setName("Acme Corp");
+
+        ApplicantEntity applicant = buildApplicant(3L, 12L);
+        applicant.setName("Ivan Ivanov");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setEmployer(employer);
+
+        OpportunityResponseEntity response = new OpportunityResponseEntity();
+        response.setId(15L);
+        response.setOpportunity(opportunity);
+        response.setApplicant(applicant);
+        response.setStatus(OpportunityResponseStatus.NOT_REVIEWED);
+        response.setCreatedAt(LocalDateTime.of(2026, 3, 28, 14, 0));
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
+        when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
+        when(jpaOpportunityResponseRepository.findAllByEmployerIdWithDetails(7L)).thenReturn(List.of(response));
+
+        List<EmployerOpportunityApplication> result =
+                opportunityResponseService.getApplicationsForMyOpportunities("employer@example.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().opportunityId()).isEqualTo(10L);
+        assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
+        assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {

@@ -74,6 +74,7 @@ class ApplicantServiceImplTest {
                 "RANEPA",
                 "IT",
                 "Software Engineering",
+                "Backend Developer Intern",
                 "Applied Informatics",
                 2027,
                 "ML course",
@@ -97,7 +98,7 @@ class ApplicantServiceImplTest {
         when(jpaUserRepository.findById(12L)).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> applicantService.create(new CreateApplicantCommand(
-                12L, null, null, null, null, null, null, null, null, List.of()
+                12L, null, null, null, null, null, null, null, null, null, List.of()
         )))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("APPLICANT");
@@ -113,7 +114,7 @@ class ApplicantServiceImplTest {
         when(jpaApplicantRepository.findByUserIdWithSkills(12L)).thenReturn(Optional.of(new ApplicantEntity()));
 
         assertThatThrownBy(() -> applicantService.create(new CreateApplicantCommand(
-                12L, null, null, null, null, null, null, null, null, List.of()
+                12L, null, null, null, null, null, null, null, null, null, List.of()
         )))
                 .isInstanceOf(ApplicantAlreadyExistsException.class);
     }
@@ -161,6 +162,7 @@ class ApplicantServiceImplTest {
                 "RANEPA",
                 "IT",
                 "Software Engineering",
+                "Backend Developer Intern",
                 "Applied Informatics",
                 2027,
                 "ML course",
@@ -187,7 +189,7 @@ class ApplicantServiceImplTest {
         when(jpaUserRepository.findById(12L)).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> applicantService.update(1L, new UpdateApplicantCommand(
-                12L, "Name", null, null, null, null, null, null, null, null, List.of()
+                12L, "Name", null, null, null, null, null, null, null, null, null, List.of()
         )))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("APPLICANT");
@@ -250,6 +252,7 @@ class ApplicantServiceImplTest {
                         "RANEPA",
                         "IT",
                         "Software Engineering",
+                        "Backend Developer Intern",
                         "Applied Informatics",
                         2027,
                         "ML course",

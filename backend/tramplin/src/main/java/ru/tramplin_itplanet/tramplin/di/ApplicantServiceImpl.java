@@ -72,6 +72,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         entity.setUniversity(command.university());
         entity.setFaculty(command.faculty());
         entity.setCurrentFieldOfStudy(command.currentFieldOfStudy());
+        entity.setDesiredPosition(command.desiredPosition());
         entity.setMajor(command.major());
         entity.setGraduationYear(command.graduationYear());
         entity.setAdditionalEducationDetails(command.additionalEducationDetails());
@@ -130,6 +131,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         entity.setUniversity(command.university());
         entity.setFaculty(command.faculty());
         entity.setCurrentFieldOfStudy(command.currentFieldOfStudy());
+        entity.setDesiredPosition(command.desiredPosition());
         entity.setMajor(command.major());
         entity.setGraduationYear(command.graduationYear());
         entity.setAdditionalEducationDetails(command.additionalEducationDetails());
@@ -156,6 +158,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         entity.setUniversity(command.university());
         entity.setFaculty(command.faculty());
         entity.setCurrentFieldOfStudy(command.currentFieldOfStudy());
+        entity.setDesiredPosition(command.desiredPosition());
         entity.setMajor(command.major());
         entity.setGraduationYear(command.graduationYear());
         entity.setAdditionalEducationDetails(command.additionalEducationDetails());
@@ -194,6 +197,7 @@ public class ApplicantServiceImpl implements ApplicantService {
                 entity.getUniversity(),
                 entity.getFaculty(),
                 entity.getCurrentFieldOfStudy(),
+                entity.getDesiredPosition(),
                 entity.getMajor(),
                 entity.getGraduationYear(),
                 entity.getAdditionalEducationDetails(),

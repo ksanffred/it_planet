@@ -25,6 +25,9 @@ public class ApplicantEntity {
     @Column(name = "current_field_of_study")
     private String currentFieldOfStudy;
 
+    @Column(name = "desired_position")
+    private String desiredPosition;
+
     private String major;
 
     @Column(name = "graduation_year")
@@ -64,6 +67,9 @@ public class ApplicantEntity {
 
     public String getCurrentFieldOfStudy() { return currentFieldOfStudy; }
     public void setCurrentFieldOfStudy(String currentFieldOfStudy) { this.currentFieldOfStudy = currentFieldOfStudy; }
+
+    public String getDesiredPosition() { return desiredPosition; }
+    public void setDesiredPosition(String desiredPosition) { this.desiredPosition = desiredPosition; }
 
     public String getMajor() { return major; }
     public void setMajor(String major) { this.major = major; }
