@@ -18,6 +18,7 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavorites;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavoriteOpportunityCard;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantFavoriteService;
 
@@ -64,20 +65,22 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
     public ApplicantFavorites removeOneByUserEmail(String email, Long opportunityId) {
         log.info("Removing one favorite for email={}, opportunityId={}", email, opportunityId);
 
-        UserEntity user = resolveAuthenticatedUserByEmail(email);
-        ensureApplicantRole(user);
-
-        ApplicantEntity applicant = jpaApplicantRepository.findByUserIdWithSkills(user.getId())
-                .orElseThrow(() -> {
-                    log.warn("Applicant profile not found for userId={}", user.getId());
-                    return new ApplicantNotFoundException(user.getId());
-                });
+        ApplicantEntity applicant = resolveApplicantByUserEmail(email);
 
         jpaApplicantFavoriteOpportunityRepository.deleteById(
                 new ApplicantFavoriteOpportunityId(applicant.getId(), opportunityId)
         );
 
         return currentFavorites(applicant.getId());
+    }
+
+    @Override
+    public List<ApplicantFavoriteOpportunityCard> getCardsByUserEmail(String email) {
+        log.info("Loading favorite opportunity cards for email={}", email);
+        ApplicantEntity applicant = resolveApplicantByUserEmail(email);
+        return jpaApplicantFavoriteOpportunityRepository.findAllByApplicantIdWithOpportunity(applicant.getId()).stream()
+                .map(this::toFavoriteCard)
+                .toList();
     }
 
     @Override
@@ -147,6 +150,16 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
         }
     }
 
+    private ApplicantEntity resolveApplicantByUserEmail(String email) {
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+        ensureApplicantRole(user);
+        return jpaApplicantRepository.findByUserIdWithSkills(user.getId())
+                .orElseThrow(() -> {
+                    log.warn("Applicant profile not found for userId={}", user.getId());
+                    return new ApplicantNotFoundException(user.getId());
+                });
+    }
+
     private ApplicantFavorites currentFavorites(Long applicantId) {
         List<Long> ids = jpaApplicantFavoriteOpportunityRepository.findOpportunityIdsByApplicantId(applicantId);
         return new ApplicantFavorites(applicantId, ids);
@@ -174,5 +187,15 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
         entity.setOpportunity(opportunity);
         entity.setCreatedAt(LocalDateTime.now());
         return entity;
+    }
+
+    private ApplicantFavoriteOpportunityCard toFavoriteCard(ApplicantFavoriteOpportunityEntity favorite) {
+        OpportunityEntity opportunity = favorite.getOpportunity();
+        return new ApplicantFavoriteOpportunityCard(
+                opportunity.getTitle(),
+                opportunity.getEmployer().getName(),
+                opportunity.getStatus(),
+                opportunity.getType()
+        );
     }
 }

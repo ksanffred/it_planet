@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantFavoriteService;
 import ru.tramplin_itplanet.tramplin.web.dto.AddFavoritesRequest;
+import ru.tramplin_itplanet.tramplin.web.dto.ApplicantFavoriteOpportunityCardResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.ApplicantFavoritesResponse;
+import ru.tramplin_itplanet.tramplin.web.mapper.ApplicantFavoriteOpportunityCardMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.ApplicantFavoritesMapper;
+
+import java.util.List;
 
 @Tag(name = "Applicant Favorites", description = "Favorites for applicant users")
 @RestController
@@ -93,6 +98,32 @@ public class ApplicantFavoriteController {
         ApplicantFavoritesResponse response = ApplicantFavoritesMapper.toResponse(
                 applicantFavoriteService.addManyByUserEmail(email, request.opportunityIds())
         );
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Get current applicant favorite opportunity cards",
+            description = "Returns title, company_name, status and type for each favorite card."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Favorite cards returned"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an applicant"),
+            @ApiResponse(responseCode = "404", description = "Applicant profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping
+    public ResponseEntity<List<ApplicantFavoriteOpportunityCardResponse>> getCards() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureApplicantRole(authentication);
+
+        log.info("GET /applicants/me/favorites/opportunities: email={}", email);
+
+        List<ApplicantFavoriteOpportunityCardResponse> response = applicantFavoriteService.getCardsByUserEmail(email)
+                .stream()
+                .map(ApplicantFavoriteOpportunityCardMapper::toResponse)
+                .toList();
         return ResponseEntity.ok(response);
     }
 

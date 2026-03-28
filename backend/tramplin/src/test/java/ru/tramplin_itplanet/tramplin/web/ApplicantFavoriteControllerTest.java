@@ -8,7 +8,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavoriteOpportunityCard;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavorites;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantFavoriteService;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,5 +128,32 @@ class ApplicantFavoriteControllerTest {
     void removeOne_nonApplicantRole_returns403() throws Exception {
         mockMvc.perform(delete("/applicants/me/favorites/opportunities/10"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void getCards_validApplicant_returns200() throws Exception {
+        when(applicantFavoriteService.getCardsByUserEmail("applicant@example.com"))
+                .thenReturn(List.of(
+                        new ApplicantFavoriteOpportunityCard(
+                                "Java Developer",
+                                "Acme Corp",
+                                OpportunityStatus.ACTIVE,
+                                OpportunityType.VACANCY
+                        )
+                ));
+
+        mockMvc.perform(get("/applicants/me/favorites/opportunities"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
+                .andExpect(jsonPath("$[0].type").value("VACANCY"));
+    }
+
+    @Test
+    void getCards_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(get("/applicants/me/favorites/opportunities"))
+                .andExpect(status().isUnauthorized());
     }
 }
