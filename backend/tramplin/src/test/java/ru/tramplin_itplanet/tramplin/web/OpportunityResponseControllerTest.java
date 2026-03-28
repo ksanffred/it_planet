@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
@@ -120,5 +121,70 @@ class OpportunityResponseControllerTest {
     void myResponses_withoutAuthentication_returns401() throws Exception {
         mockMvc.perform(get("/opportunities/responses/me"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void applicationsByOpportunity_employer_returns200() throws Exception {
+        when(opportunityResponseService.getApplicationsForOpportunity(10L, "employer@example.com"))
+                .thenReturn(List.of(
+                        new EmployerOpportunityApplication(
+                                15L,
+                                10L,
+                                "Java Developer",
+                                "Acme Corp",
+                                OpportunityType.VACANCY,
+                                OpportunityStatus.ACTIVE,
+                                3L,
+                                "Ivan Ivanov",
+                                OpportunityResponseStatus.NOT_REVIEWED,
+                                LocalDateTime.of(2026, 3, 28, 14, 0)
+                        )
+                ));
+
+        mockMvc.perform(get("/opportunities/10/responses"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].responseId").value(15))
+                .andExpect(jsonPath("$[0].opportunityId").value(10))
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].response_status").value("NOT_REVIEWED"))
+                .andExpect(jsonPath("$[0].opportunity_type").value("VACANCY"))
+                .andExpect(jsonPath("$[0].opportunity_status").value("ACTIVE"))
+                .andExpect(jsonPath("$[0].applicant_id").value(3))
+                .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"));
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void applicationsForEmployer_employer_returns200() throws Exception {
+        when(opportunityResponseService.getApplicationsForMyOpportunities("employer@example.com"))
+                .thenReturn(List.of(
+                        new EmployerOpportunityApplication(
+                                15L,
+                                10L,
+                                "Java Developer",
+                                "Acme Corp",
+                                OpportunityType.VACANCY,
+                                OpportunityStatus.ACTIVE,
+                                3L,
+                                "Ivan Ivanov",
+                                OpportunityResponseStatus.NOT_REVIEWED,
+                                LocalDateTime.of(2026, 3, 28, 14, 0)
+                        )
+                ));
+
+        mockMvc.perform(get("/opportunities/responses/employer"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].responseId").value(15))
+                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"));
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void applicationsForEmployer_applicantRole_returns403() throws Exception {
+        mockMvc.perform(get("/opportunities/responses/employer"))
+                .andExpect(status().isForbidden());
     }
 }

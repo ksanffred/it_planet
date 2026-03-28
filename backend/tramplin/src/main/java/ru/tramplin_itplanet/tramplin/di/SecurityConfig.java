@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/applicants/me/favorites/opportunities/**").hasRole("APPLICANT")
                         .requestMatchers(HttpMethod.DELETE, "/applicants/me/favorites/opportunities/**").hasRole("APPLICANT")
                         .requestMatchers(HttpMethod.GET, "/opportunities/responses/me").hasRole("APPLICANT")
+                        .requestMatchers(HttpMethod.GET, "/opportunities/responses/employer").hasRole("EMPLOYER")
+                        .requestMatchers(HttpMethod.GET, "/opportunities/*/responses").hasRole("EMPLOYER")
                         .requestMatchers(HttpMethod.POST, "/opportunities/*/responses").hasRole("APPLICANT")
                         .requestMatchers(HttpMethod.POST, "/applicants").hasRole("APPLICANT")
                         .requestMatchers(HttpMethod.POST, "/applicants/*").hasRole("APPLICANT")

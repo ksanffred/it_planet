@@ -16,4 +16,20 @@ public interface JpaOpportunityResponseRepository extends JpaRepository<Opportun
            "WHERE r.applicant.id = :applicantId " +
            "ORDER BY r.createdAt DESC, r.id DESC")
     List<OpportunityResponseEntity> findAllByApplicantIdWithOpportunity(@Param("applicantId") Long applicantId);
+
+    @Query("SELECT r FROM OpportunityResponseEntity r " +
+           "JOIN FETCH r.applicant " +
+           "JOIN FETCH r.opportunity o " +
+           "JOIN FETCH o.employer " +
+           "WHERE o.id = :opportunityId " +
+           "ORDER BY r.createdAt DESC, r.id DESC")
+    List<OpportunityResponseEntity> findAllByOpportunityIdWithDetails(@Param("opportunityId") Long opportunityId);
+
+    @Query("SELECT r FROM OpportunityResponseEntity r " +
+           "JOIN FETCH r.applicant " +
+           "JOIN FETCH r.opportunity o " +
+           "JOIN FETCH o.employer " +
+           "WHERE o.employer.id = :employerId " +
+           "ORDER BY r.createdAt DESC, r.id DESC")
+    List<OpportunityResponseEntity> findAllByEmployerIdWithDetails(@Param("employerId") Long employerId);
 }
