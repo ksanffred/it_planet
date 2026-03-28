@@ -9,9 +9,7 @@ definePageMeta({
 
 <template>
   <BaseBackButton class="back-button" />
-
-  <div class="auth__wrapper">
-    <NuxtImg src="/media/images/loginPanel.webp" />
+  <AuthWrapper>
     <div class="auth__card bordered">
       <BaseAppLogo class="auth__logo" />
       <hgroup class="auth__title-group">
@@ -58,20 +56,11 @@ definePageMeta({
         Нет аккаунта? <NuxtLink to="/registration">Зарегестрироваться</NuxtLink>
       </p>
     </div>
-  </div>
+  </AuthWrapper>
 </template>
 
 <style lang="scss" scoped>
 .auth {
-  &__wrapper {
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    align-items: center;
-    gap: 15px;
-    justify-content: center;
-  }
-
   &__label {
     display: flex;
     flex-direction: column;
