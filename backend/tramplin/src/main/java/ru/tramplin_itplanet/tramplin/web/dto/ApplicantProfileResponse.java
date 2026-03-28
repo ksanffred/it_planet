@@ -39,6 +39,9 @@ public record ApplicantProfileResponse(
         @Schema(description = "Portfolio link")
         String portfolioUrl,
 
+        @Schema(description = "Avatar image object path or public URL")
+        String avatarUrl,
+
         @Schema(description = "Resume PDF object path or public URL")
         String resumeUrl,
 

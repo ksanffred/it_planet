@@ -9,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContact;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactPreview;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactStatus;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantContactService;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -89,5 +91,23 @@ class ApplicantContactControllerTest {
     void create_nonApplicantRole_returns403() throws Exception {
         mockMvc.perform(post("/applicants/me/contacts/7"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void getMyContacts_validApplicant_returns200() throws Exception {
+        when(applicantContactService.getMyContacts("applicant@example.com")).thenReturn(
+                java.util.List.of(new ApplicantContactPreview(
+                        "https://cdn.example.com/photos/user1.jpg",
+                        "Ivan Ivanov",
+                        "Backend Developer Intern"
+                ))
+        );
+
+        mockMvc.perform(get("/applicants/me/contacts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].photo").value("https://cdn.example.com/photos/user1.jpg"))
+                .andExpect(jsonPath("$[0].name").value("Ivan Ivanov"))
+                .andExpect(jsonPath("$[0].desired_profession").value("Backend Developer Intern"));
     }
 }

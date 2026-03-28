@@ -202,6 +202,7 @@ public class ApplicantServiceImpl implements ApplicantService {
                 entity.getGraduationYear(),
                 entity.getAdditionalEducationDetails(),
                 entity.getPortfolioUrl(),
+                entity.getAvatarUrl(),
                 entity.getResumeUrl(),
                 skills
         );

@@ -90,4 +90,20 @@ public class MediaController {
         log.info("POST /applicants/{}/resume", applicantId);
         return ResponseEntity.status(HttpStatus.CREATED).body(mediaService.uploadApplicantResume(applicantId, file));
     }
+
+    @Operation(summary = "Upload applicant avatar", description = "Uploads an image to S3 and saves object path to applicants.avatar_url")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Applicant avatar uploaded"),
+            @ApiResponse(responseCode = "400", description = "Invalid image file",
+                    content = @Content(schema = @Schema(example = "{\"status\":400,\"error\":\"Only image files are allowed\"}"))),
+            @ApiResponse(responseCode = "404", description = "Applicant not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping(value = "/applicants/{applicantId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MediaUploadResponse> uploadApplicantAvatar(@PathVariable Long applicantId,
+                                                                     @RequestParam("file") MultipartFile file) {
+        log.info("POST /applicants/{}/avatar", applicantId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mediaService.uploadApplicantAvatar(applicantId, file));
+    }
 }
