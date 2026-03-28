@@ -13,7 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
 import ru.tramplin_itplanet.tramplin.web.dto.CreateOpportunityRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityCardResponse;
@@ -34,9 +38,11 @@ public class OpportunityController {
     private static final Logger log = LoggerFactory.getLogger(OpportunityController.class);
 
     private final OpportunityService opportunityService;
+    private final EmployerService employerService;
 
-    public OpportunityController(OpportunityService opportunityService) {
+    public OpportunityController(OpportunityService opportunityService, EmployerService employerService) {
         this.opportunityService = opportunityService;
+        this.employerService = employerService;
     }
 
     @Operation(
@@ -85,12 +91,16 @@ public class OpportunityController {
                     content = @Content(schema = @Schema(example = "{\"status\":400,\"errors\":[\"title: must not be blank\"]}"))),
             @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token",
                     content = @Content(schema = @Schema(example = "{\"status\":401,\"error\":\"Unauthorized\"}"))),
+            @ApiResponse(responseCode = "403", description = "Only full_verified employer owner can create opportunity",
+                    content = @Content(schema = @Schema(example = "{\"status\":403,\"error\":\"Employer must have full_verified status\"}"))),
             @ApiResponse(responseCode = "404", description = "Referenced employer not found",
                     content = @Content(schema = @Schema(example = "{\"status\":404,\"error\":\"Employer not found with id: 5\"}")))
     })
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<OpportunityCardResponse> create(@Valid @RequestBody CreateOpportunityRequest request) {
+        String email = authenticatedEmail();
+        employerService.assertCanManageOpportunities(email, request.employerId());
         log.info("POST /opportunities: title={}, type={}, employerId={}", request.title(), request.type(), request.employerId());
         OpportunityCardResponse response = OpportunityCardMapper.toResponse(
                 opportunityService.create(CreateOpportunityRequestMapper.toCommand(request))
@@ -108,6 +118,8 @@ public class OpportunityController {
                     content = @Content(schema = @Schema(example = "{\"status\":400,\"errors\":[\"title: must not be blank\"]}"))),
             @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token",
                     content = @Content(schema = @Schema(example = "{\"status\":401,\"error\":\"Unauthorized\"}"))),
+            @ApiResponse(responseCode = "403", description = "Only full_verified employer owner can update opportunity",
+                    content = @Content(schema = @Schema(example = "{\"status\":403,\"error\":\"Employer must have full_verified status\"}"))),
             @ApiResponse(responseCode = "404", description = "Opportunity or referenced employer not found",
                     content = @Content(schema = @Schema(example = "{\"status\":404,\"error\":\"Opportunity not found with id: 5\"}")))
     })
@@ -117,10 +129,22 @@ public class OpportunityController {
             @Parameter(description = "ID of the opportunity", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody UpdateOpportunityRequest request) {
+        String email = authenticatedEmail();
+        employerService.assertCanManageOpportunities(email, request.employerId());
         log.info("PUT /opportunities/{}: title={}, type={}, employerId={}", id, request.title(), request.type(), request.employerId());
         OpportunityCardResponse response = OpportunityCardMapper.toResponse(
                 opportunityService.update(id, UpdateOpportunityRequestMapper.toCommand(request))
         );
         return ResponseEntity.ok(response);
+    }
+
+    private static String authenticatedEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || authentication.getName() == null
+                || "anonymousUser".equals(authentication.getName())) {
+            throw new BadCredentialsException("Unauthorized");
+        }
+        return authentication.getName();
     }
 }

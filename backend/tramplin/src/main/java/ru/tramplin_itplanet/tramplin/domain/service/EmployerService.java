@@ -9,4 +9,5 @@ public interface EmployerService {
     EmployerProfile getById(Long id);
     EmployerProfile getCurrentByUserEmail(String email);
     EmployerProfile updateCurrentByUserEmail(String email, UpdateEmployerCommand command);
+    void assertCanManageOpportunities(String email, Long employerId);
 }

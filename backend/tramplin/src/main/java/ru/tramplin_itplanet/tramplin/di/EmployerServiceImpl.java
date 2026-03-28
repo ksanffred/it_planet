@@ -2,6 +2,7 @@ package ru.tramplin_itplanet.tramplin.di;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
@@ -13,7 +14,10 @@ import ru.tramplin_itplanet.tramplin.domain.exception.UserNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateEmployerCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerProfile;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateEmployerCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
+
+import java.util.Objects;
 
 @Service
 public class EmployerServiceImpl implements EmployerService {
@@ -22,6 +26,7 @@ public class EmployerServiceImpl implements EmployerService {
     private static final String STATUS_PENDING = "pending";
     private static final String STATUS_AUTO_VERIFIED = "auto_verified";
     private static final String STATUS_AUTO_REJECTED = "auto_rejected";
+    private static final String STATUS_FULL_VERIFIED = "full_verified";
 
     private final JpaEmployerRepository jpaEmployerRepository;
     private final JpaUserRepository jpaUserRepository;
@@ -86,6 +91,28 @@ public class EmployerServiceImpl implements EmployerService {
 
         EmployerEntity updated = jpaEmployerRepository.save(entity);
         return toProfile(updated);
+    }
+
+    @Override
+    public void assertCanManageOpportunities(String email, Long employerId) {
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+
+        if (user.getRole() != UserRole.EMPLOYER) {
+            log.warn("Access denied for opportunity management: role={}, email={}", user.getRole(), email);
+            throw new AccessDeniedException("Only EMPLOYER users can manage opportunities");
+        }
+
+        EmployerEntity employer = findEmployerByUserId(user.getId());
+        if (!Objects.equals(employer.getId(), employerId)) {
+            log.warn("Access denied for opportunity management: requestedEmployerId={}, actualEmployerId={}, email={}",
+                    employerId, employer.getId(), email);
+            throw new AccessDeniedException("You can manage only opportunities of your employer profile");
+        }
+
+        if (!STATUS_FULL_VERIFIED.equals(employer.getStatus())) {
+            log.warn("Access denied for opportunity management: employerId={}, status={}", employer.getId(), employer.getStatus());
+            throw new AccessDeniedException("Employer must have full_verified status");
+        }
     }
 
     private static EmployerProfile toProfile(EmployerEntity entity) {
