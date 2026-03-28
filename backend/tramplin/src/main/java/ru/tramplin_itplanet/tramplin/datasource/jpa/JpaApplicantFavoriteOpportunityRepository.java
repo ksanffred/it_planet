@@ -15,4 +15,11 @@ public interface JpaApplicantFavoriteOpportunityRepository
            "WHERE f.id.applicantId = :applicantId " +
            "ORDER BY f.createdAt DESC, f.id.opportunityId DESC")
     List<Long> findOpportunityIdsByApplicantId(@Param("applicantId") Long applicantId);
+
+    @Query("SELECT f FROM ApplicantFavoriteOpportunityEntity f " +
+           "JOIN FETCH f.opportunity o " +
+           "JOIN FETCH o.employer " +
+           "WHERE f.id.applicantId = :applicantId " +
+           "ORDER BY f.createdAt DESC, f.id.opportunityId DESC")
+    List<ApplicantFavoriteOpportunityEntity> findAllByApplicantIdWithOpportunity(@Param("applicantId") Long applicantId);
 }

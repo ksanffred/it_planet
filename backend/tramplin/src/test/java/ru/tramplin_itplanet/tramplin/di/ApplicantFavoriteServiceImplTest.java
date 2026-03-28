@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantFavoriteOpportunityEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantFavoriteOpportunityRepository;
@@ -18,6 +19,9 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavorites;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavoriteOpportunityCard;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 
 import java.util.List;
@@ -173,6 +177,37 @@ class ApplicantFavoriteServiceImplTest {
                 .deleteById(org.mockito.ArgumentMatchers.argThat(id ->
                         id.getApplicantId().equals(1L) && id.getOpportunityId().equals(10L)
                 ));
+    }
+
+    @Test
+    void getCardsByUserEmail_existingFavorites_returnsCardSummaries() {
+        UserEntity user = buildUser(12L, "applicant@example.com", UserRole.APPLICANT);
+        ApplicantEntity applicant = buildApplicant(1L, 12L);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setName("Acme Corp");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setEmployer(employer);
+
+        ApplicantFavoriteOpportunityEntity favorite = new ApplicantFavoriteOpportunityEntity();
+        favorite.setOpportunity(opportunity);
+
+        when(jpaUserRepository.findByEmail("applicant@example.com")).thenReturn(Optional.of(user));
+        when(jpaApplicantRepository.findByUserIdWithSkills(12L)).thenReturn(Optional.of(applicant));
+        when(jpaApplicantFavoriteOpportunityRepository.findAllByApplicantIdWithOpportunity(1L))
+                .thenReturn(List.of(favorite));
+
+        List<ApplicantFavoriteOpportunityCard> result = applicantFavoriteService.getCardsByUserEmail("applicant@example.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
+        assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
+        assertThat(result.getFirst().status()).isEqualTo(OpportunityStatus.ACTIVE);
+        assertThat(result.getFirst().type()).isEqualTo(OpportunityType.VACANCY);
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {
