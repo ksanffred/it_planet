@@ -12,6 +12,7 @@ import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.*;
+import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
 
 import java.math.BigDecimal;
@@ -19,6 +20,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,6 +38,9 @@ class OpportunityControllerTest {
 
     @MockitoBean
     private OpportunityService opportunityService;
+
+    @MockitoBean
+    private EmployerService employerService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -113,8 +120,9 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void create_validRequest_returns201WithCreatedCard() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 1L);
         when(opportunityService.create(any())).thenReturn(buildOpportunity(1L));
 
         mockMvc.perform(post("/opportunities")
@@ -135,7 +143,7 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void create_missingRequiredFields_returns400() throws Exception {
         mockMvc.perform(post("/opportunities")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -146,8 +154,9 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void create_unknownEmployerId_returns404() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 99L);
         when(opportunityService.create(any())).thenThrow(new EmployerNotFoundException(99L));
 
         mockMvc.perform(post("/opportunities")
@@ -166,8 +175,9 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void update_validRequest_returns200WithUpdatedCard() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 1L);
         when(opportunityService.update(any(), any())).thenReturn(buildOpportunity(1L));
 
         mockMvc.perform(put("/opportunities/1")
@@ -188,7 +198,7 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void update_missingRequiredFields_returns400() throws Exception {
         mockMvc.perform(put("/opportunities/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -199,8 +209,9 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void update_nonExistingOpportunity_returns404() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 1L);
         when(opportunityService.update(any(), any())).thenThrow(new OpportunityNotFoundException(99L));
 
         mockMvc.perform(put("/opportunities/99")
@@ -216,6 +227,47 @@ class OpportunityControllerTest {
                                 """))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Opportunity not found with id: 99"));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com", roles = "USER")
+    void create_nonEmployerRole_returns403() throws Exception {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Only EMPLOYER users can manage opportunities"))
+                .when(employerService).assertCanManageOpportunities(eq("user@example.com"), eq(1L));
+
+        mockMvc.perform(post("/opportunities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void update_notFullVerifiedEmployer_returns403() throws Exception {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Employer must have full_verified status"))
+                .when(employerService).assertCanManageOpportunities(eq("employer@example.com"), eq(1L));
+
+        mockMvc.perform(put("/opportunities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Employer must have full_verified status"));
     }
 
     private Opportunity buildOpportunity(Long id) {

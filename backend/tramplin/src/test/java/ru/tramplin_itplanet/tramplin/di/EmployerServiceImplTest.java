@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
@@ -250,5 +251,57 @@ class EmployerServiceImplTest {
         assertThat(result.website()).isEqualTo("https://acme.com");
         assertThat(result.socials()).isEqualTo("@acme_hr");
         assertThat(result.logoUrl()).isEqualTo("https://acme.com/logo.png");
+    }
+
+    @Test
+    void assertCanManageOpportunities_fullVerifiedEmployerOwner_allowsAccess() {
+        UserEntity user = new UserEntity();
+        ReflectionTestUtils.setField(user, "id", 30L);
+        user.setEmail("employer@example.com");
+        user.setRole(ru.tramplin_itplanet.tramplin.domain.model.UserRole.EMPLOYER);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(77L);
+        employer.setUserId(30L);
+        employer.setStatus("full_verified");
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
+        when(jpaEmployerRepository.findByUserId(30L)).thenReturn(Optional.of(employer));
+
+        employerService.assertCanManageOpportunities("employer@example.com", 77L);
+    }
+
+    @Test
+    void assertCanManageOpportunities_notEmployerRole_throwsForbidden() {
+        UserEntity user = new UserEntity();
+        ReflectionTestUtils.setField(user, "id", 31L);
+        user.setEmail("user@example.com");
+        user.setRole(ru.tramplin_itplanet.tramplin.domain.model.UserRole.USER);
+
+        when(jpaUserRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> employerService.assertCanManageOpportunities("user@example.com", 77L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Only EMPLOYER users can manage opportunities");
+    }
+
+    @Test
+    void assertCanManageOpportunities_notFullVerified_throwsForbidden() {
+        UserEntity user = new UserEntity();
+        ReflectionTestUtils.setField(user, "id", 32L);
+        user.setEmail("employer@example.com");
+        user.setRole(ru.tramplin_itplanet.tramplin.domain.model.UserRole.EMPLOYER);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(78L);
+        employer.setUserId(32L);
+        employer.setStatus("pending");
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
+        when(jpaEmployerRepository.findByUserId(32L)).thenReturn(Optional.of(employer));
+
+        assertThatThrownBy(() -> employerService.assertCanManageOpportunities("employer@example.com", 78L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("full_verified");
     }
 }
