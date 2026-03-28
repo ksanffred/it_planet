@@ -98,21 +98,32 @@ public class ApplicantContactServiceImpl implements ApplicantContactService {
         log.info("Loading applicant contacts: userEmail={}", userEmail);
         ApplicantEntity currentApplicant = resolveCurrentApplicant(userEmail);
 
-        return jpaApplicantContactRepository.findByApplicantIdAndStatusWithApplicants(
+        return jpaApplicantContactRepository.findByApplicantIdAndStatusesWithApplicants(
                         currentApplicant.getId(),
-                        ApplicantContactStatus.ACCEPTED
+                        List.of(ApplicantContactStatus.ACCEPTED, ApplicantContactStatus.PENDING)
                 ).stream()
                 .map(contact -> {
                     ApplicantEntity other = contact.getRequester().getId().equals(currentApplicant.getId())
                             ? contact.getRecipient()
                             : contact.getRequester();
                     return new ApplicantContactPreview(
-                            null,
+                            other.getAvatarUrl(),
                             other.getName(),
-                            other.getDesiredPosition()
+                            other.getDesiredPosition(),
+                            toDisplayStatus(contact, currentApplicant.getId())
                     );
                 })
                 .toList();
+    }
+
+    private static String toDisplayStatus(ApplicantContactEntity contact, Long currentApplicantId) {
+        if (contact.getStatus() == ApplicantContactStatus.ACCEPTED) {
+            return "accepted";
+        }
+        if (contact.getStatus() == ApplicantContactStatus.PENDING) {
+            return contact.getRequester().getId().equals(currentApplicantId) ? "sent" : "received";
+        }
+        return contact.getStatus().name().toLowerCase();
     }
 
     private ApplicantEntity resolveCurrentApplicant(String userEmail) {

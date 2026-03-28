@@ -19,10 +19,10 @@ public interface JpaApplicantContactRepository extends JpaRepository<ApplicantCo
            "JOIN FETCH c.requester " +
            "JOIN FETCH c.recipient " +
            "WHERE (c.requester.id = :applicantId OR c.recipient.id = :applicantId) " +
-           "AND c.status = :status " +
+           "AND c.status IN :statuses " +
            "ORDER BY c.updatedAt DESC, c.id DESC")
-    List<ApplicantContactEntity> findByApplicantIdAndStatusWithApplicants(
+    List<ApplicantContactEntity> findByApplicantIdAndStatusesWithApplicants(
             @Param("applicantId") Long applicantId,
-            @Param("status") ApplicantContactStatus status
+            @Param("statuses") List<ApplicantContactStatus> statuses
     );
 }

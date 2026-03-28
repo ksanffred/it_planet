@@ -12,7 +12,8 @@ public final class ApplicantContactPreviewMapper {
         return new ApplicantContactPreviewResponse(
                 preview.photo(),
                 preview.name(),
-                preview.desiredProfession()
+                preview.desiredProfession(),
+                preview.status()
         );
     }
 }

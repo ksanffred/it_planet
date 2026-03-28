@@ -13,5 +13,8 @@ public record ApplicantContactPreviewResponse(
 
         @JsonProperty("desired_profession")
         @Schema(description = "Desired profession", example = "Backend Developer Intern")
-        String desiredProfession
+        String desiredProfession,
+
+        @Schema(description = "Contact status", allowableValues = {"accepted", "sent", "received"}, example = "received")
+        String status
 ) {}
