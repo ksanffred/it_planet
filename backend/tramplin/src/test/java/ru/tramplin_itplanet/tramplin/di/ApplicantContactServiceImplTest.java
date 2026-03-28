@@ -139,7 +139,7 @@ class ApplicantContactServiceImplTest {
     }
 
     @Test
-    void getMyContacts_returnsAcceptedContactsOnly() {
+    void getMyContacts_returnsAcceptedAndPendingContactsWithAvatar() {
         UserEntity user = buildUser(11L, "applicant@example.com", UserRole.APPLICANT);
         ApplicantEntity currentApplicant = buildApplicant(3L, 11L);
 
@@ -149,6 +149,7 @@ class ApplicantContactServiceImplTest {
         ApplicantEntity recipient = buildApplicant(7L, 12L);
         recipient.setName("Ivan Ivanov");
         recipient.setDesiredPosition("Backend Developer Intern");
+        recipient.setAvatarUrl("https://cdn.example.com/photos/user1.jpg");
 
         ApplicantContactEntity accepted = new ApplicantContactEntity();
         accepted.setId(1L);
@@ -156,16 +157,33 @@ class ApplicantContactServiceImplTest {
         accepted.setRecipient(recipient);
         accepted.setStatus(ApplicantContactStatus.ACCEPTED);
 
+        ApplicantEntity sender = buildApplicant(9L, 15L);
+        sender.setName("Petr Petrov");
+        sender.setDesiredPosition("Data Analyst");
+        sender.setAvatarUrl("https://cdn.example.com/photos/user2.jpg");
+
+        ApplicantContactEntity pendingReceived = new ApplicantContactEntity();
+        pendingReceived.setId(2L);
+        pendingReceived.setRequester(sender);
+        pendingReceived.setRecipient(requester);
+        pendingReceived.setStatus(ApplicantContactStatus.PENDING);
+
         when(jpaUserRepository.findByEmail("applicant@example.com")).thenReturn(Optional.of(user));
         when(jpaApplicantRepository.findByUserIdWithSkills(11L)).thenReturn(Optional.of(currentApplicant));
-        when(jpaApplicantContactRepository.findByApplicantIdAndStatusWithApplicants(3L, ApplicantContactStatus.ACCEPTED))
-                .thenReturn(java.util.List.of(accepted));
+        when(jpaApplicantContactRepository.findByApplicantIdAndStatusesWithApplicants(
+                3L,
+                java.util.List.of(ApplicantContactStatus.ACCEPTED, ApplicantContactStatus.PENDING)
+        ))
+                .thenReturn(java.util.List.of(accepted, pendingReceived));
 
         java.util.List<ApplicantContactPreview> result = applicantContactService.getMyContacts("applicant@example.com");
 
-        assertThat(result).hasSize(1);
+        assertThat(result).hasSize(2);
+        assertThat(result.getFirst().photo()).isEqualTo("https://cdn.example.com/photos/user1.jpg");
         assertThat(result.getFirst().name()).isEqualTo("Ivan Ivanov");
         assertThat(result.getFirst().desiredProfession()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().status()).isEqualTo("accepted");
+        assertThat(result.get(1).status()).isEqualTo("received");
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {

@@ -100,7 +100,8 @@ class ApplicantContactControllerTest {
                 java.util.List.of(new ApplicantContactPreview(
                         "https://cdn.example.com/photos/user1.jpg",
                         "Ivan Ivanov",
-                        "Backend Developer Intern"
+                        "Backend Developer Intern",
+                        "received"
                 ))
         );
 
@@ -108,6 +109,7 @@ class ApplicantContactControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].photo").value("https://cdn.example.com/photos/user1.jpg"))
                 .andExpect(jsonPath("$[0].name").value("Ivan Ivanov"))
-                .andExpect(jsonPath("$[0].desired_profession").value("Backend Developer Intern"));
+                .andExpect(jsonPath("$[0].desired_profession").value("Backend Developer Intern"))
+                .andExpect(jsonPath("$[0].status").value("received"));
     }
 }
