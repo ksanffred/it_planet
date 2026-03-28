@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.util.ReflectionTestUtils;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
@@ -13,6 +15,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateEmployerCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerProfile;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateEmployerCommand;
 
 import java.util.Optional;
 
@@ -178,5 +181,74 @@ class EmployerServiceImplTest {
         assertThatThrownBy(() -> employerService.getById(99L))
                 .isInstanceOf(EmployerNotFoundException.class)
                 .hasMessageContaining("99");
+    }
+
+    @Test
+    void getCurrentByUserEmail_existingEmployer_returnsProfile() {
+        UserEntity user = new UserEntity();
+        ReflectionTestUtils.setField(user, "id", 20L);
+        user.setEmail("employer@example.com");
+        user.setVerified(true);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(55L);
+        employer.setUserId(20L);
+        employer.setName("Acme Corp");
+        employer.setInn("7701234567");
+        employer.setStatus("pending");
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
+        when(jpaEmployerRepository.findByUserId(20L)).thenReturn(Optional.of(employer));
+
+        EmployerProfile result = employerService.getCurrentByUserEmail("employer@example.com");
+
+        assertThat(result.id()).isEqualTo(55L);
+        assertThat(result.companyName()).isEqualTo("Acme Corp");
+        assertThat(result.inn()).isEqualTo("7701234567");
+    }
+
+    @Test
+    void getCurrentByUserEmail_unknownUser_throwsUnauthorized() {
+        when(jpaUserRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> employerService.getCurrentByUserEmail("missing@example.com"))
+                .isInstanceOf(BadCredentialsException.class)
+                .hasMessageContaining("Invalid authentication token");
+    }
+
+    @Test
+    void updateCurrentByUserEmail_existingEmployer_updatesFields() {
+        UserEntity user = new UserEntity();
+        ReflectionTestUtils.setField(user, "id", 21L);
+        user.setEmail("employer@example.com");
+        user.setVerified(true);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(56L);
+        employer.setUserId(21L);
+        employer.setName("Old Name");
+        employer.setInn("1111111111");
+        employer.setStatus("pending");
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
+        when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
+        when(jpaEmployerRepository.save(employer)).thenReturn(employer);
+
+        EmployerProfile result = employerService.updateCurrentByUserEmail(
+                "employer@example.com",
+                new UpdateEmployerCommand(
+                        "Global software company",
+                        "https://acme.com",
+                        "@acme_hr",
+                        "https://acme.com/logo.png"
+                )
+        );
+
+        assertThat(result.companyName()).isEqualTo("Old Name");
+        assertThat(result.description()).isEqualTo("Global software company");
+        assertThat(result.inn()).isEqualTo("1111111111");
+        assertThat(result.website()).isEqualTo("https://acme.com");
+        assertThat(result.socials()).isEqualTo("@acme_hr");
+        assertThat(result.logoUrl()).isEqualTo("https://acme.com/logo.png");
     }
 }
