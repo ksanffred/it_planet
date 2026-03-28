@@ -22,6 +22,9 @@ public record OpportunityMiniCardResponse(
         @Schema(description = "Employer name", example = "Acme Corp")
         String employerName,
 
+        @Schema(description = "Opportunity type", example = "VACANCY", allowableValues = {"VACANCY", "INTERNSHIP", "MENTORSHIP", "EVENT"})
+        String type,
+
         @Schema(description = "Work format", example = "REMOTE", allowableValues = {"OFFICE", "HYBRID", "REMOTE"})
         String format,
 

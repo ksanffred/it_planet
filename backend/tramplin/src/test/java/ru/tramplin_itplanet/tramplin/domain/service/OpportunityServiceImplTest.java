@@ -48,6 +48,7 @@ class OpportunityServiceImplTest {
                         "Java Developer",
                         "Backend role",
                         "Acme Corp",
+                        "VACANCY",
                         "REMOTE",
                         List.of("Java", "Spring", "Docker")
                 )

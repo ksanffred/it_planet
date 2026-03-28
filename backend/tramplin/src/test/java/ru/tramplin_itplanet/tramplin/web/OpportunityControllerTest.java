@@ -69,6 +69,7 @@ class OpportunityControllerTest {
                         "Java Developer",
                         "Backend role",
                         "Acme Corp",
+                        "VACANCY",
                         "REMOTE",
                         List.of("Java", "Spring", "Docker")
                 )
@@ -81,6 +82,7 @@ class OpportunityControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Java Developer"))
                 .andExpect(jsonPath("$[0].description").value("Backend role"))
                 .andExpect(jsonPath("$[0].employerName").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].type").value("VACANCY"))
                 .andExpect(jsonPath("$[0].format").value("REMOTE"))
                 .andExpect(jsonPath("$[0].tags.length()").value(3))
                 .andExpect(jsonPath("$[0].tags[0]").value("Java"))
@@ -97,6 +99,7 @@ class OpportunityControllerTest {
                         "Java Intern",
                         "Internship for backend team",
                         "Beta Corp",
+                        "INTERNSHIP",
                         "REMOTE",
                         List.of("Java", "Intern", "Spring")
                 )
