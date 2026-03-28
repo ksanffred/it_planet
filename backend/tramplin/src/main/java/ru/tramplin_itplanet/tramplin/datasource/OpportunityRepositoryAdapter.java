@@ -17,10 +17,12 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaTagRepository;
 import ru.tramplin_itplanet.tramplin.datasource.mapper.OpportunityEntityMapper;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
+import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityMiniCard;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.repository.OpportunityRepository;
 
 import java.time.Duration;
@@ -133,10 +135,49 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
         return OpportunityEntityMapper.toDomain(saved);
     }
 
+    @Override
+    @CacheEvict(value = "opportunity-feed", allEntries = true)
+    public Opportunity update(Long id, UpdateOpportunityCommand command) {
+        log.debug("Updating opportunity: id={}, title={}, employerId={}", id, command.title(), command.employerId());
+
+        OpportunityEntity entity = jpaOpportunityRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Opportunity not found with id: {}", id);
+                    return new OpportunityNotFoundException(id);
+                });
+
+        EmployerEntity employer = jpaEmployerRepository.findById(command.employerId())
+                .orElseThrow(() -> {
+                    log.warn("Employer not found with id: {}", command.employerId());
+                    return new EmployerNotFoundException(command.employerId());
+                });
+
+        List<TagEntity> tags = command.tagIds().isEmpty()
+                ? List.of()
+                : jpaTagRepository.findAllById(command.tagIds());
+
+        applyCommandToEntity(entity, employer, tags, command);
+
+        OpportunityEntity updated = jpaOpportunityRepository.save(entity);
+        log.debug("Opportunity updated with id: {}", updated.getId());
+        return OpportunityEntityMapper.toDomain(updated);
+    }
+
     private OpportunityEntity buildEntity(CreateOpportunityCommand command,
                                           EmployerEntity employer,
                                           List<TagEntity> tags) {
         OpportunityEntity entity = new OpportunityEntity();
+        applyCommandToEntity(entity, employer, tags, command);
+        if (entity.getPublishedAt() == null) {
+            entity.setPublishedAt(LocalDateTime.now());
+        }
+        return entity;
+    }
+
+    private void applyCommandToEntity(OpportunityEntity entity,
+                                      EmployerEntity employer,
+                                      List<TagEntity> tags,
+                                      CreateOpportunityCommand command) {
         entity.setEmployer(employer);
         entity.setTitle(command.title());
         entity.setDescription(command.description());
@@ -148,12 +189,33 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
         entity.setLng(command.lng());
         entity.setSalaryFrom(command.salaryFrom());
         entity.setSalaryTo(command.salaryTo());
-        entity.setPublishedAt(command.publishedAt() != null ? command.publishedAt() : LocalDateTime.now());
+        entity.setPublishedAt(command.publishedAt());
         entity.setExpiresAt(command.expiresAt());
         entity.setStatus(command.status());
         entity.setMedia(command.media());
         entity.setTags(tags);
-        return entity;
+    }
+
+    private void applyCommandToEntity(OpportunityEntity entity,
+                                      EmployerEntity employer,
+                                      List<TagEntity> tags,
+                                      UpdateOpportunityCommand command) {
+        entity.setEmployer(employer);
+        entity.setTitle(command.title());
+        entity.setDescription(command.description());
+        entity.setType(command.type());
+        entity.setFormat(command.format());
+        entity.setAddress(command.address());
+        entity.setCity(command.city());
+        entity.setLat(command.lat());
+        entity.setLng(command.lng());
+        entity.setSalaryFrom(command.salaryFrom());
+        entity.setSalaryTo(command.salaryTo());
+        entity.setPublishedAt(command.publishedAt());
+        entity.setExpiresAt(command.expiresAt());
+        entity.setStatus(command.status());
+        entity.setMedia(command.media());
+        entity.setTags(tags);
     }
 
     private List<OpportunityMiniCard> loadMiniCardsFromDatabase(List<Long> ids) {

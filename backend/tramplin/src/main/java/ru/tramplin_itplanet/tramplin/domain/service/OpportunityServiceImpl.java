@@ -12,6 +12,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundExcepti
 import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityMiniCard;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.repository.OpportunityRepository;
 
 import java.util.List;
@@ -62,5 +63,18 @@ public class OpportunityServiceImpl implements OpportunityService {
         Opportunity saved = opportunityRepository.save(command);
         log.info("Opportunity created with id: {}", saved.id());
         return saved;
+    }
+
+    @Override
+    @Transactional
+    @Caching(
+            put = @CachePut(value = "opportunities", key = "#id"),
+            evict = @CacheEvict(value = "opportunity-feed", allEntries = true)
+    )
+    public Opportunity update(Long id, UpdateOpportunityCommand command) {
+        log.info("Updating opportunity with id: {}", id);
+        Opportunity updated = opportunityRepository.update(id, command);
+        log.info("Opportunity updated with id: {}", updated.id());
+        return updated;
     }
 }

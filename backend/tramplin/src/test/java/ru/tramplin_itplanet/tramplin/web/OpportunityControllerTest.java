@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -162,6 +163,59 @@ class OpportunityControllerTest {
                                 """))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Employer not found with id: 99"));
+    }
+
+    @Test
+    @WithMockUser
+    void update_validRequest_returns200WithUpdatedCard() throws Exception {
+        when(opportunityService.update(any(), any())).thenReturn(buildOpportunity(1L));
+
+        mockMvc.perform(put("/opportunities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Java Developer"))
+                .andExpect(jsonPath("$.type").value("VACANCY"));
+    }
+
+    @Test
+    @WithMockUser
+    void update_missingRequiredFields_returns400() throws Exception {
+        mockMvc.perform(put("/opportunities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    @WithMockUser
+    void update_nonExistingOpportunity_returns404() throws Exception {
+        when(opportunityService.update(any(), any())).thenThrow(new OpportunityNotFoundException(99L));
+
+        mockMvc.perform(put("/opportunities/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Opportunity not found with id: 99"));
     }
 
     private Opportunity buildOpportunity(Long id) {
