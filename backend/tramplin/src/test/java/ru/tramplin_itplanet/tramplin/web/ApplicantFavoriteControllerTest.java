@@ -1,0 +1,159 @@
+package ru.tramplin_itplanet.tramplin.web;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import ru.tramplin_itplanet.tramplin.di.JwtService;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavoriteOpportunityCard;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavorites;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
+import ru.tramplin_itplanet.tramplin.domain.service.ApplicantFavoriteService;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(ApplicantFavoriteController.class)
+class ApplicantFavoriteControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private ApplicantFavoriteService applicantFavoriteService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void addOne_validApplicant_returns200() throws Exception {
+        when(applicantFavoriteService.addOneByUserEmail("applicant@example.com", 10L))
+                .thenReturn(new ApplicantFavorites(1L, List.of(10L, 5L)));
+
+        mockMvc.perform(post("/applicants/me/favorites/opportunities/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applicantId").value(1))
+                .andExpect(jsonPath("$.opportunityIds[0]").value(10))
+                .andExpect(jsonPath("$.opportunityIds[1]").value(5));
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void addMany_validApplicant_returns200() throws Exception {
+        when(applicantFavoriteService.addManyByUserEmail(eq("applicant@example.com"), any()))
+                .thenReturn(new ApplicantFavorites(1L, List.of(12L, 10L, 5L)));
+
+        mockMvc.perform(post("/applicants/me/favorites/opportunities/bulk")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "opportunityIds": [12, 10, 5]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applicantId").value(1))
+                .andExpect(jsonPath("$.opportunityIds.length()").value(3))
+                .andExpect(jsonPath("$.opportunityIds[0]").value(12));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com")
+    void addMany_nonApplicantRole_returns403() throws Exception {
+        mockMvc.perform(post("/applicants/me/favorites/opportunities/bulk")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "opportunityIds": [12]
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void addMany_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(post("/applicants/me/favorites/opportunities/bulk")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "opportunityIds": [12]
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void addMany_emptyList_returns400() throws Exception {
+        mockMvc.perform(post("/applicants/me/favorites/opportunities/bulk")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "opportunityIds": []
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void removeOne_validApplicant_returns200() throws Exception {
+        when(applicantFavoriteService.removeOneByUserEmail("applicant@example.com", 10L))
+                .thenReturn(new ApplicantFavorites(1L, List.of(5L)));
+
+        mockMvc.perform(delete("/applicants/me/favorites/opportunities/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applicantId").value(1))
+                .andExpect(jsonPath("$.opportunityIds[0]").value(5));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com")
+    void removeOne_nonApplicantRole_returns403() throws Exception {
+        mockMvc.perform(delete("/applicants/me/favorites/opportunities/10"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void getCards_validApplicant_returns200() throws Exception {
+        when(applicantFavoriteService.getCardsByUserEmail("applicant@example.com"))
+                .thenReturn(List.of(
+                        new ApplicantFavoriteOpportunityCard(
+                                "Java Developer",
+                                "Acme Corp",
+                                OpportunityStatus.ACTIVE,
+                                OpportunityType.VACANCY
+                        )
+                ));
+
+        mockMvc.perform(get("/applicants/me/favorites/opportunities"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
+                .andExpect(jsonPath("$[0].type").value("VACANCY"));
+    }
+
+    @Test
+    void getCards_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(get("/applicants/me/favorites/opportunities"))
+                .andExpect(status().isUnauthorized());
+    }
+}

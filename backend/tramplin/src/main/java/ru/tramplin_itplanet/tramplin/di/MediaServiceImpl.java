@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
+import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.FileStorageException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
@@ -37,10 +40,12 @@ public class MediaServiceImpl implements MediaService {
             "image/gif",
             "image/svg+xml"
     );
+    private static final String PDF_CONTENT_TYPE = "application/pdf";
 
     private final S3Client s3Client;
     private final JpaEmployerRepository jpaEmployerRepository;
     private final JpaOpportunityRepository jpaOpportunityRepository;
+    private final JpaApplicantRepository jpaApplicantRepository;
 
     @Value("${app.s3.bucket}")
     private String bucket;
@@ -50,10 +55,12 @@ public class MediaServiceImpl implements MediaService {
 
     public MediaServiceImpl(S3Client s3Client,
                             JpaEmployerRepository jpaEmployerRepository,
-                            JpaOpportunityRepository jpaOpportunityRepository) {
+                            JpaOpportunityRepository jpaOpportunityRepository,
+                            JpaApplicantRepository jpaApplicantRepository) {
         this.s3Client = s3Client;
         this.jpaEmployerRepository = jpaEmployerRepository;
         this.jpaOpportunityRepository = jpaOpportunityRepository;
+        this.jpaApplicantRepository = jpaApplicantRepository;
     }
 
     @Override
@@ -69,6 +76,22 @@ public class MediaServiceImpl implements MediaService {
         employer.setLogoUrl(objectPath);
         jpaEmployerRepository.save(employer);
         log.info("Employer logo uploaded: employerId={}, path={}", employerId, objectPath);
+        return new MediaUploadResponse(objectPath, toPublicUrl(objectPath));
+    }
+
+    @Override
+    @Transactional
+    public MediaUploadResponse uploadApplicantAvatar(Long applicantId, MultipartFile file) {
+        validateImageFile(file);
+        ApplicantEntity applicant = jpaApplicantRepository.findById(applicantId)
+                .orElseThrow(() -> new ApplicantNotFoundException(applicantId));
+
+        String objectPath = buildObjectPath("applicants/" + applicantId + "/avatar", file.getOriginalFilename());
+        uploadToS3(objectPath, file);
+
+        applicant.setAvatarUrl(objectPath);
+        jpaApplicantRepository.save(applicant);
+        log.info("Applicant avatar uploaded: applicantId={}, path={}", applicantId, objectPath);
         return new MediaUploadResponse(objectPath, toPublicUrl(objectPath));
     }
 
@@ -99,6 +122,22 @@ public class MediaServiceImpl implements MediaService {
         return new MediaUploadResponse(objectPath, toPublicUrl(objectPath));
     }
 
+    @Override
+    @Transactional
+    public MediaUploadResponse uploadApplicantResume(Long applicantId, MultipartFile file) {
+        validatePdfFile(file);
+        ApplicantEntity applicant = jpaApplicantRepository.findById(applicantId)
+                .orElseThrow(() -> new ApplicantNotFoundException(applicantId));
+
+        String objectPath = buildObjectPath("applicants/" + applicantId + "/resume", file.getOriginalFilename());
+        uploadToS3(objectPath, file);
+
+        applicant.setResumeUrl(objectPath);
+        jpaApplicantRepository.save(applicant);
+        log.info("Applicant resume uploaded: applicantId={}, path={}", applicantId, objectPath);
+        return new MediaUploadResponse(objectPath, toPublicUrl(objectPath));
+    }
+
     private void validateImageFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new InvalidFileException("Uploaded file is empty");
@@ -107,6 +146,17 @@ public class MediaServiceImpl implements MediaService {
         String contentType = file.getContentType();
         if (contentType == null || !SUPPORTED_IMAGE_CONTENT_TYPES.contains(contentType)) {
             throw new InvalidFileException("Only image files are allowed");
+        }
+    }
+
+    private void validatePdfFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new InvalidFileException("Uploaded file is empty");
+        }
+
+        String contentType = file.getContentType();
+        if (!PDF_CONTENT_TYPE.equals(contentType)) {
+            throw new InvalidFileException("Only PDF files are allowed");
         }
     }
 

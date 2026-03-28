@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateOpportunityCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityPosting;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityMiniCard;
 import ru.tramplin_itplanet.tramplin.domain.model.Opportunity;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateOpportunityCommand;
 import ru.tramplin_itplanet.tramplin.domain.repository.OpportunityRepository;
 
 import java.util.List;
@@ -41,6 +43,12 @@ public class OpportunityServiceImpl implements OpportunityService {
     }
 
     @Override
+    public List<EmployerOpportunityPosting> findByEmployerId(Long employerId) {
+        log.info("Fetching opportunities by employerId={}", employerId);
+        return opportunityRepository.findByEmployerId(employerId);
+    }
+
+    @Override
     @Cacheable(value = "opportunities", key = "#id")
     public Opportunity getById(Long id) {
         log.info("Fetching opportunity with id: {} (cache miss)", id);
@@ -62,5 +70,18 @@ public class OpportunityServiceImpl implements OpportunityService {
         Opportunity saved = opportunityRepository.save(command);
         log.info("Opportunity created with id: {}", saved.id());
         return saved;
+    }
+
+    @Override
+    @Transactional
+    @Caching(
+            put = @CachePut(value = "opportunities", key = "#id"),
+            evict = @CacheEvict(value = "opportunity-feed", allEntries = true)
+    )
+    public Opportunity update(Long id, UpdateOpportunityCommand command) {
+        log.info("Updating opportunity with id: {}", id);
+        Opportunity updated = opportunityRepository.update(id, command);
+        log.info("Opportunity updated with id: {}", updated.id());
+        return updated;
     }
 }

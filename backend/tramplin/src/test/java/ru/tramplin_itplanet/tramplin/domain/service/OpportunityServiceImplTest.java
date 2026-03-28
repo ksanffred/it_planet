@@ -48,6 +48,7 @@ class OpportunityServiceImplTest {
                         "Java Developer",
                         "Backend role",
                         "Acme Corp",
+                        "VACANCY",
                         "REMOTE",
                         List.of("Java", "Spring", "Docker")
                 )
@@ -58,6 +59,27 @@ class OpportunityServiceImplTest {
 
         assertThat(result).isEqualTo(expected);
         verify(opportunityRepository).findActiveMiniCards("java");
+    }
+
+    @Test
+    void findByEmployerId_returnsEmployerOpportunities() {
+        List<EmployerOpportunityPosting> expected = List.of(
+                new EmployerOpportunityPosting(
+                        1L,
+                        "Java Developer",
+                        OpportunityStatus.ACTIVE,
+                        OpportunityType.VACANCY,
+                        LocalDateTime.of(2026, 1, 1, 0, 0),
+                        LocalDateTime.of(2026, 6, 1, 0, 0),
+                        7L
+                )
+        );
+        when(opportunityRepository.findByEmployerId(3L)).thenReturn(expected);
+
+        List<EmployerOpportunityPosting> result = opportunityService.findByEmployerId(3L);
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).findByEmployerId(3L);
     }
 
     @Test
@@ -94,6 +116,30 @@ class OpportunityServiceImplTest {
         verify(opportunityRepository).save(command);
     }
 
+    @Test
+    void update_validCommand_returnsUpdatedOpportunity() {
+        UpdateOpportunityCommand command = buildUpdateCommand();
+        Opportunity expected = buildOpportunity(1L);
+        when(opportunityRepository.update(1L, command)).thenReturn(expected);
+
+        Opportunity result = opportunityService.update(1L, command);
+
+        assertThat(result).isEqualTo(expected);
+        verify(opportunityRepository).update(1L, command);
+    }
+
+    @Test
+    void update_nonExistingId_throwsOpportunityNotFoundException() {
+        UpdateOpportunityCommand command = buildUpdateCommand();
+        when(opportunityRepository.update(99L, command)).thenThrow(new OpportunityNotFoundException(99L));
+
+        assertThatThrownBy(() -> opportunityService.update(99L, command))
+                .isInstanceOf(OpportunityNotFoundException.class)
+                .hasMessageContaining("99");
+
+        verify(opportunityRepository).update(99L, command);
+    }
+
     private CreateOpportunityCommand buildCommand() {
         return new CreateOpportunityCommand(
                 1L,
@@ -108,6 +154,27 @@ class OpportunityServiceImplTest {
                 BigDecimal.valueOf(100_000),
                 BigDecimal.valueOf(150_000),
                 null,
+                LocalDateTime.of(2026, 6, 1, 0, 0),
+                OpportunityStatus.ACTIVE,
+                List.of(),
+                List.of()
+        );
+    }
+
+    private UpdateOpportunityCommand buildUpdateCommand() {
+        return new UpdateOpportunityCommand(
+                1L,
+                "Java Developer",
+                "Backend role",
+                OpportunityType.VACANCY,
+                OpportunityFormat.REMOTE,
+                null,
+                "Moscow",
+                null,
+                null,
+                BigDecimal.valueOf(100_000),
+                BigDecimal.valueOf(150_000),
+                LocalDateTime.of(2026, 1, 1, 0, 0),
                 LocalDateTime.of(2026, 6, 1, 0, 0),
                 OpportunityStatus.ACTIVE,
                 List.of(),

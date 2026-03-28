@@ -9,6 +9,7 @@ public record OpportunityMiniCard(
         String title,
         String description,
         String employerName,
+        String type,
         String format,
         List<String> tags
 ) implements Serializable {}

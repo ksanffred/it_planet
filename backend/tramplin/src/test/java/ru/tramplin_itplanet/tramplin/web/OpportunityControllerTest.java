@@ -12,6 +12,7 @@ import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.*;
+import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityService;
 
 import java.math.BigDecimal;
@@ -19,9 +20,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +38,9 @@ class OpportunityControllerTest {
 
     @MockitoBean
     private OpportunityService opportunityService;
+
+    @MockitoBean
+    private EmployerService employerService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -61,6 +69,7 @@ class OpportunityControllerTest {
                         "Java Developer",
                         "Backend role",
                         "Acme Corp",
+                        "VACANCY",
                         "REMOTE",
                         List.of("Java", "Spring", "Docker")
                 )
@@ -73,6 +82,7 @@ class OpportunityControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Java Developer"))
                 .andExpect(jsonPath("$[0].description").value("Backend role"))
                 .andExpect(jsonPath("$[0].employerName").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].type").value("VACANCY"))
                 .andExpect(jsonPath("$[0].format").value("REMOTE"))
                 .andExpect(jsonPath("$[0].tags.length()").value(3))
                 .andExpect(jsonPath("$[0].tags[0]").value("Java"))
@@ -89,6 +99,7 @@ class OpportunityControllerTest {
                         "Java Intern",
                         "Internship for backend team",
                         "Beta Corp",
+                        "INTERNSHIP",
                         "REMOTE",
                         List.of("Java", "Intern", "Spring")
                 )
@@ -112,8 +123,9 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void create_validRequest_returns201WithCreatedCard() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 1L);
         when(opportunityService.create(any())).thenReturn(buildOpportunity(1L));
 
         mockMvc.perform(post("/opportunities")
@@ -134,7 +146,7 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void create_missingRequiredFields_returns400() throws Exception {
         mockMvc.perform(post("/opportunities")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -145,8 +157,9 @@ class OpportunityControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
     void create_unknownEmployerId_returns404() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 99L);
         when(opportunityService.create(any())).thenThrow(new EmployerNotFoundException(99L));
 
         mockMvc.perform(post("/opportunities")
@@ -162,6 +175,146 @@ class OpportunityControllerTest {
                                 """))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Employer not found with id: 99"));
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void update_validRequest_returns200WithUpdatedCard() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 1L);
+        when(opportunityService.update(any(), any())).thenReturn(buildOpportunity(1L));
+
+        mockMvc.perform(put("/opportunities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Java Developer"))
+                .andExpect(jsonPath("$.type").value("VACANCY"));
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void update_missingRequiredFields_returns400() throws Exception {
+        mockMvc.perform(put("/opportunities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void update_nonExistingOpportunity_returns404() throws Exception {
+        doNothing().when(employerService).assertCanManageOpportunities("employer@example.com", 1L);
+        when(opportunityService.update(any(), any())).thenThrow(new OpportunityNotFoundException(99L));
+
+        mockMvc.perform(put("/opportunities/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Opportunity not found with id: 99"));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com", roles = "USER")
+    void create_nonEmployerRole_returns403() throws Exception {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Only EMPLOYER users can manage opportunities"))
+                .when(employerService).assertCanManageOpportunities(eq("user@example.com"), eq(1L));
+
+        mockMvc.perform(post("/opportunities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void update_notFullVerifiedEmployer_returns403() throws Exception {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Employer must have full_verified status"))
+                .when(employerService).assertCanManageOpportunities(eq("employer@example.com"), eq(1L));
+
+        mockMvc.perform(put("/opportunities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "employerId": 1,
+                                  "title": "Java Developer",
+                                  "type": "VACANCY",
+                                  "format": "REMOTE",
+                                  "status": "ACTIVE"
+                                }
+                                """))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Employer must have full_verified status"));
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void getMyOpportunities_employer_returns200() throws Exception {
+        when(employerService.getCurrentByUserEmail("employer@example.com")).thenReturn(
+                new EmployerProfile(
+                        1L,
+                        10L,
+                        "Acme Corp",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "full_verified"
+                )
+        );
+        when(opportunityService.findByEmployerId(1L)).thenReturn(List.of(
+                new EmployerOpportunityPosting(
+                        12L,
+                        "Java Developer",
+                        OpportunityStatus.ACTIVE,
+                        OpportunityType.VACANCY,
+                        LocalDateTime.of(2026, 1, 1, 0, 0),
+                        LocalDateTime.of(2026, 6, 1, 0, 0),
+                        3L
+                )
+        ));
+
+        mockMvc.perform(get("/opportunities/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(12))
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
+                .andExpect(jsonPath("$[0].type").value("VACANCY"))
+                .andExpect(jsonPath("$[0].applications_count").value(3));
+    }
+
+    @Test
+    void getMyOpportunities_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(get("/opportunities/me"))
+                .andExpect(status().isUnauthorized());
     }
 
     private Opportunity buildOpportunity(Long id) {

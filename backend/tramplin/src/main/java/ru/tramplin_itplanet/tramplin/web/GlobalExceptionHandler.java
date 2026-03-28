@@ -5,14 +5,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import ru.tramplin_itplanet.tramplin.domain.exception.FileStorageException;
+import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantContactAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
+import ru.tramplin_itplanet.tramplin.domain.exception.InvalidApplicantContactOperationException;
+import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.TagAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException;
@@ -57,12 +62,65 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(ApplicantAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleApplicantAlreadyExists(ApplicantAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(ApplicantContactAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleApplicantContactAlreadyExists(
+            ApplicantContactAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(OpportunityResponseAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleOpportunityResponseAlreadyExists(
+            OpportunityResponseAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
         log.warn("Unauthorized: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", 401,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Forbidden: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 403,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(InvalidApplicantContactOperationException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidApplicantContactOperation(
+            InvalidApplicantContactOperationException ex) {
+        log.warn("Invalid applicant contact operation: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
                 "error", ex.getMessage()
         ));
     }

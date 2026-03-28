@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
+import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
 import ru.tramplin_itplanet.tramplin.domain.service.MediaService;
 import ru.tramplin_itplanet.tramplin.web.dto.MediaUploadResponse;
@@ -94,5 +95,41 @@ class MediaControllerTest {
         mockMvc.perform(multipart("/opportunities/media").file(file))
                 .andExpect(status().isPayloadTooLarge())
                 .andExpect(jsonPath("$.error").value("Uploaded file exceeds the maximum allowed size (10.00 MB)"));
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void uploadApplicantResume_validPdf_returns201() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "resume.pdf", "application/pdf", "pdf".getBytes());
+        when(mediaService.uploadApplicantResume(1L, file))
+                .thenReturn(new MediaUploadResponse("applicants/1/resume/test.pdf", "https://cdn.test/applicants/1/resume/test.pdf"));
+
+        mockMvc.perform(multipart("/applicants/1/resume").file(file))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.path").value("applicants/1/resume/test.pdf"));
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void uploadApplicantResume_unknownApplicant_returns404() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "resume.pdf", "application/pdf", "pdf".getBytes());
+        when(mediaService.uploadApplicantResume(999L, file))
+                .thenThrow(new ApplicantNotFoundException(999L));
+
+        mockMvc.perform(multipart("/applicants/999/resume").file(file))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Applicant not found with id: 999"));
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void uploadApplicantAvatar_validImage_returns201() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "avatar.png", MediaType.IMAGE_PNG_VALUE, "img".getBytes());
+        when(mediaService.uploadApplicantAvatar(1L, file))
+                .thenReturn(new MediaUploadResponse("applicants/1/avatar/test.png", "https://cdn.test/applicants/1/avatar/test.png"));
+
+        mockMvc.perform(multipart("/applicants/1/avatar").file(file))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.path").value("applicants/1/avatar/test.png"));
     }
 }

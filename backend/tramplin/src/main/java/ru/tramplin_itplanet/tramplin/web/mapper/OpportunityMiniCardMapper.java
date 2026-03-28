@@ -14,6 +14,7 @@ public final class OpportunityMiniCardMapper {
                 opportunity.title(),
                 opportunity.description(),
                 opportunity.employerName(),
+                opportunity.type(),
                 opportunity.format(),
                 opportunity.tags()
         );

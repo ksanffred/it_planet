@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.AuthService;
 import ru.tramplin_itplanet.tramplin.web.dto.AuthResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.CurrentUserResponse;
@@ -47,9 +48,10 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        log.info("POST /auth/register: email={}, role={}", request.email(), request.role());
+        UserRole role = request.role() != null ? request.role() : UserRole.APPLICANT;
+        log.info("POST /auth/register: email={}, role={}", request.email(), role);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authService.register(request.email(), request.displayName(), request.password(), request.role()));
+                .body(authService.register(request.email(), request.displayName(), request.password(), role));
     }
 
     @Operation(summary = "Login", description = "Authenticates with email and password, returns a JWT token.")

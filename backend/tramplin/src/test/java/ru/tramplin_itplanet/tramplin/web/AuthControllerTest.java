@@ -10,13 +10,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.tramplin_itplanet.tramplin.di.EmailVerificationService;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
+import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.AuthService;
+import ru.tramplin_itplanet.tramplin.web.dto.AuthResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.CurrentUserResponse;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,5 +85,23 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Verification token is invalid or has expired"));
+    }
+
+    @Test
+    void register_withoutRole_defaultsToApplicant() throws Exception {
+        when(authService.register("user@example.com", "Ivan Ivanov", "securePass123", UserRole.APPLICANT))
+                .thenReturn(new AuthResponse("token", 1L, "user@example.com", "Ivan Ivanov", "APPLICANT"));
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "email": "user@example.com",
+                                  "displayName": "Ivan Ivanov",
+                                  "password": "securePass123"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.role").value("APPLICANT"));
     }
 }
