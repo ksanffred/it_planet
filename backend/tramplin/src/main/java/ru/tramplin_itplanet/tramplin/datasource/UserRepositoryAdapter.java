@@ -48,12 +48,13 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public User save(String email, String displayName, String passwordHash, UserRole role) {
+        UserRole effectiveRole = role != null ? role : UserRole.APPLICANT;
         log.debug("Saving new user with email: {}", email);
         UserEntity entity = new UserEntity();
         entity.setEmail(email);
         entity.setDisplayName(displayName);
         entity.setPasswordHash(passwordHash);
-        entity.setRole(role);
+        entity.setRole(effectiveRole);
         entity.setVerified(false);
         entity.setCreatedAt(LocalDateTime.now());
         User saved = UserEntityMapper.toDomain(jpaUserRepository.save(entity));

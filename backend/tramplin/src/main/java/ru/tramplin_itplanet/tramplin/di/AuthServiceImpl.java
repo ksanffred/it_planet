@@ -40,13 +40,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(String email, String displayName, String password, UserRole role) {
-        log.info("Registering new user: email={}, role={}", email, role);
+        UserRole effectiveRole = role != null ? role : UserRole.APPLICANT;
+        log.info("Registering new user: email={}, role={}", email, effectiveRole);
         if (userRepository.findByEmail(email).isPresent()) {
             log.warn("Registration failed — user already exists: {}", email);
             throw new UserAlreadyExistsException(email);
         }
         String passwordHash = passwordEncoder.encode(password);
-        User user = userRepository.save(email, displayName, passwordHash, role);
+        User user = userRepository.save(email, displayName, passwordHash, effectiveRole);
         emailVerificationService.sendVerificationEmail(user.id(), user.email());
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String token = jwtService.generateToken(userDetails);

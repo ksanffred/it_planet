@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import ru.tramplin_itplanet.tramplin.domain.exception.FileStorageException;
+import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
@@ -50,6 +51,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TagAlreadyExistsException.class)
     public ResponseEntity<Map<String, Object>> handleTagAlreadyExists(TagAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(ApplicantAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleApplicantAlreadyExists(ApplicantAlreadyExistsException ex) {
         log.warn("Conflict: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "timestamp", LocalDateTime.now(),
