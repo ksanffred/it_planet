@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/employers/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/employers/me").hasRole("EMPLOYER")
                         .requestMatchers(HttpMethod.GET, "/opportunities/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/employers/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/tags/**").permitAll()
