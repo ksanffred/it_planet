@@ -68,11 +68,6 @@ definePageMeta({
     font-weight: 700;
   }
 
-  &__input {
-    font-size: 14px;
-    font-weight: 500;
-  }
-
   &__reset-link {
     text-decoration: none;
     color: var(--primary-color);
