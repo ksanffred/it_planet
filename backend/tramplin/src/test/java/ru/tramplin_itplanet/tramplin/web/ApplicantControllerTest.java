@@ -189,6 +189,7 @@ class ApplicantControllerTest {
                 2027,
                 "ML course",
                 "https://github.com/user",
+                "applicants/1/avatar/photo.png",
                 "applicants/1/resume/cv.pdf",
                 List.of(
                         new Tag(2L, "Java", TagCategory.TECHNOLOGY),

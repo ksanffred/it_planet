@@ -17,6 +17,7 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantContactAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidApplicantContactOperationException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContact;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactPreview;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 
@@ -135,6 +136,36 @@ class ApplicantContactServiceImplTest {
         assertThatThrownBy(() -> applicantContactService.create("missing@example.com", 7L))
                 .isInstanceOf(BadCredentialsException.class)
                 .hasMessageContaining("Invalid authentication token");
+    }
+
+    @Test
+    void getMyContacts_returnsAcceptedContactsOnly() {
+        UserEntity user = buildUser(11L, "applicant@example.com", UserRole.APPLICANT);
+        ApplicantEntity currentApplicant = buildApplicant(3L, 11L);
+
+        ApplicantEntity requester = buildApplicant(3L, 11L);
+        requester.setName("Current User");
+
+        ApplicantEntity recipient = buildApplicant(7L, 12L);
+        recipient.setName("Ivan Ivanov");
+        recipient.setDesiredPosition("Backend Developer Intern");
+
+        ApplicantContactEntity accepted = new ApplicantContactEntity();
+        accepted.setId(1L);
+        accepted.setRequester(requester);
+        accepted.setRecipient(recipient);
+        accepted.setStatus(ApplicantContactStatus.ACCEPTED);
+
+        when(jpaUserRepository.findByEmail("applicant@example.com")).thenReturn(Optional.of(user));
+        when(jpaApplicantRepository.findByUserIdWithSkills(11L)).thenReturn(Optional.of(currentApplicant));
+        when(jpaApplicantContactRepository.findByApplicantIdAndStatusWithApplicants(3L, ApplicantContactStatus.ACCEPTED))
+                .thenReturn(java.util.List.of(accepted));
+
+        java.util.List<ApplicantContactPreview> result = applicantContactService.getMyContacts("applicant@example.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().name()).isEqualTo("Ivan Ivanov");
+        assertThat(result.getFirst().desiredProfession()).isEqualTo("Backend Developer Intern");
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {

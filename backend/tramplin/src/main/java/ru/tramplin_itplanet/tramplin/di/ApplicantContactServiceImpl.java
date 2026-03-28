@@ -17,9 +17,12 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantContactNotFoundEx
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidApplicantContactOperationException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContact;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactPreview;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantContactService;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -88,6 +91,28 @@ public class ApplicantContactServiceImpl implements ApplicantContactService {
         contact.setStatus(status);
         ApplicantContactEntity updated = jpaApplicantContactRepository.save(contact);
         return toDomain(updated);
+    }
+
+    @Override
+    public List<ApplicantContactPreview> getMyContacts(String userEmail) {
+        log.info("Loading applicant contacts: userEmail={}", userEmail);
+        ApplicantEntity currentApplicant = resolveCurrentApplicant(userEmail);
+
+        return jpaApplicantContactRepository.findByApplicantIdAndStatusWithApplicants(
+                        currentApplicant.getId(),
+                        ApplicantContactStatus.ACCEPTED
+                ).stream()
+                .map(contact -> {
+                    ApplicantEntity other = contact.getRequester().getId().equals(currentApplicant.getId())
+                            ? contact.getRecipient()
+                            : contact.getRequester();
+                    return new ApplicantContactPreview(
+                            null,
+                            other.getName(),
+                            other.getDesiredPosition()
+                    );
+                })
+                .toList();
     }
 
     private ApplicantEntity resolveCurrentApplicant(String userEmail) {

@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantContactEntity;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantContactStatus;
+
+import java.util.List;
 
 public interface JpaApplicantContactRepository extends JpaRepository<ApplicantContactEntity, Long> {
 
@@ -11,4 +14,15 @@ public interface JpaApplicantContactRepository extends JpaRepository<ApplicantCo
            "WHERE (c.requester.id = :firstId AND c.recipient.id = :secondId) " +
            "OR (c.requester.id = :secondId AND c.recipient.id = :firstId)")
     boolean existsBetweenApplicants(@Param("firstId") Long firstId, @Param("secondId") Long secondId);
+
+    @Query("SELECT c FROM ApplicantContactEntity c " +
+           "JOIN FETCH c.requester " +
+           "JOIN FETCH c.recipient " +
+           "WHERE (c.requester.id = :applicantId OR c.recipient.id = :applicantId) " +
+           "AND c.status = :status " +
+           "ORDER BY c.updatedAt DESC, c.id DESC")
+    List<ApplicantContactEntity> findByApplicantIdAndStatusWithApplicants(
+            @Param("applicantId") Long applicantId,
+            @Param("status") ApplicantContactStatus status
+    );
 }

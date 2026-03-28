@@ -39,6 +39,9 @@ public class ApplicantEntity {
     @Column(name = "portfolio_url", columnDefinition = "TEXT")
     private String portfolioUrl;
 
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    private String avatarUrl;
+
     @Column(name = "resume_url", columnDefinition = "TEXT")
     private String resumeUrl;
 
@@ -84,6 +87,9 @@ public class ApplicantEntity {
 
     public String getPortfolioUrl() { return portfolioUrl; }
     public void setPortfolioUrl(String portfolioUrl) { this.portfolioUrl = portfolioUrl; }
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 
     public String getResumeUrl() { return resumeUrl; }
     public void setResumeUrl(String resumeUrl) { this.resumeUrl = resumeUrl; }

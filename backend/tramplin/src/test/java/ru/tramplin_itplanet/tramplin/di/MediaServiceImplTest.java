@@ -139,4 +139,24 @@ class MediaServiceImplTest {
         assertEquals(response.path(), applicant.getResumeUrl());
         verify(jpaApplicantRepository).save(applicant);
     }
+
+    @Test
+    void uploadApplicantAvatar_validImage_uploadsToS3AndSavesPath() {
+        ApplicantEntity applicant = new ApplicantEntity();
+        applicant.setId(9L);
+
+        MockMultipartFile file = new MockMultipartFile("file", "avatar.png", "image/png", "img".getBytes());
+
+        when(jpaApplicantRepository.findById(9L)).thenReturn(Optional.of(applicant));
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().eTag("etag").build());
+
+        MediaUploadResponse response = mediaService.uploadApplicantAvatar(9L, file);
+
+        assertNotNull(response.path());
+        assertTrue(response.path().startsWith("applicants/9/avatar/"));
+        assertTrue(response.path().endsWith(".png"));
+        assertEquals(response.path(), applicant.getAvatarUrl());
+        verify(jpaApplicantRepository).save(applicant);
+    }
 }

@@ -16,6 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,9 +24,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantContactService;
+import ru.tramplin_itplanet.tramplin.web.dto.ApplicantContactPreviewResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.ApplicantContactResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.UpdateApplicantContactStatusRequest;
+import ru.tramplin_itplanet.tramplin.web.mapper.ApplicantContactPreviewMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.ApplicantContactMapper;
+
+import java.util.List;
 
 @Tag(name = "Applicant Contacts", description = "Professional contacts between applicants")
 @RestController
@@ -63,6 +68,26 @@ public class ApplicantContactController {
                 applicantContactService.create(email, recipientApplicantId)
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "Get my contacts")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contacts returned"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an applicant")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping
+    public ResponseEntity<List<ApplicantContactPreviewResponse>> getMyContacts() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureApplicantRole(authentication);
+
+        log.info("GET /applicants/me/contacts: email={}", email);
+        List<ApplicantContactPreviewResponse> response = applicantContactService.getMyContacts(email).stream()
+                .map(ApplicantContactPreviewMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Accept or reject contact request")

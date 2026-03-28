@@ -80,6 +80,22 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    @Transactional
+    public MediaUploadResponse uploadApplicantAvatar(Long applicantId, MultipartFile file) {
+        validateImageFile(file);
+        ApplicantEntity applicant = jpaApplicantRepository.findById(applicantId)
+                .orElseThrow(() -> new ApplicantNotFoundException(applicantId));
+
+        String objectPath = buildObjectPath("applicants/" + applicantId + "/avatar", file.getOriginalFilename());
+        uploadToS3(objectPath, file);
+
+        applicant.setAvatarUrl(objectPath);
+        jpaApplicantRepository.save(applicant);
+        log.info("Applicant avatar uploaded: applicantId={}, path={}", applicantId, objectPath);
+        return new MediaUploadResponse(objectPath, toPublicUrl(objectPath));
+    }
+
+    @Override
     public MediaUploadResponse uploadOpportunityDraftMedia(MultipartFile file) {
         validateImageFile(file);
 

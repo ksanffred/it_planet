@@ -120,4 +120,16 @@ class MediaControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Applicant not found with id: 999"));
     }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void uploadApplicantAvatar_validImage_returns201() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "avatar.png", MediaType.IMAGE_PNG_VALUE, "img".getBytes());
+        when(mediaService.uploadApplicantAvatar(1L, file))
+                .thenReturn(new MediaUploadResponse("applicants/1/avatar/test.png", "https://cdn.test/applicants/1/avatar/test.png"));
+
+        mockMvc.perform(multipart("/applicants/1/avatar").file(file))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.path").value("applicants/1/avatar/test.png"));
+    }
 }
