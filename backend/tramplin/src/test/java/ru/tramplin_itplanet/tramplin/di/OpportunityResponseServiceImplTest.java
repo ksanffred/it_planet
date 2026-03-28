@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.tramplin_itplanet.tramplin.datasource.entity.ApplicantEntity;
+import ru.tramplin_itplanet.tramplin.datasource.entity.EmployerEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
@@ -18,11 +19,15 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityResponseReposi
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,6 +128,38 @@ class OpportunityResponseServiceImplTest {
         assertThatThrownBy(() -> opportunityResponseService.apply(999L, "applicant@example.com"))
                 .isInstanceOf(OpportunityNotFoundException.class)
                 .hasMessageContaining("999");
+    }
+
+    @Test
+    void getMyResponses_existingResponses_returnsSummaries() {
+        UserEntity user = buildUser(12L, "applicant@example.com", UserRole.APPLICANT);
+        ApplicantEntity applicant = buildApplicant(3L, 12L);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setName("Acme Corp");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setEmployer(employer);
+
+        OpportunityResponseEntity response = new OpportunityResponseEntity();
+        response.setOpportunity(opportunity);
+        response.setStatus(OpportunityResponseStatus.NOT_REVIEWED);
+
+        when(jpaUserRepository.findByEmail("applicant@example.com")).thenReturn(Optional.of(user));
+        when(jpaApplicantRepository.findByUserIdWithSkills(12L)).thenReturn(Optional.of(applicant));
+        when(jpaOpportunityResponseRepository.findAllByApplicantIdWithOpportunity(3L)).thenReturn(List.of(response));
+
+        List<ApplicantOpportunityResponseCard> result = opportunityResponseService.getMyResponses("applicant@example.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
+        assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
+        assertThat(result.getFirst().responseStatus()).isEqualTo(OpportunityResponseStatus.NOT_REVIEWED);
+        assertThat(result.getFirst().opportunityType()).isEqualTo(OpportunityType.VACANCY);
+        assertThat(result.getFirst().opportunityStatus()).isEqualTo(OpportunityStatus.ACTIVE);
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {

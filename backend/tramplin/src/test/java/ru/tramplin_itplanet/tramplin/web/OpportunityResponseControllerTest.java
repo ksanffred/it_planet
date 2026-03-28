@@ -9,13 +9,18 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponseStatus;
+import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -79,5 +84,41 @@ class OpportunityResponseControllerTest {
         mockMvc.perform(post("/opportunities/10/responses"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("Response already exists for opportunity id: 10 and applicant id: 3"));
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void myResponses_validApplicant_returns200() throws Exception {
+        when(opportunityResponseService.getMyResponses("applicant@example.com"))
+                .thenReturn(List.of(
+                        new ApplicantOpportunityResponseCard(
+                                "Java Developer",
+                                "Acme Corp",
+                                OpportunityResponseStatus.NOT_REVIEWED,
+                                OpportunityType.VACANCY,
+                                OpportunityStatus.ACTIVE
+                        )
+                ));
+
+        mockMvc.perform(get("/opportunities/responses/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Java Developer"))
+                .andExpect(jsonPath("$[0].company_name").value("Acme Corp"))
+                .andExpect(jsonPath("$[0].response_status").value("NOT_REVIEWED"))
+                .andExpect(jsonPath("$[0].opportunity_type").value("VACANCY"))
+                .andExpect(jsonPath("$[0].opportunity_status").value("ACTIVE"));
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com")
+    void myResponses_nonApplicantRole_returns403() throws Exception {
+        mockMvc.perform(get("/opportunities/responses/me"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void myResponses_withoutAuthentication_returns401() throws Exception {
+        mockMvc.perform(get("/opportunities/responses/me"))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -17,13 +17,18 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
+import ru.tramplin_itplanet.tramplin.web.dto.MyOpportunityResponseItem;
 import ru.tramplin_itplanet.tramplin.web.dto.OpportunityResponseCreatedResponse;
+import ru.tramplin_itplanet.tramplin.web.mapper.MyOpportunityResponseItemMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.OpportunityResponseMapper;
+
+import java.util.List;
 
 @Tag(name = "Opportunity Responses", description = "Applicant responses to opportunity cards")
 @RestController
@@ -64,6 +69,30 @@ public class OpportunityResponseController {
                 opportunityResponseService.apply(opportunityId, email)
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(
+            summary = "Get opportunities I responded to",
+            description = "Returns title, company_name, response status, opportunity type, and opportunity status."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "List returned"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an applicant"),
+            @ApiResponse(responseCode = "404", description = "Applicant profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/responses/me")
+    public ResponseEntity<List<MyOpportunityResponseItem>> myResponses() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureApplicantRole(authentication);
+
+        log.info("GET /opportunities/responses/me: email={}", email);
+        List<MyOpportunityResponseItem> response = opportunityResponseService.getMyResponses(email).stream()
+                .map(MyOpportunityResponseItemMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     private static String authenticatedEmail(Authentication authentication) {
