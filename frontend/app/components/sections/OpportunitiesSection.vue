@@ -5,7 +5,12 @@ import { opportunities } from '~/data/opportunities'
 <template>
   <div class="opportunities-section container">
     <div class="opportunities-section__grid">
-      <BaseOpportunityCard v-for="item in opportunities" :key="item.id" v-bind="item" />
+      <BaseOpportunityCard
+        class="opportunities-section__card"
+        v-for="item in opportunities"
+        :key="item.id"
+        v-bind="item"
+      />
     </div>
   </div>
 </template>
