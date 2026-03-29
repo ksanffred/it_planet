@@ -15,6 +15,7 @@ public final class EmployerOpportunityApplicationMapper {
                 application.applicantName(),
                 application.university(),
                 application.desiredPosition(),
+                application.recommendation(),
                 application.matchingTags().stream()
                         .map(tag -> new TagResponse(tag.id(), tag.name(), tag.category().name()))
                         .toList()

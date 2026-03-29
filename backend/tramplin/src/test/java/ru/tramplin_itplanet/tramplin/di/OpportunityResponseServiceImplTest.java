@@ -15,6 +15,7 @@ import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity
 import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantOpportunityRecommendationRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityResponseRepository;
@@ -56,6 +57,9 @@ class OpportunityResponseServiceImplTest {
 
     @Mock
     private JpaOpportunityResponseRepository jpaOpportunityResponseRepository;
+
+    @Mock
+    private JpaApplicantOpportunityRecommendationRepository jpaRecommendationRepository;
 
     @InjectMocks
     private OpportunityResponseServiceImpl opportunityResponseService;
@@ -212,6 +216,18 @@ class OpportunityResponseServiceImplTest {
         when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
         when(jpaOpportunityRepository.findById(10L)).thenReturn(Optional.of(opportunity));
         when(jpaOpportunityResponseRepository.findAllByOpportunityIdWithDetails(10L)).thenReturn(List.of(response));
+        when(jpaRecommendationRepository.countRecommendationsByOpportunityAndApplicants(10L, List.of(3L)))
+                .thenReturn(List.of(new JpaApplicantOpportunityRecommendationRepository.RecommendationCountProjection() {
+                    @Override
+                    public Long getRecommendedApplicantId() {
+                        return 3L;
+                    }
+
+                    @Override
+                    public long getRecommendationsCount() {
+                        return 2L;
+                    }
+                }));
 
         List<EmployerOpportunityApplication> result =
                 opportunityResponseService.getApplicationsForOpportunity(10L, "employer@example.com");
@@ -221,6 +237,7 @@ class OpportunityResponseServiceImplTest {
         assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
         assertThat(result.getFirst().university()).isEqualTo("RANEPA");
         assertThat(result.getFirst().desiredPosition()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().recommendation()).isEqualTo(2L);
         assertThat(result.getFirst().matchingTags()).hasSize(1);
         assertThat(result.getFirst().matchingTags().getFirst().name()).isEqualTo("Java");
     }
@@ -262,6 +279,18 @@ class OpportunityResponseServiceImplTest {
         when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
         when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
         when(jpaOpportunityResponseRepository.findAllByEmployerIdWithDetails(7L)).thenReturn(List.of(response));
+        when(jpaRecommendationRepository.countRecommendationsByOpportunityAndApplicants(10L, List.of(3L)))
+                .thenReturn(List.of(new JpaApplicantOpportunityRecommendationRepository.RecommendationCountProjection() {
+                    @Override
+                    public Long getRecommendedApplicantId() {
+                        return 3L;
+                    }
+
+                    @Override
+                    public long getRecommendationsCount() {
+                        return 4L;
+                    }
+                }));
 
         List<EmployerOpportunityApplication> result =
                 opportunityResponseService.getApplicationsForMyOpportunities("employer@example.com");
@@ -270,6 +299,7 @@ class OpportunityResponseServiceImplTest {
         assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
         assertThat(result.getFirst().university()).isEqualTo("RANEPA");
         assertThat(result.getFirst().desiredPosition()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().recommendation()).isEqualTo(4L);
         assertThat(result.getFirst().matchingTags()).hasSize(1);
     }
 

@@ -135,6 +135,7 @@ class OpportunityResponseControllerTest {
                                 "Ivan Ivanov",
                                 "RANEPA",
                                 "Backend Developer Intern",
+                                2L,
                                 List.of(new Tag(2L, "Java", TagCategory.TECHNOLOGY))
                         )
                 ));
@@ -145,6 +146,7 @@ class OpportunityResponseControllerTest {
                 .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"))
                 .andExpect(jsonPath("$[0].university").value("RANEPA"))
                 .andExpect(jsonPath("$[0].desired_position").value("Backend Developer Intern"))
+                .andExpect(jsonPath("$[0].recommendation").value(2))
                 .andExpect(jsonPath("$[0].matching_tags[0].name").value("Java"));
     }
 
@@ -158,6 +160,7 @@ class OpportunityResponseControllerTest {
                                 "Ivan Ivanov",
                                 "RANEPA",
                                 "Backend Developer Intern",
+                                4L,
                                 List.of(new Tag(2L, "Java", TagCategory.TECHNOLOGY))
                         )
                 ));
@@ -165,6 +168,7 @@ class OpportunityResponseControllerTest {
         mockMvc.perform(get("/opportunities/responses/employer"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].applicant_name").value("Ivan Ivanov"))
+                .andExpect(jsonPath("$[0].recommendation").value(4))
                 .andExpect(jsonPath("$[0].matching_tags[0].name").value("Java"));
     }
 

@@ -21,6 +21,9 @@ public record EmployerOpportunityApplicationItem(
         @Schema(description = "Desired position", example = "Backend Developer Intern")
         String desiredPosition,
 
+        @Schema(description = "Count of recommendations received for this applicant on this opportunity", example = "2")
+        long recommendation,
+
         @JsonProperty("matching_tags")
         @Schema(description = "Tags that are present both in opportunity and applicant profile")
         List<TagResponse> matchingTags
