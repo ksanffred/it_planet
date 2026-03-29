@@ -1,8 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { Tag } from '~/types'
+
+const searchText: Ref<string> = ref('')
+const searchTags: Ref<Tag[]> = ref([])
+</script>
 
 <template>
   <div class="search-section container">
-    <BaseAppInput placeholder="Поиск стажировок, компаний, технологий..." />
+    <BaseAppInput v-model="searchText" placeholder="Поиск стажировок, компаний, технологий..." />
     <BaseAppButton variant="secondary" class="search-section__map-button">
       <img
         class="search-section__map-thumb"
