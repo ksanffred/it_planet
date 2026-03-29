@@ -47,6 +47,7 @@ public final class ApplicantMapper {
                 profile.portfolioUrl(),
                 profile.avatarUrl(),
                 profile.resumeUrl(),
+                profile.visibility().name(),
                 profile.skills().stream()
                         .map(tag -> new TagResponse(tag.id(), tag.name(), tag.category().name()))
                         .toList()

@@ -17,5 +17,6 @@ public record ApplicantProfile(
         String portfolioUrl,
         String avatarUrl,
         String resumeUrl,
+        ApplicantVisibility visibility,
         List<Tag> skills
 ) implements Serializable {}

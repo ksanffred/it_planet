@@ -20,6 +20,7 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavorites;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavoriteOpportunityCard;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityType;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
@@ -208,6 +209,67 @@ class ApplicantFavoriteServiceImplTest {
         assertThat(result.getFirst().companyName()).isEqualTo("Acme Corp");
         assertThat(result.getFirst().status()).isEqualTo(OpportunityStatus.ACTIVE);
         assertThat(result.getFirst().type()).isEqualTo(OpportunityType.VACANCY);
+    }
+
+    @Test
+    void getCardsByApplicantIdForViewer_publicProfile_allowsApplicantViewer() {
+        UserEntity viewer = buildUser(21L, "viewer@example.com", UserRole.APPLICANT);
+        ApplicantEntity target = buildApplicant(7L, 30L);
+        target.setVisibility(ApplicantVisibility.PUBLIC);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setName("Acme Corp");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setEmployer(employer);
+
+        ApplicantFavoriteOpportunityEntity favorite = new ApplicantFavoriteOpportunityEntity();
+        favorite.setOpportunity(opportunity);
+
+        when(jpaUserRepository.findByEmail("viewer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(7L)).thenReturn(Optional.of(target));
+        when(jpaApplicantFavoriteOpportunityRepository.findAllByApplicantIdWithOpportunity(7L))
+                .thenReturn(List.of(favorite));
+
+        List<ApplicantFavoriteOpportunityCard> result =
+                applicantFavoriteService.getCardsByApplicantIdForViewer("viewer@example.com", 7L);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
+    }
+
+    @Test
+    void getCardsByApplicantIdForViewer_privateProfile_otherApplicantDenied() {
+        UserEntity viewer = buildUser(21L, "viewer@example.com", UserRole.APPLICANT);
+        ApplicantEntity target = buildApplicant(7L, 30L);
+        target.setVisibility(ApplicantVisibility.PRIVATE);
+
+        when(jpaUserRepository.findByEmail("viewer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(7L)).thenReturn(Optional.of(target));
+
+        assertThatThrownBy(() -> applicantFavoriteService.getCardsByApplicantIdForViewer("viewer@example.com", 7L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("private");
+    }
+
+    @Test
+    void getCardsByApplicantIdForViewer_privateProfile_employerAllowed() {
+        UserEntity viewer = buildUser(22L, "employer@example.com", UserRole.EMPLOYER);
+        ApplicantEntity target = buildApplicant(7L, 30L);
+        target.setVisibility(ApplicantVisibility.PRIVATE);
+
+        when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(7L)).thenReturn(Optional.of(target));
+        when(jpaApplicantFavoriteOpportunityRepository.findAllByApplicantIdWithOpportunity(7L))
+                .thenReturn(List.of());
+
+        List<ApplicantFavoriteOpportunityCard> result =
+                applicantFavoriteService.getCardsByApplicantIdForViewer("employer@example.com", 7L);
+
+        assertThat(result).isEmpty();
     }
 
     private static UserEntity buildUser(Long id, String email, UserRole role) {

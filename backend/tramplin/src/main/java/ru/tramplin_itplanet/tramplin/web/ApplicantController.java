@@ -24,6 +24,7 @@ import ru.tramplin_itplanet.tramplin.web.dto.ApplicantProfileResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.CreateApplicantRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.UpdateCurrentApplicantRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.UpdateApplicantRequest;
+import ru.tramplin_itplanet.tramplin.web.dto.UpdateApplicantVisibilityRequest;
 import ru.tramplin_itplanet.tramplin.web.mapper.ApplicantMapper;
 
 @Tag(name = "Applicants", description = "Applicant personal profiles")
@@ -127,6 +128,29 @@ public class ApplicantController {
         log.info("PUT /applicants/me: email={}", email);
         ApplicantProfileResponse response = ApplicantMapper.toResponse(
                 applicantService.updateCurrentByUserEmail(email, ApplicantMapper.toCommand(request))
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Update current applicant visibility")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Applicant visibility updated"),
+            @ApiResponse(responseCode = "400", description = "Validation failed"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not an applicant"),
+            @ApiResponse(responseCode = "404", description = "Applicant profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/me/visibility")
+    public ResponseEntity<ApplicantProfileResponse> updateVisibility(
+            @Valid @RequestBody UpdateApplicantVisibilityRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureApplicantRole(authentication);
+        log.info("PUT /applicants/me/visibility: email={}, visibility={}", email, request.visibility());
+
+        ApplicantProfileResponse response = ApplicantMapper.toResponse(
+                applicantService.updateVisibilityByUserEmail(email, request.visibility())
         );
         return ResponseEntity.ok(response);
     }

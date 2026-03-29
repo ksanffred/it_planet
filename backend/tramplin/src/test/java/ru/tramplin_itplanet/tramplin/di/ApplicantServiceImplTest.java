@@ -17,6 +17,7 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantProfile;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateApplicantCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateCurrentApplicantCommand;
@@ -85,6 +86,7 @@ class ApplicantServiceImplTest {
 
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.name()).isEqualTo("Ivan Ivanov");
+        assertThat(result.visibility()).isEqualTo(ApplicantVisibility.PRIVATE);
         assertThat(result.skills()).hasSize(1);
         assertThat(result.skills().getFirst().name()).isEqualTo("Java");
     }
@@ -265,5 +267,30 @@ class ApplicantServiceImplTest {
         assertThat(result.name()).isEqualTo("Ivan Ivanov");
         assertThat(result.university()).isEqualTo("RANEPA");
         assertThat(result.skills()).hasSize(1);
+    }
+
+    @Test
+    void updateVisibilityByUserEmail_applicant_updatesVisibility() {
+        UserEntity user = new UserEntity();
+        ReflectionTestUtils.setField(user, "id", 12L);
+        user.setEmail("applicant@example.com");
+        user.setRole(UserRole.APPLICANT);
+
+        ApplicantEntity applicant = new ApplicantEntity();
+        applicant.setId(1L);
+        applicant.setUserId(12L);
+        applicant.setName("Ivan Ivanov");
+        applicant.setVisibility(ApplicantVisibility.PRIVATE);
+
+        when(jpaUserRepository.findByEmail("applicant@example.com")).thenReturn(Optional.of(user));
+        when(jpaApplicantRepository.findByUserIdWithSkills(12L)).thenReturn(Optional.of(applicant));
+        when(jpaApplicantRepository.save(applicant)).thenReturn(applicant);
+
+        ApplicantProfile result = applicantService.updateVisibilityByUserEmail(
+                "applicant@example.com",
+                ApplicantVisibility.PUBLIC
+        );
+
+        assertThat(result.visibility()).isEqualTo(ApplicantVisibility.PUBLIC);
     }
 }

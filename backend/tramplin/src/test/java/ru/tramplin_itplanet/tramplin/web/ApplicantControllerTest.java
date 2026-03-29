@@ -12,6 +12,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantProfile;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
 import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantService;
 
 import java.util.List;
@@ -176,7 +177,29 @@ class ApplicantControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void updateVisibility_validRequest_returns200() throws Exception {
+        when(applicantService.updateVisibilityByUserEmail("applicant@example.com", ApplicantVisibility.PUBLIC))
+                .thenReturn(buildProfile(1L, ApplicantVisibility.PUBLIC));
+
+        mockMvc.perform(put("/applicants/me/visibility")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "visibility": "PUBLIC"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.visibility").value("PUBLIC"));
+    }
+
     private ApplicantProfile buildProfile(Long id) {
+        return buildProfile(id, ApplicantVisibility.PRIVATE);
+    }
+
+    private ApplicantProfile buildProfile(Long id, ApplicantVisibility visibility) {
         return new ApplicantProfile(
                 id,
                 12L,
@@ -191,6 +214,7 @@ class ApplicantControllerTest {
                 "https://github.com/user",
                 "applicants/1/avatar/photo.png",
                 "applicants/1/resume/cv.pdf",
+                visibility,
                 List.of(
                         new Tag(2L, "Java", TagCategory.TECHNOLOGY),
                         new Tag(10L, "Spring Boot", TagCategory.TECHNOLOGY)

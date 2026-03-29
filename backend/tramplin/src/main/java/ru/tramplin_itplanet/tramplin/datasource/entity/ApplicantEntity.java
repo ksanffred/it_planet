@@ -1,6 +1,8 @@
 package ru.tramplin_itplanet.tramplin.datasource.entity;
 
 import jakarta.persistence.*;
+import ru.tramplin_itplanet.tramplin.datasource.entity.converter.ApplicantVisibilityConverter;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,10 @@ public class ApplicantEntity {
 
     @Column(name = "resume_url", columnDefinition = "TEXT")
     private String resumeUrl;
+
+    @Column
+    @Convert(converter = ApplicantVisibilityConverter.class)
+    private ApplicantVisibility visibility = ApplicantVisibility.PRIVATE;
 
     @ManyToMany
     @JoinTable(
@@ -93,6 +99,9 @@ public class ApplicantEntity {
 
     public String getResumeUrl() { return resumeUrl; }
     public void setResumeUrl(String resumeUrl) { this.resumeUrl = resumeUrl; }
+
+    public ApplicantVisibility getVisibility() { return visibility; }
+    public void setVisibility(ApplicantVisibility visibility) { this.visibility = visibility; }
 
     public List<TagEntity> getSkills() { return skills; }
     public void setSkills(List<TagEntity> skills) { this.skills = skills; }

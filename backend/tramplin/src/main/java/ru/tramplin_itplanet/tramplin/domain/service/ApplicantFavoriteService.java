@@ -10,4 +10,5 @@ public interface ApplicantFavoriteService {
     ApplicantFavorites addManyByUserEmail(String email, List<Long> opportunityIds);
     ApplicantFavorites removeOneByUserEmail(String email, Long opportunityId);
     List<ApplicantFavoriteOpportunityCard> getCardsByUserEmail(String email);
+    List<ApplicantFavoriteOpportunityCard> getCardsByApplicantIdForViewer(String viewerEmail, Long applicantId);
 }

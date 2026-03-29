@@ -16,6 +16,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantAlreadyExistsExce
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantProfile;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateApplicantCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateCurrentApplicantCommand;
@@ -78,6 +79,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         entity.setAdditionalEducationDetails(command.additionalEducationDetails());
         entity.setPortfolioUrl(command.portfolioUrl());
         entity.setResumeUrl(command.resumeUrl());
+        entity.setVisibility(ApplicantVisibility.PRIVATE);
         entity.setSkills(skills);
 
         ApplicantEntity saved = jpaApplicantRepository.save(entity);
@@ -170,6 +172,23 @@ public class ApplicantServiceImpl implements ApplicantService {
         return toProfile(updated);
     }
 
+    @Override
+    @Transactional
+    public ApplicantProfile updateVisibilityByUserEmail(String email, ApplicantVisibility visibility) {
+        log.info("Updating applicant visibility by email={}, visibility={}", email, visibility);
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+
+        if (user.getRole() != UserRole.APPLICANT) {
+            throw new AccessDeniedException("User role must be APPLICANT");
+        }
+
+        ApplicantEntity entity = findApplicantByUserId(user.getId());
+        entity.setVisibility(visibility);
+
+        ApplicantEntity updated = jpaApplicantRepository.save(entity);
+        return toProfile(updated);
+    }
+
     private UserEntity resolveAuthenticatedUserByEmail(String email) {
         return jpaUserRepository.findByEmail(email)
                 .orElseThrow(() -> {
@@ -204,6 +223,7 @@ public class ApplicantServiceImpl implements ApplicantService {
                 entity.getPortfolioUrl(),
                 entity.getAvatarUrl(),
                 entity.getResumeUrl(),
+                entity.getVisibility() != null ? entity.getVisibility() : ApplicantVisibility.PRIVATE,
                 skills
         );
     }
