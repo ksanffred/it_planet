@@ -15,6 +15,16 @@ public interface JpaApplicantContactRepository extends JpaRepository<ApplicantCo
            "OR (c.requester.id = :secondId AND c.recipient.id = :firstId)")
     boolean existsBetweenApplicants(@Param("firstId") Long firstId, @Param("secondId") Long secondId);
 
+    @Query("SELECT COUNT(c) > 0 FROM ApplicantContactEntity c " +
+           "WHERE ((c.requester.id = :firstId AND c.recipient.id = :secondId) " +
+           "OR (c.requester.id = :secondId AND c.recipient.id = :firstId)) " +
+           "AND c.status = :status")
+    boolean existsBetweenApplicantsWithStatus(
+            @Param("firstId") Long firstId,
+            @Param("secondId") Long secondId,
+            @Param("status") ApplicantContactStatus status
+    );
+
     @Query("SELECT c FROM ApplicantContactEntity c " +
            "JOIN FETCH c.requester " +
            "JOIN FETCH c.recipient " +

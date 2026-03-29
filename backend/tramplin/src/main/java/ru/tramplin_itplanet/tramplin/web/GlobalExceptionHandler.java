@@ -17,10 +17,12 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantContactAlreadyExi
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidVerificationTokenException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidFileException;
 import ru.tramplin_itplanet.tramplin.domain.exception.InvalidApplicantContactOperationException;
+import ru.tramplin_itplanet.tramplin.domain.exception.InvalidApplicantOpportunityRecommendationOperationException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.TagAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantOpportunityRecommendationAlreadyExistsException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -94,6 +96,17 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(ApplicantOpportunityRecommendationAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleApplicantOpportunityRecommendationAlreadyExists(
+            ApplicantOpportunityRecommendationAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
         log.warn("Unauthorized: {}", ex.getMessage());
@@ -118,6 +131,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidApplicantContactOperation(
             InvalidApplicantContactOperationException ex) {
         log.warn("Invalid applicant contact operation: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(InvalidApplicantOpportunityRecommendationOperationException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidApplicantOpportunityRecommendationOperation(
+            InvalidApplicantOpportunityRecommendationOperationException ex) {
+        log.warn("Invalid applicant recommendation operation: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", 400,
