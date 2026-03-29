@@ -50,6 +50,12 @@ const props = defineProps<Props>()
   &__content {
     display: flex;
     flex-direction: column;
+    color: var(--text-inverted-color);
+  }
+
+  &__name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
   }
 }
 </style>
