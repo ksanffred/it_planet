@@ -23,6 +23,7 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
@@ -171,6 +172,50 @@ class OpportunityResponseServiceImplTest {
         assertThat(result.getFirst().responseStatus()).isEqualTo(OpportunityResponseStatus.NOT_REVIEWED);
         assertThat(result.getFirst().opportunityType()).isEqualTo(OpportunityType.VACANCY);
         assertThat(result.getFirst().opportunityStatus()).isEqualTo(OpportunityStatus.ACTIVE);
+    }
+
+    @Test
+    void getResponsesByApplicantIdForViewer_publicApplicant_returnsResponses() {
+        UserEntity viewer = buildUser(21L, "viewer@example.com", UserRole.USER);
+        ApplicantEntity targetApplicant = buildApplicant(3L, 12L);
+        targetApplicant.setVisibility(ApplicantVisibility.PUBLIC);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setName("Acme Corp");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setEmployer(employer);
+
+        OpportunityResponseEntity response = new OpportunityResponseEntity();
+        response.setOpportunity(opportunity);
+        response.setStatus(OpportunityResponseStatus.NOT_REVIEWED);
+
+        when(jpaUserRepository.findByEmail("viewer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(3L)).thenReturn(Optional.of(targetApplicant));
+        when(jpaOpportunityResponseRepository.findAllByApplicantIdWithOpportunity(3L)).thenReturn(List.of(response));
+
+        List<ApplicantOpportunityResponseCard> result =
+                opportunityResponseService.getResponsesByApplicantIdForViewer("viewer@example.com", 3L);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
+    }
+
+    @Test
+    void getResponsesByApplicantIdForViewer_privateApplicant_otherApplicantDenied() {
+        UserEntity viewer = buildUser(21L, "viewer@example.com", UserRole.APPLICANT);
+        ApplicantEntity targetApplicant = buildApplicant(3L, 12L);
+        targetApplicant.setVisibility(ApplicantVisibility.PRIVATE);
+
+        when(jpaUserRepository.findByEmail("viewer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(3L)).thenReturn(Optional.of(targetApplicant));
+
+        assertThatThrownBy(() -> opportunityResponseService.getResponsesByApplicantIdForViewer("viewer@example.com", 3L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("private");
     }
 
     @Test

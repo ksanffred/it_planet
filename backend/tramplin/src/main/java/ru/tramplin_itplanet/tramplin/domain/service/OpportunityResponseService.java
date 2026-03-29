@@ -9,6 +9,7 @@ import java.util.List;
 public interface OpportunityResponseService {
     OpportunityResponse apply(Long opportunityId, String userEmail);
     List<ApplicantOpportunityResponseCard> getMyResponses(String userEmail);
+    List<ApplicantOpportunityResponseCard> getResponsesByApplicantIdForViewer(String viewerEmail, Long applicantId);
     List<EmployerOpportunityApplication> getApplicationsForOpportunity(Long opportunityId, String userEmail);
     List<EmployerOpportunityApplication> getApplicationsForMyOpportunities(String userEmail);
 }

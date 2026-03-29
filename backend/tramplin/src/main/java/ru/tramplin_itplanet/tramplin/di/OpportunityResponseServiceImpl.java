@@ -22,6 +22,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
@@ -111,6 +112,29 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     }
 
     @Override
+    public List<ApplicantOpportunityResponseCard> getResponsesByApplicantIdForViewer(String viewerEmail, Long applicantId) {
+        log.info("Loading opportunity responses by applicantId={}, viewerEmail={}", applicantId, viewerEmail);
+        UserEntity viewer = resolveAuthenticatedUserByEmail(viewerEmail);
+        ApplicantEntity targetApplicant = jpaApplicantRepository.findById(applicantId)
+                .orElseThrow(() -> new ApplicantNotFoundException(applicantId));
+
+        if (effectiveVisibility(targetApplicant) == ApplicantVisibility.PRIVATE
+                && canViewPrivateApplicantData(viewer, targetApplicant) == false) {
+            throw new AccessDeniedException("Responses are private for this applicant");
+        }
+
+        return jpaOpportunityResponseRepository.findAllByApplicantIdWithOpportunity(targetApplicant.getId()).stream()
+                .map(response -> new ApplicantOpportunityResponseCard(
+                        response.getOpportunity().getTitle(),
+                        response.getOpportunity().getEmployer().getName(),
+                        response.getStatus(),
+                        response.getOpportunity().getType(),
+                        response.getOpportunity().getStatus()
+                ))
+                .toList();
+    }
+
+    @Override
     public List<EmployerOpportunityApplication> getApplicationsForOpportunity(Long opportunityId, String userEmail) {
         log.info("Loading applications for opportunityId={}, userEmail={}", opportunityId, userEmail);
         EmployerEntity employer = resolveEmployerByUserEmail(userEmail);
@@ -153,11 +177,7 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     }
 
     private ApplicantEntity resolveApplicantByUserEmail(String userEmail) {
-        UserEntity user = jpaUserRepository.findByEmail(userEmail)
-                .orElseThrow(() -> {
-                    log.warn("Authenticated user not found by email={}", userEmail);
-                    return new BadCredentialsException("Invalid authentication token");
-                });
+        UserEntity user = resolveAuthenticatedUserByEmail(userEmail);
 
         if (user.getRole() != UserRole.APPLICANT) {
             throw new AccessDeniedException("User role must be APPLICANT");
@@ -169,6 +189,14 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
                     return new ApplicantNotFoundException(user.getId());
                 });
         return applicant;
+    }
+
+    private UserEntity resolveAuthenticatedUserByEmail(String userEmail) {
+        return jpaUserRepository.findByEmail(userEmail)
+                .orElseThrow(() -> {
+                    log.warn("Authenticated user not found by email={}", userEmail);
+                    return new BadCredentialsException("Invalid authentication token");
+                });
     }
 
     private EmployerEntity resolveEmployerByUserEmail(String userEmail) {
@@ -227,6 +255,20 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
 
     private static String recommendationKey(Long opportunityId, Long applicantId) {
         return opportunityId + ":" + applicantId;
+    }
+
+    private static ApplicantVisibility effectiveVisibility(ApplicantEntity applicant) {
+        return applicant.getVisibility() != null ? applicant.getVisibility() : ApplicantVisibility.PRIVATE;
+    }
+
+    private static boolean canViewPrivateApplicantData(UserEntity viewer, ApplicantEntity targetApplicant) {
+        if (viewer.getRole() == UserRole.EMPLOYER || viewer.getRole() == UserRole.ADMIN) {
+            return true;
+        }
+        if (viewer.getRole() == UserRole.APPLICANT) {
+            return Objects.equals(targetApplicant.getUserId(), viewer.getId());
+        }
+        return false;
     }
 
     private EmployerOpportunityApplication toEmployerApplication(OpportunityResponseEntity response, long recommendation) {
