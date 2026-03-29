@@ -1,6 +1,6 @@
 // ==================== Auth Types ====================
 
-export type UserRole = 'USER' | 'EMPLOYER' | 'ADMIN'
+export type UserRole = 'USER' | 'APPLICANT' | 'EMPLOYER' | 'CURATOR'
 
 export interface LoginRequest {
   email: string

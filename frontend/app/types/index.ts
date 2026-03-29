@@ -28,6 +28,48 @@ export type {
   CreateOpportunityRequest,
 } from './opportunity'
 
+// Applicants
+export type { ApplicantVisibility } from './applicant'
+export type {
+  Applicant,
+  ApplicantResponse,
+  CreateApplicantRequest,
+  UpdateApplicantRequest,
+  UpdateApplicantVisibilityRequest,
+} from './applicant'
+
+// Contacts
+export type { ApplicantContactStatus } from './contact'
+export type {
+  ApplicantContact,
+  ApplicantContactResponse,
+  ApplicantContactListItem,
+  UpdateContactStatusRequest,
+} from './contact'
+
+// Favorites
+export type {
+  FavoriteOpportunity,
+  FavoriteOpportunityResponse,
+  AddFavoritesBulkRequest,
+  AddFavoritesBulkResponse,
+} from './favorite'
+
+// Responses
+export type { OpportunityResponseStatus } from './response'
+export type {
+  OpportunityResponse,
+  OpportunityResponseListItem,
+  OpportunityResponseApplicant,
+  ApplicantResponsesLookup,
+} from './response'
+
+// Recommendations
+export type { Recommendation, RecommendationResponse } from './recommendation'
+
+// Curators
+export type { Curator, CuratorResponse, CreateCuratorRequest } from './curator'
+
 // Media
 export type { MediaUploadResponse } from './media'
 

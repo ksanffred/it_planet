@@ -12,10 +12,14 @@ export interface Employer {
 
 export interface EmployerResponse {
   id: number
-  name: string
-  logoUrl?: string
+  companyName: string
+  description?: string
+  inn: string
   website?: string
-  contacts?: string
+  socials?: string
+  logoUrl?: string
+  verifiedOrgName?: string
+  status: EmployerStatus
 }
 
 export interface EmployerProfileResponse {
