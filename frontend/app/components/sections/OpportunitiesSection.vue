@@ -5,7 +5,7 @@
     <div class="opportunities-section__grid">
       <!-- <BaseOpportunityCard
         class="opportunities-section__card"
-        v-for="item in [' ',]"
+        v-for="item in []"
         :key="item.id"
         v-bind="item"
       /> -->
