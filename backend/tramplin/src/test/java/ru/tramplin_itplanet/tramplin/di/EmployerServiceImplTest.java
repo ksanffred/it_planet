@@ -16,7 +16,9 @@ import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateEmployerCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerProfile;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateEmployerByCuratorCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateEmployerCommand;
+import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 
 import java.util.Optional;
 
@@ -303,5 +305,63 @@ class EmployerServiceImplTest {
         assertThatThrownBy(() -> employerService.assertCanManageOpportunities("employer@example.com", 78L))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("full_verified");
+    }
+
+    @Test
+    void updateByIdAsCurator_curator_updatesAllFields() {
+        UserEntity curator = new UserEntity();
+        ReflectionTestUtils.setField(curator, "id", 40L);
+        curator.setEmail("curator@example.com");
+        curator.setRole(UserRole.CURATOR);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(10L);
+        employer.setUserId(11L);
+        employer.setName("Old Name");
+        employer.setInn("1111111111");
+        employer.setStatus("pending");
+
+        when(jpaUserRepository.findByEmail("curator@example.com")).thenReturn(Optional.of(curator));
+        when(jpaEmployerRepository.findById(10L)).thenReturn(Optional.of(employer));
+        when(jpaEmployerRepository.save(employer)).thenReturn(employer);
+
+        EmployerProfile result = employerService.updateByIdAsCurator(
+                "curator@example.com",
+                10L,
+                new UpdateEmployerByCuratorCommand(
+                        50L,
+                        "Acme Corp",
+                        "Global software company",
+                        "7701234567",
+                        "https://acme.com",
+                        "@acme_hr",
+                        "https://acme.com/logo.png",
+                        "Acme Corporation",
+                        "full_verified"
+                )
+        );
+
+        assertThat(result.companyName()).isEqualTo("Acme Corp");
+        assertThat(result.inn()).isEqualTo("7701234567");
+        assertThat(result.status()).isEqualTo("full_verified");
+        assertThat(result.userId()).isEqualTo(50L);
+    }
+
+    @Test
+    void deleteByIdAsCurator_curator_deletesEmployer() {
+        UserEntity curator = new UserEntity();
+        ReflectionTestUtils.setField(curator, "id", 40L);
+        curator.setEmail("curator@example.com");
+        curator.setRole(UserRole.CURATOR);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setId(10L);
+
+        when(jpaUserRepository.findByEmail("curator@example.com")).thenReturn(Optional.of(curator));
+        when(jpaEmployerRepository.findById(10L)).thenReturn(Optional.of(employer));
+
+        employerService.deleteByIdAsCurator("curator@example.com", 10L);
+
+        verify(jpaEmployerRepository).delete(employer);
     }
 }

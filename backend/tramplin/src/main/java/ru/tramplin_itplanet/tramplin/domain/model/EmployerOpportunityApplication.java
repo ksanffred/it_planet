@@ -7,5 +7,6 @@ public record EmployerOpportunityApplication(
         String applicantName,
         String university,
         String desiredPosition,
+        long recommendation,
         List<Tag> matchingTags
 ) {}

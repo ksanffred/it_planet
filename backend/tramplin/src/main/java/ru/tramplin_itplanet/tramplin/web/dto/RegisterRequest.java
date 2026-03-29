@@ -18,6 +18,6 @@ public record RegisterRequest(
         @NotBlank @Size(min = 8) String password,
 
         @Schema(description = "User role (defaults to APPLICANT if omitted)", example = "APPLICANT",
-                allowableValues = {"USER", "APPLICANT", "EMPLOYER", "ADMIN"})
+                allowableValues = {"USER", "APPLICANT", "EMPLOYER"})
         UserRole role
 ) {}

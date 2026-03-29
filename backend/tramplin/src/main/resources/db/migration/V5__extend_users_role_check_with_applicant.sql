@@ -10,5 +10,5 @@ BEGIN
 
     ALTER TABLE users
         ADD CONSTRAINT users_role_check
-        CHECK (role IN ('USER', 'APPLICANT', 'EMPLOYER', 'ADMIN'));
+        CHECK (role IN ('USER', 'APPLICANT', 'EMPLOYER', 'CURATOR'));
 END $$;

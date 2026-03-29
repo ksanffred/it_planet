@@ -7,6 +7,6 @@ public record CurrentUserResponse(
         @Schema(description = "User ID") Long userId,
         @Schema(description = "User email") String email,
         @Schema(description = "Display name") String displayName,
-        @Schema(description = "User role", allowableValues = {"USER", "APPLICANT", "EMPLOYER", "ADMIN"}) String role,
+        @Schema(description = "User role", allowableValues = {"USER", "APPLICANT", "EMPLOYER", "CURATOR"}) String role,
         @Schema(description = "Email verification flag") boolean verified
 ) {}

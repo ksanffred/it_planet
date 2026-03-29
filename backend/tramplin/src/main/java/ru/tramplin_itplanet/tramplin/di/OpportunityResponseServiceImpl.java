@@ -14,6 +14,7 @@ import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantOpportunityRecommendationRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityResponseRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
@@ -21,6 +22,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException
 import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
@@ -31,7 +33,9 @@ import ru.tramplin_itplanet.tramplin.domain.service.OpportunityResponseService;
 
 import java.util.Objects;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,19 +48,22 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     private final JpaApplicantRepository jpaApplicantRepository;
     private final JpaOpportunityRepository jpaOpportunityRepository;
     private final JpaOpportunityResponseRepository jpaOpportunityResponseRepository;
+    private final JpaApplicantOpportunityRecommendationRepository jpaRecommendationRepository;
 
     public OpportunityResponseServiceImpl(
             JpaUserRepository jpaUserRepository,
             JpaEmployerRepository jpaEmployerRepository,
             JpaApplicantRepository jpaApplicantRepository,
             JpaOpportunityRepository jpaOpportunityRepository,
-            JpaOpportunityResponseRepository jpaOpportunityResponseRepository
+            JpaOpportunityResponseRepository jpaOpportunityResponseRepository,
+            JpaApplicantOpportunityRecommendationRepository jpaRecommendationRepository
     ) {
         this.jpaUserRepository = jpaUserRepository;
         this.jpaEmployerRepository = jpaEmployerRepository;
         this.jpaApplicantRepository = jpaApplicantRepository;
         this.jpaOpportunityRepository = jpaOpportunityRepository;
         this.jpaOpportunityResponseRepository = jpaOpportunityResponseRepository;
+        this.jpaRecommendationRepository = jpaRecommendationRepository;
     }
 
     @Override
@@ -105,6 +112,29 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     }
 
     @Override
+    public List<ApplicantOpportunityResponseCard> getResponsesByApplicantIdForViewer(String viewerEmail, Long applicantId) {
+        log.info("Loading opportunity responses by applicantId={}, viewerEmail={}", applicantId, viewerEmail);
+        UserEntity viewer = resolveAuthenticatedUserByEmail(viewerEmail);
+        ApplicantEntity targetApplicant = jpaApplicantRepository.findById(applicantId)
+                .orElseThrow(() -> new ApplicantNotFoundException(applicantId));
+
+        if (effectiveVisibility(targetApplicant) == ApplicantVisibility.PRIVATE
+                && canViewPrivateApplicantData(viewer, targetApplicant) == false) {
+            throw new AccessDeniedException("Responses are private for this applicant");
+        }
+
+        return jpaOpportunityResponseRepository.findAllByApplicantIdWithOpportunity(targetApplicant.getId()).stream()
+                .map(response -> new ApplicantOpportunityResponseCard(
+                        response.getOpportunity().getTitle(),
+                        response.getOpportunity().getEmployer().getName(),
+                        response.getStatus(),
+                        response.getOpportunity().getType(),
+                        response.getOpportunity().getStatus()
+                ))
+                .toList();
+    }
+
+    @Override
     public List<EmployerOpportunityApplication> getApplicationsForOpportunity(Long opportunityId, String userEmail) {
         log.info("Loading applications for opportunityId={}, userEmail={}", opportunityId, userEmail);
         EmployerEntity employer = resolveEmployerByUserEmail(userEmail);
@@ -116,8 +146,14 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
             throw new AccessDeniedException("You can view only applications for your opportunities");
         }
 
-        return jpaOpportunityResponseRepository.findAllByOpportunityIdWithDetails(opportunityId).stream()
-                .map(this::toEmployerApplication)
+        List<OpportunityResponseEntity> responses = jpaOpportunityResponseRepository.findAllByOpportunityIdWithDetails(opportunityId);
+        Map<Long, Long> recommendationsByApplicant = loadRecommendationCountsByApplicant(opportunityId, responses);
+
+        return responses.stream()
+                .map(response -> toEmployerApplication(response, recommendationsByApplicant.getOrDefault(
+                        response.getApplicant().getId(),
+                        0L
+                )))
                 .toList();
     }
 
@@ -125,17 +161,23 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
     public List<EmployerOpportunityApplication> getApplicationsForMyOpportunities(String userEmail) {
         log.info("Loading applications for all employer opportunities, userEmail={}", userEmail);
         EmployerEntity employer = resolveEmployerByUserEmail(userEmail);
-        return jpaOpportunityResponseRepository.findAllByEmployerIdWithDetails(employer.getId()).stream()
-                .map(this::toEmployerApplication)
+        List<OpportunityResponseEntity> responses = jpaOpportunityResponseRepository.findAllByEmployerIdWithDetails(employer.getId());
+        Map<String, Long> recommendationsByOpportunityAndApplicant =
+                loadRecommendationCountsByOpportunityAndApplicant(responses);
+
+        return responses.stream()
+                .map(response -> toEmployerApplication(
+                        response,
+                        recommendationsByOpportunityAndApplicant.getOrDefault(
+                                recommendationKey(response.getOpportunity().getId(), response.getApplicant().getId()),
+                                0L
+                        )
+                ))
                 .toList();
     }
 
     private ApplicantEntity resolveApplicantByUserEmail(String userEmail) {
-        UserEntity user = jpaUserRepository.findByEmail(userEmail)
-                .orElseThrow(() -> {
-                    log.warn("Authenticated user not found by email={}", userEmail);
-                    return new BadCredentialsException("Invalid authentication token");
-                });
+        UserEntity user = resolveAuthenticatedUserByEmail(userEmail);
 
         if (user.getRole() != UserRole.APPLICANT) {
             throw new AccessDeniedException("User role must be APPLICANT");
@@ -147,6 +189,14 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
                     return new ApplicantNotFoundException(user.getId());
                 });
         return applicant;
+    }
+
+    private UserEntity resolveAuthenticatedUserByEmail(String userEmail) {
+        return jpaUserRepository.findByEmail(userEmail)
+                .orElseThrow(() -> {
+                    log.warn("Authenticated user not found by email={}", userEmail);
+                    return new BadCredentialsException("Invalid authentication token");
+                });
     }
 
     private EmployerEntity resolveEmployerByUserEmail(String userEmail) {
@@ -167,12 +217,66 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
                 });
     }
 
-    private EmployerOpportunityApplication toEmployerApplication(OpportunityResponseEntity response) {
+    private Map<Long, Long> loadRecommendationCountsByApplicant(
+            Long opportunityId,
+            List<OpportunityResponseEntity> responses
+    ) {
+        List<Long> applicantIds = responses.stream()
+                .map(response -> response.getApplicant().getId())
+                .distinct()
+                .toList();
+        if (applicantIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return jpaRecommendationRepository.countRecommendationsByOpportunityAndApplicants(opportunityId, applicantIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        JpaApplicantOpportunityRecommendationRepository.RecommendationCountProjection::getRecommendedApplicantId,
+                        JpaApplicantOpportunityRecommendationRepository.RecommendationCountProjection::getRecommendationsCount,
+                        (first, second) -> first
+                ));
+    }
+
+    private Map<String, Long> loadRecommendationCountsByOpportunityAndApplicant(List<OpportunityResponseEntity> responses) {
+        Map<Long, List<OpportunityResponseEntity>> responsesByOpportunity = responses.stream()
+                .collect(Collectors.groupingBy(response -> response.getOpportunity().getId()));
+
+        Map<String, Long> result = new java.util.HashMap<>();
+        for (Map.Entry<Long, List<OpportunityResponseEntity>> entry : responsesByOpportunity.entrySet()) {
+            Long opportunityId = entry.getKey();
+            Map<Long, Long> countsByApplicant = loadRecommendationCountsByApplicant(opportunityId, entry.getValue());
+            for (Map.Entry<Long, Long> applicantCount : countsByApplicant.entrySet()) {
+                result.put(recommendationKey(opportunityId, applicantCount.getKey()), applicantCount.getValue());
+            }
+        }
+        return result;
+    }
+
+    private static String recommendationKey(Long opportunityId, Long applicantId) {
+        return opportunityId + ":" + applicantId;
+    }
+
+    private static ApplicantVisibility effectiveVisibility(ApplicantEntity applicant) {
+        return applicant.getVisibility() != null ? applicant.getVisibility() : ApplicantVisibility.PRIVATE;
+    }
+
+    private static boolean canViewPrivateApplicantData(UserEntity viewer, ApplicantEntity targetApplicant) {
+        if (viewer.getRole() == UserRole.EMPLOYER || viewer.getRole() == UserRole.CURATOR) {
+            return true;
+        }
+        if (viewer.getRole() == UserRole.APPLICANT) {
+            return Objects.equals(targetApplicant.getUserId(), viewer.getId());
+        }
+        return false;
+    }
+
+    private EmployerOpportunityApplication toEmployerApplication(OpportunityResponseEntity response, long recommendation) {
         OpportunityEntity opportunity = response.getOpportunity();
         ApplicantEntity applicant = response.getApplicant();
         Set<Long> applicantSkillIds = applicant.getSkills().stream()
                 .map(TagEntity::getId)
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
 
         List<Tag> matchingTags = opportunity.getTags().stream()
                 .filter(tag -> applicantSkillIds.contains(tag.getId()))
@@ -184,6 +288,7 @@ public class OpportunityResponseServiceImpl implements OpportunityResponseServic
                 applicant.getName(),
                 applicant.getUniversity(),
                 applicant.getDesiredPosition(),
+                recommendation,
                 matchingTags
         );
     }

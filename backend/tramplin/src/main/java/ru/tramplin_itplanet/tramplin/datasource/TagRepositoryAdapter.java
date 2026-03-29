@@ -6,8 +6,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaTagRepository;
+import ru.tramplin_itplanet.tramplin.domain.exception.TagNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
 import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateTagCommand;
 import ru.tramplin_itplanet.tramplin.domain.repository.TagRepository;
 
 import java.util.List;
@@ -39,6 +41,12 @@ public class TagRepositoryAdapter implements TagRepository {
     }
 
     @Override
+    public boolean existsByNameIgnoreCaseAndIdNot(String name, Long id) {
+        log.debug("Checking if tag exists by name={} excluding id={}", name, id);
+        return jpaTagRepository.existsByNameIgnoreCaseAndIdNot(name, id);
+    }
+
+    @Override
     public Tag save(String name, TagCategory category) {
         log.debug("Persisting tag: name={}, category={}", name, category);
 
@@ -48,5 +56,22 @@ public class TagRepositoryAdapter implements TagRepository {
 
         TagEntity saved = jpaTagRepository.save(entity);
         return new Tag(saved.getId(), saved.getName(), saved.getCategory());
+    }
+
+    @Override
+    public Tag update(Long id, UpdateTagCommand command) {
+        TagEntity entity = jpaTagRepository.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id));
+        entity.setName(command.name());
+        entity.setCategory(command.category());
+        TagEntity saved = jpaTagRepository.save(entity);
+        return new Tag(saved.getId(), saved.getName(), saved.getCategory());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        TagEntity entity = jpaTagRepository.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id));
+        jpaTagRepository.delete(entity);
     }
 }

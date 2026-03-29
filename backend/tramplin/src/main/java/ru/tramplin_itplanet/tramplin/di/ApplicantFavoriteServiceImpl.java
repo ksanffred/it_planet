@@ -19,6 +19,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavorites;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantFavoriteOpportunityCard;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantFavoriteService;
 
@@ -79,6 +80,23 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
         log.info("Loading favorite opportunity cards for email={}", email);
         ApplicantEntity applicant = resolveApplicantByUserEmail(email);
         return jpaApplicantFavoriteOpportunityRepository.findAllByApplicantIdWithOpportunity(applicant.getId()).stream()
+                .map(this::toFavoriteCard)
+                .toList();
+    }
+
+    @Override
+    public List<ApplicantFavoriteOpportunityCard> getCardsByApplicantIdForViewer(String viewerEmail, Long applicantId) {
+        log.info("Loading favorite opportunity cards by applicant id={}, viewerEmail={}", applicantId, viewerEmail);
+        UserEntity viewer = resolveAuthenticatedUserByEmail(viewerEmail);
+        ApplicantEntity targetApplicant = jpaApplicantRepository.findById(applicantId)
+                .orElseThrow(() -> new ApplicantNotFoundException(applicantId));
+
+        if (effectiveVisibility(targetApplicant) == ApplicantVisibility.PRIVATE
+                && canViewPrivateFavorites(viewer, targetApplicant) == false) {
+            throw new AccessDeniedException("Favorites are private for this applicant");
+        }
+
+        return jpaApplicantFavoriteOpportunityRepository.findAllByApplicantIdWithOpportunity(applicantId).stream()
                 .map(this::toFavoriteCard)
                 .toList();
     }
@@ -158,6 +176,20 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
                     log.warn("Applicant profile not found for userId={}", user.getId());
                     return new ApplicantNotFoundException(user.getId());
                 });
+    }
+
+    private static boolean canViewPrivateFavorites(UserEntity viewer, ApplicantEntity targetApplicant) {
+        if (viewer.getRole() == UserRole.EMPLOYER || viewer.getRole() == UserRole.CURATOR) {
+            return true;
+        }
+        if (viewer.getRole() == UserRole.APPLICANT) {
+            return java.util.Objects.equals(targetApplicant.getUserId(), viewer.getId());
+        }
+        return false;
+    }
+
+    private static ApplicantVisibility effectiveVisibility(ApplicantEntity applicant) {
+        return applicant.getVisibility() != null ? applicant.getVisibility() : ApplicantVisibility.PRIVATE;
     }
 
     private ApplicantFavorites currentFavorites(Long applicantId) {

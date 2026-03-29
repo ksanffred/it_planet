@@ -11,16 +11,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tramplin_itplanet.tramplin.domain.service.TagService;
 import ru.tramplin_itplanet.tramplin.web.dto.CreateTagRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.TagResponse;
+import ru.tramplin_itplanet.tramplin.web.dto.UpdateTagRequest;
 import ru.tramplin_itplanet.tramplin.web.mapper.CreateTagRequestMapper;
 import ru.tramplin_itplanet.tramplin.web.mapper.TagMapper;
+import ru.tramplin_itplanet.tramplin.web.mapper.UpdateTagRequestMapper;
 
 import java.util.List;
 
@@ -62,5 +71,49 @@ public class TagController {
         log.info("POST /tags: name={}, category={}", request.name(), request.category());
         TagResponse response = TagMapper.toResponse(tagService.create(CreateTagRequestMapper.toCommand(request)));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "Update tag by ID (curator only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag updated"),
+            @ApiResponse(responseCode = "400", description = "Validation failed"),
+            @ApiResponse(responseCode = "403", description = "Current user is not a curator"),
+            @ApiResponse(responseCode = "404", description = "Tag not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/{id}")
+    public ResponseEntity<TagResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTagRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ensureCuratorRole(authentication);
+        log.info("PUT /tags/{}: name={}, category={}", id, request.name(), request.category());
+        TagResponse response = TagMapper.toResponse(tagService.update(id, UpdateTagRequestMapper.toCommand(request)));
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Delete tag by ID (curator only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Tag deleted"),
+            @ApiResponse(responseCode = "403", description = "Current user is not a curator"),
+            @ApiResponse(responseCode = "404", description = "Tag not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ensureCuratorRole(authentication);
+        log.info("DELETE /tags/{}", id);
+        tagService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private static void ensureCuratorRole(Authentication authentication) {
+        boolean isCurator = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_CURATOR"::equals);
+        if (!isCurator) {
+            throw new AccessDeniedException("Forbidden");
+        }
     }
 }

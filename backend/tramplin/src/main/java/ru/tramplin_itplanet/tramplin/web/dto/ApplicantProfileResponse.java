@@ -45,6 +45,9 @@ public record ApplicantProfileResponse(
         @Schema(description = "Resume PDF object path or public URL")
         String resumeUrl,
 
+        @Schema(description = "Applicant favorites visibility status", example = "PRIVATE")
+        String visibility,
+
         @Schema(description = "Skill tags")
         List<TagResponse> skills
 ) {}

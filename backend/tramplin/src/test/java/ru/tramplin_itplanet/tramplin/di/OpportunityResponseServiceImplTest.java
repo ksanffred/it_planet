@@ -15,6 +15,7 @@ import ru.tramplin_itplanet.tramplin.datasource.entity.OpportunityResponseEntity
 import ru.tramplin_itplanet.tramplin.datasource.entity.TagEntity;
 import ru.tramplin_itplanet.tramplin.datasource.entity.UserEntity;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantRepository;
+import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaApplicantOpportunityRecommendationRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaEmployerRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityRepository;
 import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaOpportunityResponseRepository;
@@ -22,6 +23,7 @@ import ru.tramplin_itplanet.tramplin.datasource.jpa.JpaUserRepository;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.OpportunityResponseAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantOpportunityResponseCard;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerOpportunityApplication;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityStatus;
 import ru.tramplin_itplanet.tramplin.domain.model.OpportunityResponse;
@@ -56,6 +58,9 @@ class OpportunityResponseServiceImplTest {
 
     @Mock
     private JpaOpportunityResponseRepository jpaOpportunityResponseRepository;
+
+    @Mock
+    private JpaApplicantOpportunityRecommendationRepository jpaRecommendationRepository;
 
     @InjectMocks
     private OpportunityResponseServiceImpl opportunityResponseService;
@@ -170,6 +175,50 @@ class OpportunityResponseServiceImplTest {
     }
 
     @Test
+    void getResponsesByApplicantIdForViewer_publicApplicant_returnsResponses() {
+        UserEntity viewer = buildUser(21L, "viewer@example.com", UserRole.USER);
+        ApplicantEntity targetApplicant = buildApplicant(3L, 12L);
+        targetApplicant.setVisibility(ApplicantVisibility.PUBLIC);
+
+        EmployerEntity employer = new EmployerEntity();
+        employer.setName("Acme Corp");
+
+        OpportunityEntity opportunity = buildOpportunity(10L);
+        opportunity.setTitle("Java Developer");
+        opportunity.setType(OpportunityType.VACANCY);
+        opportunity.setStatus(OpportunityStatus.ACTIVE);
+        opportunity.setEmployer(employer);
+
+        OpportunityResponseEntity response = new OpportunityResponseEntity();
+        response.setOpportunity(opportunity);
+        response.setStatus(OpportunityResponseStatus.NOT_REVIEWED);
+
+        when(jpaUserRepository.findByEmail("viewer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(3L)).thenReturn(Optional.of(targetApplicant));
+        when(jpaOpportunityResponseRepository.findAllByApplicantIdWithOpportunity(3L)).thenReturn(List.of(response));
+
+        List<ApplicantOpportunityResponseCard> result =
+                opportunityResponseService.getResponsesByApplicantIdForViewer("viewer@example.com", 3L);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().title()).isEqualTo("Java Developer");
+    }
+
+    @Test
+    void getResponsesByApplicantIdForViewer_privateApplicant_otherApplicantDenied() {
+        UserEntity viewer = buildUser(21L, "viewer@example.com", UserRole.APPLICANT);
+        ApplicantEntity targetApplicant = buildApplicant(3L, 12L);
+        targetApplicant.setVisibility(ApplicantVisibility.PRIVATE);
+
+        when(jpaUserRepository.findByEmail("viewer@example.com")).thenReturn(Optional.of(viewer));
+        when(jpaApplicantRepository.findById(3L)).thenReturn(Optional.of(targetApplicant));
+
+        assertThatThrownBy(() -> opportunityResponseService.getResponsesByApplicantIdForViewer("viewer@example.com", 3L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("private");
+    }
+
+    @Test
     void getApplicationsForOpportunity_ownedOpportunity_returnsApplications() {
         UserEntity user = buildUser(21L, "employer@example.com", UserRole.EMPLOYER);
 
@@ -212,6 +261,18 @@ class OpportunityResponseServiceImplTest {
         when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
         when(jpaOpportunityRepository.findById(10L)).thenReturn(Optional.of(opportunity));
         when(jpaOpportunityResponseRepository.findAllByOpportunityIdWithDetails(10L)).thenReturn(List.of(response));
+        when(jpaRecommendationRepository.countRecommendationsByOpportunityAndApplicants(10L, List.of(3L)))
+                .thenReturn(List.of(new JpaApplicantOpportunityRecommendationRepository.RecommendationCountProjection() {
+                    @Override
+                    public Long getRecommendedApplicantId() {
+                        return 3L;
+                    }
+
+                    @Override
+                    public long getRecommendationsCount() {
+                        return 2L;
+                    }
+                }));
 
         List<EmployerOpportunityApplication> result =
                 opportunityResponseService.getApplicationsForOpportunity(10L, "employer@example.com");
@@ -221,6 +282,7 @@ class OpportunityResponseServiceImplTest {
         assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
         assertThat(result.getFirst().university()).isEqualTo("RANEPA");
         assertThat(result.getFirst().desiredPosition()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().recommendation()).isEqualTo(2L);
         assertThat(result.getFirst().matchingTags()).hasSize(1);
         assertThat(result.getFirst().matchingTags().getFirst().name()).isEqualTo("Java");
     }
@@ -262,6 +324,18 @@ class OpportunityResponseServiceImplTest {
         when(jpaUserRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(user));
         when(jpaEmployerRepository.findByUserId(21L)).thenReturn(Optional.of(employer));
         when(jpaOpportunityResponseRepository.findAllByEmployerIdWithDetails(7L)).thenReturn(List.of(response));
+        when(jpaRecommendationRepository.countRecommendationsByOpportunityAndApplicants(10L, List.of(3L)))
+                .thenReturn(List.of(new JpaApplicantOpportunityRecommendationRepository.RecommendationCountProjection() {
+                    @Override
+                    public Long getRecommendedApplicantId() {
+                        return 3L;
+                    }
+
+                    @Override
+                    public long getRecommendationsCount() {
+                        return 4L;
+                    }
+                }));
 
         List<EmployerOpportunityApplication> result =
                 opportunityResponseService.getApplicationsForMyOpportunities("employer@example.com");
@@ -270,6 +344,7 @@ class OpportunityResponseServiceImplTest {
         assertThat(result.getFirst().applicantName()).isEqualTo("Ivan Ivanov");
         assertThat(result.getFirst().university()).isEqualTo("RANEPA");
         assertThat(result.getFirst().desiredPosition()).isEqualTo("Backend Developer Intern");
+        assertThat(result.getFirst().recommendation()).isEqualTo(4L);
         assertThat(result.getFirst().matchingTags()).hasSize(1);
     }
 

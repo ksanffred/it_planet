@@ -12,12 +12,14 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantNotFoundException
 import ru.tramplin_itplanet.tramplin.domain.model.ApplicantProfile;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
 import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
+import ru.tramplin_itplanet.tramplin.domain.model.ApplicantVisibility;
 import ru.tramplin_itplanet.tramplin.domain.service.ApplicantService;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -176,7 +178,85 @@ class ApplicantControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void updateVisibility_validRequest_returns200() throws Exception {
+        when(applicantService.updateVisibilityByUserEmail("applicant@example.com", ApplicantVisibility.PUBLIC))
+                .thenReturn(buildProfile(1L, ApplicantVisibility.PUBLIC));
+
+        mockMvc.perform(put("/applicants/me/visibility")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "visibility": "PUBLIC"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.visibility").value("PUBLIC"));
+    }
+
+    @Test
+    @WithMockUser(username = "curator@example.com", roles = "CURATOR")
+    void updateByIdAsCurator_validRequest_returns200() throws Exception {
+        when(applicantService.updateByIdAsCurator(any(), any(), any())).thenReturn(buildProfile(1L));
+
+        mockMvc.perform(put("/applicants/1")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userId": 12,
+                                  "name": "Ivan Ivanov",
+                                  "university": "RANEPA",
+                                  "faculty": "IT",
+                                  "currentFieldOfStudy": "Software Engineering",
+                                  "desiredPosition": "Backend Developer Intern",
+                                  "major": "Applied Informatics",
+                                  "graduationYear": 2027,
+                                  "additionalEducationDetails": "ML course",
+                                  "portfolioUrl": "https://github.com/user",
+                                  "resumeUrl": "applicants/1/resume/cv.pdf",
+                                  "skillTagIds": [1, 2]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Ivan Ivanov"));
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void updateByIdAsCurator_nonCuratorRole_returns403() throws Exception {
+        mockMvc.perform(put("/applicants/1")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userId": 12,
+                                  "name": "Ivan Ivanov"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "curator@example.com", roles = "CURATOR")
+    void deleteByIdAsCurator_curator_returns204() throws Exception {
+        mockMvc.perform(delete("/applicants/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(username = "applicant@example.com", roles = "APPLICANT")
+    void deleteByIdAsCurator_nonCuratorRole_returns403() throws Exception {
+        mockMvc.perform(delete("/applicants/1"))
+                .andExpect(status().isForbidden());
+    }
+
     private ApplicantProfile buildProfile(Long id) {
+        return buildProfile(id, ApplicantVisibility.PRIVATE);
+    }
+
+    private ApplicantProfile buildProfile(Long id, ApplicantVisibility visibility) {
         return new ApplicantProfile(
                 id,
                 12L,
@@ -191,6 +271,7 @@ class ApplicantControllerTest {
                 "https://github.com/user",
                 "applicants/1/avatar/photo.png",
                 "applicants/1/resume/cv.pdf",
+                visibility,
                 List.of(
                         new Tag(2L, "Java", TagCategory.TECHNOLOGY),
                         new Tag(10L, "Spring Boot", TagCategory.TECHNOLOGY)
