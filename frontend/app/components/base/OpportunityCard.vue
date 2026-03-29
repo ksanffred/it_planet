@@ -1,0 +1,122 @@
+<script setup lang="ts">
+import type { OpportunityMiniCard } from '@/types/opportunity'
+
+const { id, media, title, description, employerName, format, tags } =
+  defineProps<OpportunityMiniCard>()
+</script>
+
+<template>
+  <div
+    :class="[
+      'opportunity-card',
+      // `opportunity-card--${type}`,
+      // type === 'job' ? 'bordered' : '',
+    ]"
+  >
+    <NuxtLink to="/" class="opportunity-card__image-wrapper">
+      <NuxtIcon class="opportunity-card__icon" name="material-symbols:open-in-new" size="24px" />
+      <NuxtImg
+        class="opportunity-card__image"
+        :src="'/media/images/heroArt.webp'"
+        lazy
+        alt="Opportunity image"
+        fit="cover"
+      />
+    </NuxtLink>
+
+    <h2 class="opportunity-card__title">{{ title }}</h2>
+    <p class="opportunity-card__description">{{ description }}</p>
+    <div class="opportunity-card__tags">
+      <span v-for="tag in tags" :key="tag">{{ tag }}</span>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.opportunity-card {
+  $b: #{&};
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 22px;
+  color: var(--text-inverted-color);
+  position: relative;
+
+  &__icon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: var(--text-inverted-color);
+
+    .dark & {
+      color: var(--background-primary-color);
+    }
+  }
+
+  &__image-wrapper {
+    flex-grow: 1;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+  }
+  &__title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    text-transform: capitalize;
+    line-height: 1.1;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  &__description {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  &__tags {
+    color: var(--primary-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+
+    .dark & {
+      color: #c3d1e6 !important;
+    }
+
+    #{$b}--internship & {
+      color: var(--background-secondary-color);
+    }
+
+    #{$b}--event & {
+      color: var(--background-secondary-color);
+    }
+
+    ::after {
+      content: ' · ';
+    }
+
+    :last-child::after {
+      content: '';
+    }
+  }
+
+  &--job {
+    background-color: var(--background-secondary-color);
+  }
+  &--internship {
+    background-color: var(--tertiary-color);
+    color: var(--text-primary-color);
+  }
+  &--event {
+    color: var(--text-primary-color);
+
+    background-color: var(--primary-color);
+  }
+}
+</style>

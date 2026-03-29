@@ -1,0 +1,32 @@
+.reset-button {
+  background: none;
+  border: none;
+  border-radius: 50vw;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  padding-block: 10px;
+
+  height: fit-content;
+  padding-inline: 18px;
+  color: inherit;
+}
+
+.reset-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.reset-input {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: inherit;
+  outline: none;
+}
+
+.bordered {
+  border: 1px solid var(--border-color);
+}

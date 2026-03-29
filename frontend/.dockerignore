@@ -1,8 +1,6 @@
 .node_modules
-.nuxt
 .output
 .gitignore
-.qwen
 .husky
 *.md
 *.log

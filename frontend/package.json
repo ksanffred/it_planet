@@ -17,6 +17,9 @@
     "postinstall": "nuxt prepare && cd .. && husky frontend/.husky"
   },
   "dependencies": {
+    "@nuxt/icon": "2.2.1",
+    "@nuxt/image": "2.0.0",
+    "@nuxtjs/color-mode": "4.0.0",
     "nuxt": "^4.4.2",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"

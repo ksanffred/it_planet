@@ -1,7 +1,13 @@
+<script setup lang="ts">
+const colorMode = useColorMode()
+
+console.log('Current color mode:', colorMode.value)
+console.log('Preference:', colorMode.preference)
+</script>
+
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-    <p data-testid="aboba">tadsasasad</p>
-  </div>
+  <NuxtLoadingIndicator />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>

@@ -22,4 +22,4 @@ logs
 .yarn/build-state.yml
 .yarn/install-state.gz
 
-.qwen/settings.json.orig
+app/api.md
