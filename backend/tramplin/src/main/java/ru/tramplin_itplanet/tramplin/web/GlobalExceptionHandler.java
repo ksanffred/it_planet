@@ -23,6 +23,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.ResourceNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.TagAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.exception.ApplicantOpportunityRecommendationAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.exception.CuratorAlreadyExistsException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -99,6 +100,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApplicantOpportunityRecommendationAlreadyExistsException.class)
     public ResponseEntity<Map<String, Object>> handleApplicantOpportunityRecommendationAlreadyExists(
             ApplicantOpportunityRecommendationAlreadyExistsException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(CuratorAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleCuratorAlreadyExists(CuratorAlreadyExistsException ex) {
         log.warn("Conflict: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "timestamp", LocalDateTime.now(),

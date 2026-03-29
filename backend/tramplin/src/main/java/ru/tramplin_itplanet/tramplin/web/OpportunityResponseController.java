@@ -159,19 +159,19 @@ public class OpportunityResponseController {
     }
 
     private static void ensureApplicantRole(Authentication authentication) {
-        boolean isApplicant = authentication.getAuthorities().stream()
+        boolean isApplicantOrCurator = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch("ROLE_APPLICANT"::equals);
-        if (!isApplicant) {
+                .anyMatch(authority -> "ROLE_APPLICANT".equals(authority) || "ROLE_CURATOR".equals(authority));
+        if (!isApplicantOrCurator) {
             throw new AccessDeniedException("Forbidden");
         }
     }
 
     private static void ensureEmployerRole(Authentication authentication) {
-        boolean isEmployer = authentication.getAuthorities().stream()
+        boolean isEmployerOrCurator = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch("ROLE_EMPLOYER"::equals);
-        if (!isEmployer) {
+                .anyMatch(authority -> "ROLE_EMPLOYER".equals(authority) || "ROLE_CURATOR".equals(authority));
+        if (!isEmployerOrCurator) {
             throw new AccessDeniedException("Forbidden");
         }
     }

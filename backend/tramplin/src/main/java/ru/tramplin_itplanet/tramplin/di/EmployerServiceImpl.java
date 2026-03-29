@@ -97,6 +97,10 @@ public class EmployerServiceImpl implements EmployerService {
     public void assertCanManageOpportunities(String email, Long employerId) {
         UserEntity user = resolveAuthenticatedUserByEmail(email);
 
+        if (user.getRole() == UserRole.CURATOR) {
+            return;
+        }
+
         if (user.getRole() != UserRole.EMPLOYER) {
             log.warn("Access denied for opportunity management: role={}, email={}", user.getRole(), email);
             throw new AccessDeniedException("Only EMPLOYER users can manage opportunities");

@@ -179,7 +179,7 @@ public class ApplicantFavoriteServiceImpl implements ApplicantFavoriteService {
     }
 
     private static boolean canViewPrivateFavorites(UserEntity viewer, ApplicantEntity targetApplicant) {
-        if (viewer.getRole() == UserRole.EMPLOYER || viewer.getRole() == UserRole.ADMIN) {
+        if (viewer.getRole() == UserRole.EMPLOYER || viewer.getRole() == UserRole.CURATOR) {
             return true;
         }
         if (viewer.getRole() == UserRole.APPLICANT) {

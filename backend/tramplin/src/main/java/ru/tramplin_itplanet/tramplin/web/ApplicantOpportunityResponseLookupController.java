@@ -37,7 +37,7 @@ public class ApplicantOpportunityResponseLookupController {
 
     @Operation(
             summary = "Get applicant responses by applicant id",
-            description = "For PRIVATE visibility only owner applicant, EMPLOYER and ADMIN can view responses."
+            description = "For PRIVATE visibility only owner applicant, EMPLOYER and CURATOR can view responses."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Responses returned"),

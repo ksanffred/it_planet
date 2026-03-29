@@ -165,10 +165,10 @@ public class ApplicantController {
     }
 
     private static void ensureApplicantRole(Authentication authentication) {
-        boolean isApplicant = authentication.getAuthorities().stream()
+        boolean isApplicantOrCurator = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch("ROLE_APPLICANT"::equals);
-        if (!isApplicant) {
+                .anyMatch(authority -> "ROLE_APPLICANT".equals(authority) || "ROLE_CURATOR".equals(authority));
+        if (!isApplicantOrCurator) {
             throw new AccessDeniedException("Forbidden");
         }
     }

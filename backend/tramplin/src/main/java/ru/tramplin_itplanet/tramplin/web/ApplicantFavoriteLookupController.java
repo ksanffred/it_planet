@@ -37,7 +37,7 @@ public class ApplicantFavoriteLookupController {
 
     @Operation(
             summary = "Get applicant favorite opportunity cards by applicant id",
-            description = "For PRIVATE visibility only owner applicant, EMPLOYER and ADMIN can view cards."
+            description = "For PRIVATE visibility only owner applicant, EMPLOYER and CURATOR can view cards."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Favorite cards returned"),

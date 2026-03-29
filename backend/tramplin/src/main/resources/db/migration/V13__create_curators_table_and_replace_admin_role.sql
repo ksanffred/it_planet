@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS curators (
+    id       BIGSERIAL PRIMARY KEY,
+    user_id  BIGINT NOT NULL UNIQUE,
+    CONSTRAINT fk_curators_user
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 DO $$
 BEGIN
     IF EXISTS (
