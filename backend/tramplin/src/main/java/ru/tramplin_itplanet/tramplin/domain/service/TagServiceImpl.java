@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.tramplin_itplanet.tramplin.domain.exception.TagAlreadyExistsException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateTagCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateTagCommand;
 import ru.tramplin_itplanet.tramplin.domain.repository.TagRepository;
 
 import java.util.List;
@@ -43,5 +44,24 @@ public class TagServiceImpl implements TagService {
         Tag saved = tagRepository.save(normalizedName, command.category());
         log.info("Tag created with id={}, name={}", saved.id(), saved.name());
         return saved;
+    }
+
+    @Override
+    @Transactional
+    public Tag update(Long id, UpdateTagCommand command) {
+        String normalizedName = command.name().trim();
+        log.info("Updating tag: id={}, name={}, category={}", id, normalizedName, command.category());
+        if (tagRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, id)) {
+            log.warn("Tag update failed: duplicate name={} for id={}", normalizedName, id);
+            throw new TagAlreadyExistsException(normalizedName);
+        }
+        return tagRepository.update(id, new UpdateTagCommand(normalizedName, command.category()));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        log.info("Deleting tag: id={}", id);
+        tagRepository.deleteById(id);
     }
 }

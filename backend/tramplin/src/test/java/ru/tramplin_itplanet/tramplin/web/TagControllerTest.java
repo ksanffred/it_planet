@@ -10,6 +10,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tramplin_itplanet.tramplin.di.JwtService;
 import ru.tramplin_itplanet.tramplin.domain.exception.TagAlreadyExistsException;
+import ru.tramplin_itplanet.tramplin.domain.exception.TagNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.Tag;
 import ru.tramplin_itplanet.tramplin.domain.model.TagCategory;
 import ru.tramplin_itplanet.tramplin.domain.service.TagService;
@@ -17,9 +18,12 @@ import ru.tramplin_itplanet.tramplin.domain.service.TagService;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,6 +105,82 @@ class TagControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("Tag already exists with name: Docker"));
+    }
+
+    @Test
+    @WithMockUser(roles = "CURATOR")
+    void update_curatorRole_returns200WithTag() throws Exception {
+        when(tagService.update(any(), any())).thenReturn(new Tag(1L, "Docker", TagCategory.TECHNOLOGY));
+
+        mockMvc.perform(put("/tags/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Docker",
+                                  "category": "TECHNOLOGY"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Docker"))
+                .andExpect(jsonPath("$.category").value("TECHNOLOGY"));
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void update_nonCuratorRole_returns403() throws Exception {
+        mockMvc.perform(put("/tags/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Docker",
+                                  "category": "TECHNOLOGY"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "CURATOR")
+    void update_missingTag_returns404() throws Exception {
+        when(tagService.update(any(), any())).thenThrow(new TagNotFoundException(999L));
+
+        mockMvc.perform(put("/tags/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Docker",
+                                  "category": "TECHNOLOGY"
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Tag not found with id: 999"));
+    }
+
+    @Test
+    @WithMockUser(roles = "CURATOR")
+    void delete_curatorRole_returns204() throws Exception {
+        mockMvc.perform(delete("/tags/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void delete_nonCuratorRole_returns403() throws Exception {
+        mockMvc.perform(delete("/tags/1"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "CURATOR")
+    void delete_missingTag_returns404() throws Exception {
+        doThrow(new TagNotFoundException(999L)).when(tagService).delete(999L);
+
+        mockMvc.perform(delete("/tags/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Tag not found with id: 999"));
     }
 
 }

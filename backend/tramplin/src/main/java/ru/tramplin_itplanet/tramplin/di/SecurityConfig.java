@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/opportunities/**").hasAnyRole("EMPLOYER", "CURATOR")
                         .requestMatchers(HttpMethod.GET, "/opportunities/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/employers/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/tags/*").hasRole("CURATOR")
+                        .requestMatchers(HttpMethod.DELETE, "/tags/*").hasRole("CURATOR")
                         .requestMatchers(HttpMethod.GET, "/tags/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/employers/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
