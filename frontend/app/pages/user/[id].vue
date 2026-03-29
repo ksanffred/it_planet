@@ -8,8 +8,8 @@ const route = useRoute()
       <BaseBackButton />
     </header>
     <main>
-      <div class="user-account__main bordered">
-        <section class="user-account__main-top">
+      <section class="user-account__main bordered">
+        <div class="user-account__main-top">
           <BaseUserIdentity
             avatar="ДК"
             name="Данил Колбасенко"
@@ -20,8 +20,9 @@ const route = useRoute()
           <BaseAppButton class="user-account__action-button" variant="primary"
             >Добавить в контакты</BaseAppButton
           >
-        </section>
-      </div>
+        </div>
+        <div class="user-account__main-info"></div>
+      </section>
     </main>
   </div>
 </template>
