@@ -1,11 +1,9 @@
-<script lang="ts" setup>
-const router = useRouter()
-</script>
+<script lang="ts" setup></script>
 
 <template>
-  <BaseAppButton variant="primary" @click="router.back()">
+  <BaseAppButton variant="primary" @click="navigateTo('/')">
     <NuxtIcon name="material-symbols:arrow-back-rounded" size="14px" />
-    Вернуться назад</BaseAppButton
+    Вернуться на глваную</BaseAppButton
   >
 </template>
 

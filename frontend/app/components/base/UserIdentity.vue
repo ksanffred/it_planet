@@ -20,8 +20,8 @@ const props = defineProps<Props>()
     <NuxtImg
       class="user-identity__avatar"
       :src="avatar"
-      :width="sizeMap[size].avatar"
-      :height="sizeMap[size].avatar"
+      :width="sizeMap[size].avatar + 'px'"
+      :height="sizeMap[size].avatar + 'px'"
       :alt="'Аватар пользователя ' + name"
     />
     <div class="user-identity__content">
@@ -44,12 +44,21 @@ const props = defineProps<Props>()
   &__avatar {
     background-color: #dce9fa;
     border-radius: 50vw;
+    width: 72px;
+    height: 72px;
+    aspect-ratio: 1/1;
     border: 1px solid var(--var-primary-color);
   }
 
   &__content {
     display: flex;
     flex-direction: column;
+    color: var(--text-inverted-color);
+  }
+
+  &__name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
   }
 }
 </style>
