@@ -13,6 +13,7 @@ import ru.tramplin_itplanet.tramplin.domain.exception.EmployerNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.exception.UserNotFoundException;
 import ru.tramplin_itplanet.tramplin.domain.model.CreateEmployerCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.EmployerProfile;
+import ru.tramplin_itplanet.tramplin.domain.model.UpdateEmployerByCuratorCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.UpdateEmployerCommand;
 import ru.tramplin_itplanet.tramplin.domain.model.UserRole;
 import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
@@ -94,6 +95,40 @@ public class EmployerServiceImpl implements EmployerService {
     }
 
     @Override
+    public EmployerProfile updateByIdAsCurator(String email, Long id, UpdateEmployerByCuratorCommand command) {
+        log.info("Updating employer by id as curator: email={}, employerId={}", email, id);
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+        ensureCuratorRole(user);
+
+        EmployerEntity entity = jpaEmployerRepository.findById(id)
+                .orElseThrow(() -> new EmployerNotFoundException(id));
+
+        entity.setUserId(command.userId());
+        entity.setName(command.companyName());
+        entity.setDescription(command.description());
+        entity.setInn(command.inn());
+        entity.setWebsite(command.website());
+        entity.setSocials(command.socials());
+        entity.setLogoUrl(command.logoUrl());
+        entity.setVerifiedOrgName(command.verifiedOrgName());
+        entity.setStatus(command.status());
+
+        EmployerEntity updated = jpaEmployerRepository.save(entity);
+        return toProfile(updated);
+    }
+
+    @Override
+    public void deleteByIdAsCurator(String email, Long id) {
+        log.info("Deleting employer by id as curator: email={}, employerId={}", email, id);
+        UserEntity user = resolveAuthenticatedUserByEmail(email);
+        ensureCuratorRole(user);
+
+        EmployerEntity entity = jpaEmployerRepository.findById(id)
+                .orElseThrow(() -> new EmployerNotFoundException(id));
+        jpaEmployerRepository.delete(entity);
+    }
+
+    @Override
     public void assertCanManageOpportunities(String email, Long employerId) {
         UserEntity user = resolveAuthenticatedUserByEmail(email);
 
@@ -159,6 +194,12 @@ public class EmployerServiceImpl implements EmployerService {
                     log.warn("Employer not found for authenticated userId={}", userId);
                     return new EmployerNotFoundException(userId);
                 });
+    }
+
+    private static void ensureCuratorRole(UserEntity user) {
+        if (user.getRole() != UserRole.CURATOR) {
+            throw new AccessDeniedException("User role must be CURATOR");
+        }
     }
 
     private VerificationDecision evaluateAutoVerification(UserEntity user, String inn) {

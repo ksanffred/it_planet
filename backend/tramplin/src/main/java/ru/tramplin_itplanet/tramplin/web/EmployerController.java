@@ -18,10 +18,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.*;
 import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 import ru.tramplin_itplanet.tramplin.web.dto.EmployerProfileResponse;
 import ru.tramplin_itplanet.tramplin.web.dto.RegisterEmployerRequest;
+import ru.tramplin_itplanet.tramplin.web.dto.UpdateEmployerByCuratorRequest;
 import ru.tramplin_itplanet.tramplin.web.dto.UpdateEmployerRequest;
 import ru.tramplin_itplanet.tramplin.web.mapper.EmployerMapper;
 
@@ -109,6 +111,49 @@ public class EmployerController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update employer profile by id (curator only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Employer profile updated"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not a curator"),
+            @ApiResponse(responseCode = "404", description = "Employer profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployerProfileResponse> updateById(
+            @Parameter(description = "Employer id", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateEmployerByCuratorRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureCuratorRole(authentication);
+        log.info("PUT /employers/{}: email={}", id, email);
+        EmployerProfileResponse response = EmployerMapper.toResponse(
+                employerService.updateByIdAsCurator(email, id, EmployerMapper.toCommand(request))
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Delete employer profile by id (curator only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Employer profile deleted"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+            @ApiResponse(responseCode = "403", description = "Current user is not a curator"),
+            @ApiResponse(responseCode = "404", description = "Employer profile not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(
+            @Parameter(description = "Employer id", example = "1")
+            @PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureCuratorRole(authentication);
+        log.info("DELETE /employers/{}: email={}", id, email);
+        employerService.deleteByIdAsCurator(email, id);
+        return ResponseEntity.noContent().build();
+    }
+
     private static String authenticatedEmail(Authentication authentication) {
         if (authentication == null
                 || authentication.getName() == null
@@ -123,6 +168,15 @@ public class EmployerController {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("ROLE_EMPLOYER"::equals);
         if (!isEmployer) {
+            throw new AccessDeniedException("Forbidden");
+        }
+    }
+
+    private static void ensureCuratorRole(Authentication authentication) {
+        boolean isCurator = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_CURATOR"::equals);
+        if (!isCurator) {
             throw new AccessDeniedException("Forbidden");
         }
     }

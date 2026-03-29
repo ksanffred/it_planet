@@ -155,6 +155,51 @@ public class ApplicantController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Edit applicant profile by ID (curator only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Applicant profile updated"),
+            @ApiResponse(responseCode = "400", description = "Validation failed"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Current user is not a curator"),
+            @ApiResponse(responseCode = "404", description = "Applicant or user not found"),
+            @ApiResponse(responseCode = "409", description = "Applicant profile already exists for selected user")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/{id}")
+    public ResponseEntity<ApplicantProfileResponse> updateByIdAsCurator(
+            @Parameter(description = "Applicant profile id", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateApplicantRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureCuratorRole(authentication);
+        log.info("PUT /applicants/{}: email={}", id, email);
+        ApplicantProfileResponse response = ApplicantMapper.toResponse(
+                applicantService.updateByIdAsCurator(email, id, ApplicantMapper.toCommand(request))
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Delete applicant profile by ID (curator only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Applicant profile deleted"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Current user is not a curator"),
+            @ApiResponse(responseCode = "404", description = "Applicant not found")
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteByIdAsCurator(
+            @Parameter(description = "Applicant profile id", example = "1")
+            @PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticatedEmail(authentication);
+        ensureCuratorRole(authentication);
+        log.info("DELETE /applicants/{}: email={}", id, email);
+        applicantService.deleteByIdAsCurator(email, id);
+        return ResponseEntity.noContent().build();
+    }
+
     private static String authenticatedEmail(Authentication authentication) {
         if (authentication == null
                 || authentication.getName() == null
@@ -169,6 +214,15 @@ public class ApplicantController {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> "ROLE_APPLICANT".equals(authority) || "ROLE_CURATOR".equals(authority));
         if (!isApplicantOrCurator) {
+            throw new AccessDeniedException("Forbidden");
+        }
+    }
+
+    private static void ensureCuratorRole(Authentication authentication) {
+        boolean isCurator = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_CURATOR"::equals);
+        if (!isCurator) {
             throw new AccessDeniedException("Forbidden");
         }
     }

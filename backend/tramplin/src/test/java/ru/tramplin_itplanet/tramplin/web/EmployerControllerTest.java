@@ -17,6 +17,7 @@ import ru.tramplin_itplanet.tramplin.domain.service.EmployerService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -170,6 +171,58 @@ class EmployerControllerTest {
                                   "description": "Global software company"
                                 }
                                 """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "curator@example.com", roles = "CURATOR")
+    void updateById_curator_returns200() throws Exception {
+        when(employerService.updateByIdAsCurator(any(), any(), any())).thenReturn(buildEmployer(1L));
+
+        mockMvc.perform(put("/employers/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "userId": 12,
+                                  "companyName": "Acme Corp",
+                                  "description": "Global software company",
+                                  "inn": "7701234567",
+                                  "website": "https://acme.com",
+                                  "socials": "@acme_hr",
+                                  "logoUrl": "https://acme.com/logo.png",
+                                  "verifiedOrgName": "Acme Corporation",
+                                  "status": "full_verified"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.companyName").value("Acme Corp"));
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void updateById_nonCuratorRole_returns403() throws Exception {
+        mockMvc.perform(put("/employers/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "companyName": "Acme Corp"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "curator@example.com", roles = "CURATOR")
+    void deleteById_curator_returns204() throws Exception {
+        mockMvc.perform(delete("/employers/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(username = "employer@example.com", roles = "EMPLOYER")
+    void deleteById_nonCuratorRole_returns403() throws Exception {
+        mockMvc.perform(delete("/employers/1"))
                 .andExpect(status().isForbidden());
     }
 

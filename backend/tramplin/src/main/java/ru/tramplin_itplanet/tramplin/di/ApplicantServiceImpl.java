@@ -174,6 +174,58 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     @Override
     @Transactional
+    public ApplicantProfile updateByIdAsCurator(String email, Long id, UpdateApplicantCommand command) {
+        log.info("Updating applicant by id as curator: email={}, applicantId={}", email, id);
+        UserEntity curator = resolveAuthenticatedUserByEmail(email);
+        ensureCuratorRole(curator);
+
+        ApplicantEntity entity = jpaApplicantRepository.findByIdWithSkills(id)
+                .orElseThrow(() -> new ApplicantNotFoundException(id));
+
+        UserEntity user = jpaUserRepository.findById(command.userId())
+                .orElseThrow(() -> new UserNotFoundException(command.userId()));
+
+        jpaApplicantRepository.findByUserIdWithSkills(user.getId())
+                .filter(existing -> !Objects.equals(existing.getId(), id))
+                .ifPresent(existing -> {
+                    throw new ApplicantAlreadyExistsException(user.getId());
+                });
+
+        List<TagEntity> skills = command.skillTagIds().isEmpty()
+                ? List.of()
+                : jpaTagRepository.findAllById(command.skillTagIds());
+
+        entity.setUserId(user.getId());
+        entity.setName(command.name());
+        entity.setUniversity(command.university());
+        entity.setFaculty(command.faculty());
+        entity.setCurrentFieldOfStudy(command.currentFieldOfStudy());
+        entity.setDesiredPosition(command.desiredPosition());
+        entity.setMajor(command.major());
+        entity.setGraduationYear(command.graduationYear());
+        entity.setAdditionalEducationDetails(command.additionalEducationDetails());
+        entity.setPortfolioUrl(command.portfolioUrl());
+        entity.setResumeUrl(command.resumeUrl());
+        entity.setSkills(skills);
+
+        ApplicantEntity updated = jpaApplicantRepository.save(entity);
+        return toProfile(updated);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByIdAsCurator(String email, Long id) {
+        log.info("Deleting applicant by id as curator: email={}, applicantId={}", email, id);
+        UserEntity curator = resolveAuthenticatedUserByEmail(email);
+        ensureCuratorRole(curator);
+
+        ApplicantEntity entity = jpaApplicantRepository.findById(id)
+                .orElseThrow(() -> new ApplicantNotFoundException(id));
+        jpaApplicantRepository.delete(entity);
+    }
+
+    @Override
+    @Transactional
     public ApplicantProfile updateVisibilityByUserEmail(String email, ApplicantVisibility visibility) {
         log.info("Updating applicant visibility by email={}, visibility={}", email, visibility);
         UserEntity user = resolveAuthenticatedUserByEmail(email);
@@ -203,6 +255,12 @@ public class ApplicantServiceImpl implements ApplicantService {
                     log.warn("Applicant profile not found for userId={}", userId);
                     return new ApplicantNotFoundException(userId);
                 });
+    }
+
+    private static void ensureCuratorRole(UserEntity user) {
+        if (user.getRole() != UserRole.CURATOR) {
+            throw new AccessDeniedException("User role must be CURATOR");
+        }
     }
 
     private static ApplicantProfile toProfile(ApplicantEntity entity) {

@@ -30,6 +30,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -292,5 +293,68 @@ class ApplicantServiceImplTest {
         );
 
         assertThat(result.visibility()).isEqualTo(ApplicantVisibility.PUBLIC);
+    }
+
+    @Test
+    void updateByIdAsCurator_curator_updatesApplicant() {
+        UserEntity curator = new UserEntity();
+        ReflectionTestUtils.setField(curator, "id", 20L);
+        curator.setEmail("curator@example.com");
+        curator.setRole(UserRole.CURATOR);
+
+        UserEntity targetUser = new UserEntity();
+        ReflectionTestUtils.setField(targetUser, "id", 12L);
+        targetUser.setRole(UserRole.APPLICANT);
+
+        ApplicantEntity existing = new ApplicantEntity();
+        existing.setId(1L);
+        existing.setUserId(11L);
+        existing.setName("Old Name");
+
+        when(jpaUserRepository.findByEmail("curator@example.com")).thenReturn(Optional.of(curator));
+        when(jpaApplicantRepository.findByIdWithSkills(1L)).thenReturn(Optional.of(existing));
+        when(jpaUserRepository.findById(12L)).thenReturn(Optional.of(targetUser));
+        when(jpaApplicantRepository.findByUserIdWithSkills(12L)).thenReturn(Optional.empty());
+        when(jpaTagRepository.findAllById(List.of(2L))).thenReturn(List.of());
+        when(jpaApplicantRepository.save(existing)).thenReturn(existing);
+
+        ApplicantProfile result = applicantService.updateByIdAsCurator(
+                "curator@example.com",
+                1L,
+                new UpdateApplicantCommand(
+                        12L,
+                        "Ivan Ivanov",
+                        "RANEPA",
+                        "IT",
+                        "Software Engineering",
+                        "Backend Developer Intern",
+                        "Applied Informatics",
+                        2027,
+                        "ML course",
+                        "https://github.com/user",
+                        "applicants/1/resume/cv.pdf",
+                        List.of(2L)
+                )
+        );
+
+        assertThat(result.name()).isEqualTo("Ivan Ivanov");
+    }
+
+    @Test
+    void deleteByIdAsCurator_curator_deletesApplicant() {
+        UserEntity curator = new UserEntity();
+        ReflectionTestUtils.setField(curator, "id", 20L);
+        curator.setEmail("curator@example.com");
+        curator.setRole(UserRole.CURATOR);
+
+        ApplicantEntity existing = new ApplicantEntity();
+        existing.setId(1L);
+
+        when(jpaUserRepository.findByEmail("curator@example.com")).thenReturn(Optional.of(curator));
+        when(jpaApplicantRepository.findById(1L)).thenReturn(Optional.of(existing));
+
+        applicantService.deleteByIdAsCurator("curator@example.com", 1L);
+
+        verify(jpaApplicantRepository).delete(existing);
     }
 }

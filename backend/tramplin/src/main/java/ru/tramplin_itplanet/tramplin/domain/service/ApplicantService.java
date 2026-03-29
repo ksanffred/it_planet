@@ -13,4 +13,6 @@ public interface ApplicantService {
     ApplicantProfile getCurrentByUserEmail(String email);
     ApplicantProfile updateCurrentByUserEmail(String email, UpdateCurrentApplicantCommand command);
     ApplicantProfile updateVisibilityByUserEmail(String email, ApplicantVisibility visibility);
+    ApplicantProfile updateByIdAsCurator(String email, Long id, UpdateApplicantCommand command);
+    void deleteByIdAsCurator(String email, Long id);
 }
