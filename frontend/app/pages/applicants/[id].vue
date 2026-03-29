@@ -21,7 +21,11 @@ const route = useRoute()
             >Добавить в контакты</BaseAppButton
           >
         </div>
-        <div class="user-account__main-info"></div>
+        <div class="user-account__main-info">
+          <div class="user-account__card bordered">
+            <h3 class="user-account__card-title">Общая информация об учебном заведении</h3>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -54,6 +58,11 @@ const route = useRoute()
       align-items: center;
       justify-content: space-between;
     }
+  }
+
+  &__card {
+    background-color: var(--background-secondary-color);
+    border-radius: 16px;
   }
 
   &__action-button {

@@ -1,6 +1,43 @@
 <script setup lang="ts">
+import type { AuthResponse } from '~/types'
+import type { FetchError } from 'ofetch'
+
+const config = useRuntimeConfig()
+
 const email: Ref<string> = ref('')
 const password: Ref<string> = ref('')
+const error: Ref<string> = ref('')
+
+async function handleFormSubmit() {
+  try {
+    const response: AuthResponse = await $fetch(`${config.public.apiBase}/auth/login`, {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value,
+      },
+    })
+
+    const cookie = useCookie('auth_token', {
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+      sameSite: 'lax',
+    })
+    cookie.value = response.token
+
+    navigateTo(`/applicants/${response.userId}`)
+  } catch (authError: unknown) {
+    email.value = ''
+    password.value = ''
+    const err = authError as FetchError
+    if (err.statusCode && err.statusCode === 401) {
+      error.value = 'Неверная почта или пароль'
+    } else {
+      error.value = 'Неизвестная ошибка'
+      console.error(`Login error: ${authError}`)
+    }
+  }
+}
 
 definePageMeta({
   layout: false,
@@ -14,7 +51,7 @@ definePageMeta({
       title="Вход в аккаунт"
       description="Продолжайте поиск стажировок, вакансий, наставников и карьерных событий."
     >
-      <form class="auth__form">
+      <form class="auth__form" @submit.prevent="handleFormSubmit">
         <label class="auth__label" for="email">
           Email
           <BaseAppInput
@@ -43,6 +80,7 @@ definePageMeta({
             required
           />
         </label>
+        <p class="auth__error">{{ error }}</p>
         <NuxtLink class="auth__reset-link" to="/">Забыли пароль?</NuxtLink>
         <BaseAppButton :disabled="!password || !email" type="submit" variant="primary"
           >Войти</BaseAppButton
@@ -66,6 +104,9 @@ definePageMeta({
     color: var(--text-inverted-color);
 
     font-weight: 700;
+  }
+  &__error {
+    color: var(--error-color);
   }
 
   &__reset-link {
