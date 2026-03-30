@@ -71,6 +71,10 @@ class OpportunityControllerTest {
                         "Acme Corp",
                         "VACANCY",
                         "REMOTE",
+                        "Moscow",
+                        "Lenina st, 1",
+                        55.7558,
+                        37.6176,
                         List.of("Java", "Spring", "Docker")
                 )
         ));
@@ -84,6 +88,10 @@ class OpportunityControllerTest {
                 .andExpect(jsonPath("$[0].employerName").value("Acme Corp"))
                 .andExpect(jsonPath("$[0].type").value("VACANCY"))
                 .andExpect(jsonPath("$[0].format").value("REMOTE"))
+                .andExpect(jsonPath("$[0].city").value("Moscow"))
+                .andExpect(jsonPath("$[0].address").value("Lenina st, 1"))
+                .andExpect(jsonPath("$[0].lat").value(55.7558))
+                .andExpect(jsonPath("$[0].lng").value(37.6176))
                 .andExpect(jsonPath("$[0].tags.length()").value(3))
                 .andExpect(jsonPath("$[0].tags[0]").value("Java"))
                 .andExpect(jsonPath("$[0].tags[1]").value("Spring"))
@@ -101,6 +109,10 @@ class OpportunityControllerTest {
                         "Beta Corp",
                         "INTERNSHIP",
                         "REMOTE",
+                        "Kazan",
+                        "Baumana st, 5",
+                        55.7963,
+                        49.1088,
                         List.of("Java", "Intern", "Spring")
                 )
         ));
@@ -109,7 +121,11 @@ class OpportunityControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(2))
                 .andExpect(jsonPath("$[0].title").value("Java Intern"))
-                .andExpect(jsonPath("$[0].employerName").value("Beta Corp"));
+                .andExpect(jsonPath("$[0].employerName").value("Beta Corp"))
+                .andExpect(jsonPath("$[0].city").value("Kazan"))
+                .andExpect(jsonPath("$[0].address").value("Baumana st, 5"))
+                .andExpect(jsonPath("$[0].lat").value(55.7963))
+                .andExpect(jsonPath("$[0].lng").value(49.1088));
     }
 
     @Test

@@ -28,6 +28,18 @@ public record OpportunityMiniCardResponse(
         @Schema(description = "Work format", example = "REMOTE", allowableValues = {"OFFICE", "HYBRID", "REMOTE"})
         String format,
 
+        @Schema(description = "City", example = "Moscow")
+        String city,
+
+        @Schema(description = "Address for map display", example = "Lenina St, 1")
+        String address,
+
+        @Schema(description = "Latitude", example = "55.7558")
+        Double lat,
+
+        @Schema(description = "Longitude", example = "37.6176")
+        Double lng,
+
         @Schema(description = "First three tags from the opportunity")
         List<String> tags
 ) {}
