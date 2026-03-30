@@ -23,7 +23,7 @@ definePageMeta({
   <BaseBackButton class="back-button" />
 
   <AuthWrapper>
-    <AuthCard title="Регистрация " :description="descriptions[role]">
+    <AppForm title="Регистрация " :description="descriptions[role]">
       <form class="auth__form">
         <label class="auth__label" for="name">
           {{ role === 'EMPLOYER' ? 'Название компании' : 'Отображаемое имя' }}
@@ -93,7 +93,7 @@ definePageMeta({
         Есть аккаунт?
         <NuxtLink to="/auth/login">Войти</NuxtLink>
       </p>
-    </AuthCard>
+    </AppForm>
   </AuthWrapper>
 </template>
 

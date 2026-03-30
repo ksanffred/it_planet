@@ -1,11 +1,22 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const showMap = ref(false)
+
+const toggleMap = (value: boolean) => {
+  showMap.value = value
+}
+</script>
+
 <template>
   <div class="container">
     <SectionsHeroSection />
 
     <main>
-      <SectionsSearchSection />
-      <SectionsOpportunitiesSection />
+      <SectionsSearchSection @update:show-map="toggleMap" />
+
+      <template v-if="showMap"> </template>
+      <template v-else>
+        <SectionsOpportunitiesSection />
+      </template>
     </main>
   </div>
 </template>
