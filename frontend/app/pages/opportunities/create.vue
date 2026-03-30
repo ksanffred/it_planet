@@ -6,6 +6,7 @@ import type {
   OpportunityType,
   Tag,
 } from '~/types'
+import type { FetchError } from 'ofetch'
 
 type EmployerMeResponse = {
   id: number
@@ -88,7 +89,7 @@ const resolveGeocodeApiKey = () =>
 
 const geocodeAddress = async (query: string) => {
   const apiKey = resolveGeocodeApiKey()
-  const response = await $fetch<{
+  let response: {
     response?: {
       GeoObjectCollection?: {
         featureMember?: Array<{
@@ -100,16 +101,25 @@ const geocodeAddress = async (query: string) => {
         }>
       }
     }
-  }>('https://geocode-maps.yandex.ru/1.x/', {
-    method: 'GET',
-    query: {
-      apikey: apiKey,
-      geocode: query,
-      format: 'json',
-      lang: 'ru_RU',
-      results: 1,
-    },
-  })
+  }
+  try {
+    response = await $fetch('https://geocode-maps.yandex.ru/1.x/', {
+      method: 'GET',
+      query: {
+        apikey: apiKey,
+        geocode: query,
+        format: 'json',
+        lang: 'ru_RU',
+        results: 1,
+      },
+    })
+  } catch (geocodeError) {
+    console.error('[create-opportunity] geocode request failed', {
+      query,
+      geocodeError,
+    })
+    throw geocodeError
+  }
 
   const pos =
     response.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos ?? ''
@@ -190,15 +200,33 @@ const handleCreateOpportunity = async () => {
       await navigateTo('/employers/me')
     }
   } catch (requestError) {
-    const typedError = requestError as { statusCode?: number }
+    const typedError = requestError as FetchError<{ error?: string; message?: string }>
+    const backendMessage =
+      typedError.data?.error || typedError.data?.message || typedError.message || ''
+
+    console.error('[create-opportunity] create failed', {
+      statusCode: typedError.statusCode,
+      statusMessage: typedError.statusMessage,
+      data: typedError.data,
+      requestError,
+    })
+
     if (typedError.statusCode === 400) {
-      error.value = 'Проверьте корректность введенных данных'
+      error.value = backendMessage
+        ? `Проверьте данные: ${backendMessage}`
+        : 'Проверьте корректность введенных данных'
     } else if (typedError.statusCode === 401) {
       error.value = 'Требуется авторизация'
     } else if (typedError.statusCode === 403) {
       error.value = 'Недостаточно прав для создания возможности'
+    } else if (typedError.statusCode === 0 || !typedError.statusCode) {
+      error.value = backendMessage
+        ? `Сетевая ошибка: ${backendMessage}`
+        : 'Сетевая ошибка при создании возможности'
     } else {
-      error.value = 'Не удалось создать возможность'
+      error.value = backendMessage
+        ? `Не удалось создать возможность: ${backendMessage}`
+        : 'Не удалось создать возможность'
     }
   } finally {
     isGeocoding.value = false

@@ -1,23 +1,66 @@
 <script setup lang="ts">
-import type { AuthResponse } from '~/types'
+import type { AuthResponse, UserRole } from '~/types'
 import type { FetchError } from 'ofetch'
+
+type DomainItem = {
+  domains?: Array<{ domain?: string }>
+}
 
 const config = useRuntimeConfig()
 
 const email: Ref<string> = ref('')
 const password: Ref<string> = ref('')
 const name: Ref<string> = ref('')
+const role = ref<'APPLICANT' | 'EMPLOYER'>('APPLICANT')
 const error: Ref<string> = ref('')
 
+const { data: domainsData } = await useFetch<DomainItem[]>('/media/data/domains.json', {
+  method: 'GET',
+  default: () => [],
+})
+
+const blockedDomains = computed(() => {
+  const set = new Set<string>()
+  for (const item of domainsData.value ?? []) {
+    for (const domainItem of item.domains ?? []) {
+      const domain = String(domainItem.domain ?? '')
+        .trim()
+        .toLowerCase()
+      if (domain) {
+        set.add(domain)
+      }
+    }
+  }
+  return set
+})
+
+const extractEmailDomain = (emailValue: string) => {
+  const atIndex = emailValue.lastIndexOf('@')
+  if (atIndex < 0) return ''
+  return emailValue
+    .slice(atIndex + 1)
+    .trim()
+    .toLowerCase()
+}
+
 const handleFormSubmit = async () => {
+  const normalizedEmail = email.value.trim().toLowerCase()
+  if (role.value === 'EMPLOYER') {
+    const domain = extractEmailDomain(normalizedEmail)
+    if (domain && blockedDomains.value.has(domain)) {
+      error.value = 'почта не корпоративная'
+      return
+    }
+  }
+
   try {
     const response: AuthResponse = await $fetch(`${config.public.apiBase}/auth/register`, {
       method: 'POST',
       body: {
-        email: email.value,
+        email: normalizedEmail,
         displayName: name.value,
         password: password.value,
-        role: 'APPLICANT',
+        role: role.value as UserRole,
       },
     })
 
@@ -99,6 +142,13 @@ definePageMeta({
             required
           />
         </label>
+        <label class="auth__label" for="role">
+          Роль
+          <select id="role" v-model="role" class="auth__select bordered">
+            <option value="APPLICANT">Соискатель</option>
+            <option value="EMPLOYER">Работодатель</option>
+          </select>
+        </label>
         <label class="auth__label" for="password">
           Пароль
           <BaseAppInput
@@ -141,6 +191,14 @@ definePageMeta({
     color: var(--text-inverted-color);
 
     font-weight: 700;
+  }
+
+  &__select {
+    width: 100%;
+    border-radius: 50vw;
+    padding: 12px 16px;
+    background-color: var(--background-secondary-color);
+    color: var(--text-inverted-color);
   }
 
   &__reset-link {
