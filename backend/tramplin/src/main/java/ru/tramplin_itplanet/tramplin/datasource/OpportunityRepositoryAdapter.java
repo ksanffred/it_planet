@@ -277,6 +277,10 @@ public class OpportunityRepositoryAdapter implements OpportunityRepository {
                 entity.getEmployer().getName(),
                 entity.getType().name(),
                 entity.getFormat().name(),
+                entity.getCity(),
+                entity.getAddress(),
+                entity.getLat(),
+                entity.getLng(),
                 entity.getTags().stream().limit(3).map(TagEntity::getName).toList()
         );
     }

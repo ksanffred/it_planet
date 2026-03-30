@@ -50,6 +50,10 @@ class OpportunityServiceImplTest {
                         "Acme Corp",
                         "VACANCY",
                         "REMOTE",
+                        "Moscow",
+                        "Lenina st, 1",
+                        55.7558,
+                        37.6176,
                         List.of("Java", "Spring", "Docker")
                 )
         );

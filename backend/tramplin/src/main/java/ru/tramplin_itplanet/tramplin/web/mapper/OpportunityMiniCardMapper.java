@@ -16,6 +16,10 @@ public final class OpportunityMiniCardMapper {
                 opportunity.employerName(),
                 opportunity.type(),
                 opportunity.format(),
+                opportunity.city(),
+                opportunity.address(),
+                opportunity.lat(),
+                opportunity.lng(),
                 opportunity.tags()
         );
     }

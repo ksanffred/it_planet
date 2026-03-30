@@ -11,5 +11,9 @@ public record OpportunityMiniCard(
         String employerName,
         String type,
         String format,
+        String city,
+        String address,
+        Double lat,
+        Double lng,
         List<String> tags
 ) implements Serializable {}
