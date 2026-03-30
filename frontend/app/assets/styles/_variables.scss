@@ -5,12 +5,14 @@ html.light {
   --secondary-color: #ff5f00;
   --tertiary-color: #558b6e;
 
-  --text-primary-color: #fcfaee;
-  --text-secondary-color: #f8f5dd;
+  --text-primary-color: #161413;
+  --text-secondary-color: #2f2923;
+  --text-tertiary-color: #5f5a54;
   --text-inverted-color: #161413;
   --text-inverted-secondary-color: #2f2923;
 
   --background-color: #fcfaee;
+  --background-primary-color: #fcfaee;
   --background-secondary-color: #f1ebbb;
   --background-tertiary-color: #2f2923;
 
@@ -29,8 +31,11 @@ html.dark {
   --text-primary-color: #f8fafc;
   --text-secondary-color: #d8e1ee;
   --text-tertiary-color: #c3d1e6;
+  --text-inverted-color: #f8fafc;
+  --text-inverted-secondary-color: #d8e1ee;
 
   --background-color: #0b0f14;
+  --background-primary-color: #111827;
   --background-secondary-color: #1b2635;
   --background-tertiary-color: #111827;
 

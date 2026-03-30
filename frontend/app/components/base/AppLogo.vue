@@ -6,7 +6,7 @@ interface Props {
 
 const { dot, tag } = defineProps<Props>()
 </script>
-n
+
 <template>
   <NuxtLink class="app-logo" to="/">
     <span v-if="dot" class="app-logo__dot"></span>
