@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AuthResponse } from '~/types'
+import type { Tag } from '~/types'
 
 const university = ref('')
 const faculty = ref('')
@@ -7,23 +7,50 @@ const graduationYear = ref(0)
 const portfolioUrl = ref('')
 const additionalEducationDetails = ref('')
 const currentFieldOfStudy = ref('')
+const availableTags = ref<Tag[]>([])
+const selectedTags = ref<Tag[]>([])
 
 const userCookie = useCookie('user_data')
 const tokenCookie = useCookie('auth_token')
 const config = useRuntimeConfig()
 
-const { data, error } = await useFetch('/applicants/me', {
+if (!tokenCookie.value) {
+  navigateTo('/auth/login')
+}
+
+const { data, pending, error } = await useFetch('/applicants/me', {
   baseURL: config.public.apiBase,
   method: 'GET',
   headers: {
     Authorization: `Bearer ${tokenCookie.value}`,
   },
-  lazy: true,
 })
 
-if (error.value?.statusCode !== 404) {
-  navigateTo('/applicants/me')
-}
+watchEffect(() => {
+  if (pending.value) return
+
+  if (data.value) {
+    navigateTo('/applicants/me')
+    return
+  }
+
+  if (error.value && error.value.statusCode !== 404) {
+    navigateTo('/auth/login')
+  }
+})
+
+const { data: tagsData } = await useFetch<Tag[]>('/tags', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: {
+    Authorization: `Bearer ${tokenCookie.value}`,
+  },
+  default: () => [],
+})
+
+watchEffect(() => {
+  availableTags.value = tagsData.value ?? []
+})
 
 const handleCreateApplicant = async () => {
   try {
@@ -47,6 +74,7 @@ const handleCreateApplicant = async () => {
         portfolioUrl: portfolioUrl.value,
         additionalEducationDetails: additionalEducationDetails.value,
         currentFieldOfStudy: currentFieldOfStudy.value,
+        skillTagIds: selectedTags.value.map((tag) => tag.id),
       },
     })
 
@@ -146,6 +174,24 @@ const handleCreateApplicant = async () => {
           type="url"
           id="portfolioUrl"
         />
+        <div class="applicant__tags">
+          <div class="applicant__tags-top">
+            <p class="applicant__tags-title">Выберите теги навыков</p>
+            <BaseTagSelector v-model:selected-tags="selectedTags" :available-tags="availableTags" />
+          </div>
+
+          <div v-if="selectedTags.length > 0" class="applicant__tags-list">
+            <BaseAppTag
+              v-for="tag in selectedTags"
+              :key="tag.id"
+              :bordered="true"
+              class="applicant__tag"
+            >
+              {{ tag.name }}
+            </BaseAppTag>
+          </div>
+          <p v-else class="applicant__tags-hint">Можно выбрать несколько тегов</p>
+        </div>
         <!-- <FormInputField
           @change="handleFileChange"
           label="Ваше резюме в PDF"
@@ -175,6 +221,44 @@ const handleCreateApplicant = async () => {
     display: flex;
     flex-direction: column;
     gap: 20px;
+  }
+
+  &__tags {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  &__tags-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  &__tags-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-inverted-color);
+  }
+
+  &__tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__tag {
+    cursor: default;
+  }
+
+  &__tags-hint {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-tertiary-color);
   }
 }
 </style>

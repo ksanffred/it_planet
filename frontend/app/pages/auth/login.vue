@@ -53,6 +53,7 @@ async function handleFormSubmit() {
 
 definePageMeta({
   layout: false,
+  middleware: 'guest-only',
 })
 </script>
 

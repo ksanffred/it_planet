@@ -70,6 +70,7 @@ const CLUSTER_PACKAGE = '@yandex/ymaps3-clusterer@0.0.1'
 const config = useRuntimeConfig()
 const route = useRoute()
 const tokenCookie = useCookie<string | null>('auth_token')
+const FAVORITES_STORAGE_KEY = 'opportunity-favorite-ids'
 
 const searchQuery = computed(() => {
   const value = route.query.search
@@ -96,6 +97,30 @@ const selectedClusterCardIds = ref<number[]>([])
 const favoriteIds = ref<number[]>([])
 const favoriteLoadingIds = ref<number[]>([])
 const favoriteSignatures = ref<string[]>([])
+
+const readLocalFavoriteIds = (): number[] => {
+  if (!import.meta.client) {
+    return []
+  }
+
+  try {
+    const raw = localStorage.getItem(FAVORITES_STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((id): id is number => Number.isInteger(id))
+  } catch {
+    return []
+  }
+}
+
+const writeLocalFavoriteIds = (ids: number[]) => {
+  if (!import.meta.client) {
+    return
+  }
+
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...new Set(ids)]))
+}
 
 let ymaps3Instance: YMaps3Instance | null = null
 let clustererModule: YMapClustererModule | null = null
@@ -214,7 +239,7 @@ const applyFavoriteSignatures = () => {
 
 const loadFavorites = async () => {
   if (!tokenCookie.value) {
-    favoriteIds.value = []
+    favoriteIds.value = readLocalFavoriteIds()
     favoriteSignatures.value = []
     return
   }
@@ -235,6 +260,7 @@ const loadFavorites = async () => {
     if (ids.length > 0) {
       favoriteIds.value = ids
       favoriteSignatures.value = []
+      writeLocalFavoriteIds(ids)
       return
     }
 
@@ -249,7 +275,11 @@ const loadFavorites = async () => {
 
 const toggleFavorite = async (opportunityId: number) => {
   if (!tokenCookie.value) {
-    navigateTo('/auth/login')
+    const wasFavorite = isFavorite(opportunityId)
+    favoriteIds.value = wasFavorite
+      ? favoriteIds.value.filter((id) => id !== opportunityId)
+      : [...favoriteIds.value, opportunityId]
+    writeLocalFavoriteIds(favoriteIds.value)
     return
   }
 
@@ -279,6 +309,7 @@ const toggleFavorite = async (opportunityId: number) => {
     } else {
       favoriteIds.value = [...favoriteIds.value, opportunityId]
     }
+    writeLocalFavoriteIds(favoriteIds.value)
   } catch (error) {
     console.error('Failed to toggle favorite', error)
   } finally {
@@ -561,6 +592,7 @@ watch(favoriteIds, () => {
 })
 watch(tokenCookie, loadFavorites, { immediate: true })
 watch(miniCards, applyFavoriteSignatures)
+watch(favoriteIds, writeLocalFavoriteIds, { deep: true })
 
 onMounted(initMap)
 

@@ -1,21 +1,67 @@
 <script setup lang="ts">
-import type { UserRole } from '~/types'
+import type { AuthResponse } from '~/types'
+import type { FetchError } from 'ofetch'
+
+const config = useRuntimeConfig()
 
 const email: Ref<string> = ref('')
-const description: Ref<string> = ref('')
 const password: Ref<string> = ref('')
 const name: Ref<string> = ref('')
-const role: Ref<UserRole> = ref('APPLICANT')
+const error: Ref<string> = ref('')
 
-const descriptions: Record<UserRole, string> = {
-  USER: 'Начните поиск стажировок, вакансий, наставников и карьерных событий.',
-  APPLICANT: 'Начните поиск стажировок, вакансий, наставников и карьерных событий.',
-  EMPLOYER: 'Размещайте стажировки, вакансии, станьте наставником или разместите событие.',
-  CURATOR: 'Станьте представителем своего ВУЗа и администратором платформы.',
+const handleFormSubmit = async () => {
+  try {
+    const response: AuthResponse = await $fetch(`${config.public.apiBase}/auth/register`, {
+      method: 'POST',
+      body: {
+        email: email.value,
+        displayName: name.value,
+        password: password.value,
+        role: 'APPLICANT',
+      },
+    })
+
+    const authCookie = useCookie('auth_token', {
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+      sameSite: 'lax',
+    })
+    authCookie.value = response.token
+
+    const userCookie = useCookie('user_data', {
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+      sameSite: 'lax',
+    })
+    userCookie.value = JSON.stringify({
+      id: response.userId,
+      email: response.email,
+      displayName: response.displayName,
+      role: response.role,
+    })
+
+    navigateTo('/applicants')
+  } catch (registerError: unknown) {
+    const err = registerError as FetchError
+
+    if (err.statusCode === 409) {
+      error.value = 'Пользователь с таким email уже существует'
+      return
+    }
+
+    if (err.statusCode === 400) {
+      error.value = 'Проверьте корректность введенных данных'
+      return
+    }
+
+    error.value = 'Неизвестная ошибка'
+    console.error(`Register error: ${registerError}`)
+  }
 }
 
 definePageMeta({
   layout: false,
+  middleware: 'guest-only',
 })
 </script>
 
@@ -23,34 +69,25 @@ definePageMeta({
   <BaseBackButton class="back-button" />
 
   <AuthWrapper>
-    <AppForm title="Регистрация " :description="descriptions[role]">
-      <form class="auth__form">
+    <AppForm
+      title="Регистрация "
+      description="Начните поиск стажировок, вакансий, наставников и карьерных событий."
+    >
+      <form class="auth__form" @submit.prevent="handleFormSubmit">
         <label class="auth__label" for="name">
-          {{ role === 'EMPLOYER' ? 'Название компании' : 'Отображаемое имя' }}
+          Отображаемое имя
           <BaseAppInput
             class="auth__input"
-            v-model="email"
+            v-model="name"
             type="text"
             id="name"
             name="name"
-            :placeholder="role == 'EMPLOYER' ? 'ООО Рога и Копыта' : 'Иван Иванов'"
-            required
-          />
-        </label>
-        <label v-if="role === 'EMPLOYER'" class="auth__label" for="description">
-          Краткое описание компании
-          <BaseAppInput
-            class="auth__input"
-            v-model="description"
-            type="text"
-            id="description"
-            name="description"
-            placeholder="Компания разработки ПО"
+            placeholder="Иван Иванов"
             required
           />
         </label>
         <label class="auth__label" for="email">
-          {{ role === 'EMPLOYER' ? 'Корпоративный email' : 'Email' }}
+          Email
           <BaseAppInput
             class="auth__input"
             v-model="email"
@@ -77,14 +114,7 @@ definePageMeta({
             required
           />
         </label>
-        <label class="auth__label" for="role">
-          Кто вы?
-          <select class="auth__select" v-model="role" name="role" required id="role">
-            <option value="APPLICANT" selected>Соискатель</option>
-            <option value="EMPLOYER">Организация</option>
-            <option value="CURATOR">Представитель ВУЗа</option>
-          </select>
-        </label>
+        <p class="auth__error">{{ error }}</p>
         <BaseAppButton :disabled="!password || !email || !name" type="submit" variant="primary"
           >Зарегестрироваться</BaseAppButton
         >
@@ -99,6 +129,10 @@ definePageMeta({
 
 <style lang="scss" scoped>
 .auth {
+  &__error {
+    color: var(--error-color);
+  }
+
   &__label {
     display: flex;
     flex-direction: column;
@@ -107,16 +141,6 @@ definePageMeta({
     color: var(--text-inverted-color);
 
     font-weight: 700;
-  }
-
-  &__select {
-    border-radius: 50vw;
-    padding-block: 12px;
-    border: 1px solid var(--border-color);
-    padding-inline: 16px;
-    background-color: var(--background-secondary-color);
-    width: 100%;
-    color: var(--text-inverted-color);
   }
 
   &__reset-link {

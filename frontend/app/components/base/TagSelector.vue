@@ -52,6 +52,7 @@ onUnmounted(() => {
 <template>
   <div class="tag-selector" ref="dropdownRef">
     <BaseAppButton
+      type="button"
       @click="toggleDropdown"
       variant="secondary"
       class="tag-selector__button"
@@ -71,6 +72,7 @@ onUnmounted(() => {
           <button
             v-for="tag in availableTags"
             :key="tag.id"
+            type="button"
             @click="toggleTag(tag)"
             class="tag-selector__item"
             :class="{ 'tag-selector__item--selected': isSelected(tag) }"
