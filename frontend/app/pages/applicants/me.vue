@@ -27,9 +27,27 @@ const favoritesSearch = ref('')
 const responsesSearch = ref('')
 const isVisibilityLoading = ref(false)
 const visibilityError = ref('')
+const avatarFileInput = ref<HTMLInputElement | null>(null)
+const isAvatarUploading = ref(false)
+const avatarUploadError = ref('')
 const resumeFileInput = ref<HTMLInputElement | null>(null)
 const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
+
+const normalizeStorageAssetUrl = (value: string | undefined | null) => {
+  const raw = String(value ?? '').trim()
+  if (!raw) return ''
+  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
+    return raw
+  }
+  return `https://cdn.tramplin.ru/${raw}`
+}
+
+const normalizeApplicantProfile = (profile: Applicant): Applicant => ({
+  ...profile,
+  avatarUrl: normalizeStorageAssetUrl(profile.avatarUrl),
+  resumeUrl: normalizeStorageAssetUrl(profile.resumeUrl),
+})
 
 const {
   data: applicant,
@@ -39,6 +57,7 @@ const {
   baseURL: config.public.apiBase,
   method: 'GET',
   headers: authHeaders,
+  transform: (profile) => normalizeApplicantProfile(profile),
 })
 
 const { data: contacts } = await useFetch<ApplicantContactListItem[]>('/applicants/me/contacts', {
@@ -282,6 +301,62 @@ const toggleVisibility = async () => {
   }
 }
 
+const openAvatarPicker = () => {
+  if (isAvatarUploading.value) {
+    return
+  }
+
+  avatarFileInput.value?.click()
+}
+
+const uploadAvatar = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (!file || !applicant.value?.id) {
+    return
+  }
+
+  const isImage = file.type.startsWith('image/')
+  if (!isImage) {
+    avatarUploadError.value = 'Можно загрузить только изображение'
+    input.value = ''
+    return
+  }
+
+  isAvatarUploading.value = true
+  avatarUploadError.value = ''
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await $fetch<{ path?: string; url?: string }>(
+      `/applicants/${applicant.value.id}/avatar`,
+      {
+        baseURL: config.public.apiBase,
+        method: 'POST',
+        headers: authHeaders,
+        body: formData,
+      },
+    )
+
+    const nextAvatarUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
+    if (nextAvatarUrl && applicant.value) {
+      applicant.value = {
+        ...applicant.value,
+        avatarUrl: nextAvatarUrl,
+      }
+    }
+  } catch (error) {
+    avatarUploadError.value = 'Не удалось загрузить аватар'
+    console.error('Failed to upload avatar', error)
+  } finally {
+    isAvatarUploading.value = false
+    input.value = ''
+  }
+}
+
 const openResumePicker = () => {
   if (isResumeUploading.value) {
     return
@@ -322,7 +397,7 @@ const uploadResume = async (event: Event) => {
       },
     )
 
-    const nextResumeUrl = response.url ?? response.path ?? ''
+    const nextResumeUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
     if (nextResumeUrl && applicant.value) {
       applicant.value = {
         ...applicant.value,
@@ -349,10 +424,32 @@ const uploadResume = async (event: Event) => {
     <section class="user-account__profile bordered">
       <div class="user-account__profile-top">
         <div class="user-account__identity">
-          <div class="user-account__avatar">{{ applicantInitials }}</div>
+          <button
+            type="button"
+            class="user-account__avatar user-account__avatar-button"
+            :disabled="isAvatarUploading"
+            @click="openAvatarPicker"
+          >
+            <img
+              v-if="applicant?.avatarUrl"
+              :src="applicant.avatarUrl"
+              alt="Аватар пользователя"
+              class="user-account__avatar-image"
+            />
+            <span v-else>{{ applicantInitials }}</span>
+          </button>
+          <input
+            ref="avatarFileInput"
+            type="file"
+            accept="image/*"
+            class="user-account__avatar-input"
+            @change="uploadAvatar"
+          />
           <div class="user-account__identity-text">
             <p class="user-account__name">{{ applicant?.name || 'Пользователь' }}</p>
             <p class="user-account__subtitle">Профиль пользователя</p>
+            <p v-if="isAvatarUploading" class="user-account__muted">Загружаем аватар...</p>
+            <p v-if="avatarUploadError" class="user-account__error">{{ avatarUploadError }}</p>
           </div>
         </div>
 
@@ -599,6 +696,27 @@ const uploadResume = async (event: Event) => {
     font-weight: 800;
     font-size: 14px;
     background: #dce9fa;
+  }
+
+  &__avatar-button {
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+
+  &__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__avatar-input {
+    display: none;
   }
 
   &__identity-text {
