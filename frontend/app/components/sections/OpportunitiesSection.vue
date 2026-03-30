@@ -271,10 +271,14 @@ watch(miniCards, applyFavoriteSignatures)
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--text-tertiary-color);
+    color: var(--text-inverted-color);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 600;
+
+    & .dark {
+      color: var(--text-tertiary-color);
+    }
   }
 
   &__loading {

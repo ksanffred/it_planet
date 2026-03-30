@@ -3357,6 +3357,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@yandex/ymaps3-types@npm:^1.0.19017058":
+  version: 1.0.19017058
+  resolution: "@yandex/ymaps3-types@npm:1.0.19017058"
+  peerDependencies:
+    "@types/react": ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    "@vue/runtime-core": 3
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+    "@vue/runtime-core":
+      optional: true
+  checksum: 10c0/d78a158a1142e69f823ee3561864e79fe4fb26c0f4e8be458ffdf958649c76755eb7f28ec8426e327304ae0ee16f0fd59759c3bbd47ee6c9a65a98a0b286bc40
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:^2.0.0":
   version: 2.0.0
   resolution: "abbrev@npm:2.0.0"
@@ -4834,6 +4852,7 @@ __metadata:
     "@nuxtjs/color-mode": "npm:4.0.0"
     "@vitest/ui": "npm:^4.1.0"
     "@vue/test-utils": "npm:^2.4.6"
+    "@yandex/ymaps3-types": "npm:^1.0.19017058"
     happy-dom: "npm:^20.8.4"
     husky: "npm:^9.1.7"
     nuxt: "npm:^4.4.2"
