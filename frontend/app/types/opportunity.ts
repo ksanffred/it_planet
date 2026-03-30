@@ -28,6 +28,10 @@ export interface OpportunityMiniCard {
   employerName: string
   format: OpportunityFormat
   type: OpportunityType
+  city: string
+  address: string
+  lat: number
+  lng: number
   tags: string[]
 }
 

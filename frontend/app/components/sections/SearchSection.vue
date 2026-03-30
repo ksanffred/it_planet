@@ -4,12 +4,18 @@ import type { Tag } from '~/types'
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+const props = withDefaults(
+  defineProps<{
+    showMap?: boolean
+  }>(),
+  {
+    showMap: false,
+  },
+)
 
 const emit = defineEmits<{
   'update:showMap': [value: boolean]
 }>()
-
-const showMap = ref(false)
 
 const internshipOpportunity = ref(false)
 const eventOpportunity = ref(false)
@@ -105,8 +111,7 @@ const toggleTag = (tag: Tag) => {
 }
 
 const toggleMapView = () => {
-  showMap.value = !showMap.value
-  emit('update:showMap', showMap.value)
+  emit('update:showMap', !props.showMap)
 }
 
 const tagsContainerRef = ref<HTMLElement | null>(null)
@@ -259,7 +264,7 @@ onUnmounted(() => {
         />
         <div class="search-section__text">
           <span class="search-section__text-title">
-            {{ showMap ? 'Закрыть карту' : 'Открыть карту' }}
+            {{ props.showMap ? 'Закрыть карту' : 'Открыть карту' }}
           </span>
           <span class="search-section__text-subtitle">Смотрите возможности по локации</span>
         </div>

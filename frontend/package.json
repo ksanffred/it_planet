@@ -28,6 +28,7 @@
     "@nuxt/test-utils": "^4.0.0",
     "@vitest/ui": "^4.1.0",
     "@vue/test-utils": "^2.4.6",
+    "@yandex/ymaps3-types": "^1.0.19017058",
     "happy-dom": "^20.8.4",
     "husky": "^9.1.7",
     "oxc-nuxt": "^0.1.5",

@@ -219,6 +219,10 @@ watch(miniCards, applyFavoriteSignatures)
           :title="card.title"
           :description="card.description"
           :format="card.format"
+          :city="card.city"
+          :address="card.address"
+          :lat="card.lat"
+          :lng="card.lng"
           :tags="card.tags"
           :employer-name="card.employerName"
           :media="card.media"
@@ -271,10 +275,14 @@ watch(miniCards, applyFavoriteSignatures)
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--text-tertiary-color);
+    color: var(--text-inverted-color);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 600;
+
+    & .dark {
+      color: var(--text-tertiary-color);
+    }
   }
 
   &__loading {

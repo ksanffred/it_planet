@@ -1,8 +1,16 @@
 <script setup lang="ts">
-const showMap = ref(false)
+const route = useRoute()
+const router = useRouter()
+
+const showMap = computed(() => route.query.view === 'map')
 
 const toggleMap = (value: boolean) => {
-  showMap.value = value
+  router.push({
+    query: {
+      ...route.query,
+      view: value ? 'map' : undefined,
+    },
+  })
 }
 </script>
 
@@ -11,9 +19,11 @@ const toggleMap = (value: boolean) => {
     <SectionsHeroSection />
 
     <main>
-      <SectionsSearchSection @update:show-map="toggleMap" />
+      <SectionsSearchSection :show-map="showMap" @update:show-map="toggleMap" />
 
-      <template v-if="showMap"> </template>
+      <template v-if="showMap">
+        <SectionsMapSection />
+      </template>
       <template v-else>
         <SectionsOpportunitiesSection />
       </template>
