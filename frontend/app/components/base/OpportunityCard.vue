@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { OpportunityMiniCard } from '@/types/opportunity'
+import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
 type OpportunityCardProps = OpportunityMiniCard & {
   isFavorite?: boolean
@@ -26,6 +27,14 @@ const emit = defineEmits<{
 const handleToggleFavorite = () => {
   emit('toggle-favorite', id)
 }
+
+const normalizedMedia = computed(() => {
+  const normalized = normalizeStorageAssetUrl(media)
+  if (!normalized || normalized.toLowerCase() === 'string') {
+    return '/media/images/heroArt.webp'
+  }
+  return normalized
+})
 </script>
 
 <template>
@@ -58,7 +67,7 @@ const handleToggleFavorite = () => {
       <NuxtIcon class="opportunity-card__icon" name="material-symbols:open-in-new" size="24px" />
       <NuxtImg
         class="opportunity-card__image"
-        :src="media === 'string' ? '/media/images/heroArt.webp' : media"
+        :src="normalizedMedia"
         lazy
         alt="Opportunity image"
         fit="cover"

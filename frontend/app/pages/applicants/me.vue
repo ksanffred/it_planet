@@ -7,6 +7,7 @@ import type {
   ApplicantResponsesLookup,
   FavoriteOpportunityResponse,
 } from '~/types'
+import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
 type FavoriteCard = Omit<FavoriteOpportunityResponse, 'id'> & { id?: number }
 type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number }
@@ -33,15 +34,6 @@ const avatarUploadError = ref('')
 const resumeFileInput = ref<HTMLInputElement | null>(null)
 const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
-
-const normalizeStorageAssetUrl = (value: string | undefined | null) => {
-  const raw = String(value ?? '').trim()
-  if (!raw) return ''
-  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
-    return raw
-  }
-  return `https://cdn.tramplin.ru/${raw}`
-}
 
 const normalizeApplicantProfile = (profile: Applicant): Applicant => ({
   ...profile,
