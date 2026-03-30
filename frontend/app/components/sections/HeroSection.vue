@@ -31,6 +31,7 @@
   align-items: center;
 
   background-color: var(--primary-color);
+  color: var(--text-primary-color);
   padding: 20px;
   margin: 12px 36px 24px 36px;
   border-radius: 26px;
@@ -41,6 +42,7 @@
     width: fit-content;
     font-family: 'Plus Jakarta Sans', sans-serif;
     line-height: 1.05;
+    color: var(--text-primary-color);
   }
 
   &__description {
@@ -48,6 +50,7 @@
     font-family: 'Inter', sans-serif;
     font-weight: 500;
     line-height: 1.35;
+    color: var(--text-secondary-color);
   }
 
   &__title-group {

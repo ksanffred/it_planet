@@ -537,6 +537,24 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
   background-color: #1f2633 !important;
 }
 
+:global(.light) .employer-cabinet__title,
+:global(.light) .employer-cabinet__name,
+:global(.light) .employer-cabinet__section-title,
+:global(.light) .employer-cabinet__profile-field-title,
+:global(.light) .employer-cabinet__profile-field-text,
+:global(.light) .employer-cabinet__item-title,
+:global(.light) .employer-cabinet__open-link,
+:global(.light) .employer-cabinet__badge {
+  color: #1f2733 !important;
+}
+
+:global(.light) .employer-cabinet__subtitle,
+:global(.light) .employer-cabinet__section-caption,
+:global(.light) .employer-cabinet__item-subtitle,
+:global(.light) .employer-cabinet__muted {
+  color: #5a6578 !important;
+}
+
 @media (max-width: 1100px) {
   .employer-cabinet {
     &__columns {

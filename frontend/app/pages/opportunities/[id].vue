@@ -619,6 +619,22 @@ const applyToOpportunity = async () => {
   background-color: #1f2633 !important;
 }
 
+:global(.light) .opportunity-page__state,
+:global(.light) .opportunity-page__company-title,
+:global(.light) .opportunity-page__tags-title,
+:global(.light) .opportunity-page__details-title,
+:global(.light) .opportunity-page__description-title,
+:global(.light) .opportunity-page__description-text,
+:global(.light) .opportunity-page__meta-value {
+  color: #1f2733 !important;
+}
+
+:global(.light) .opportunity-page__company-description,
+:global(.light) .opportunity-page__company-contacts,
+:global(.light) .opportunity-page__meta-label {
+  color: #5a6578 !important;
+}
+
 @media (max-width: 980px) {
   .opportunity-page {
     &__about-row {
