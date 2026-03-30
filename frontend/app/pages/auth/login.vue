@@ -3,6 +3,7 @@ import type { AuthResponse } from '~/types'
 import type { FetchError } from 'ofetch'
 
 const config = useRuntimeConfig()
+const route = useRoute()
 
 const email: Ref<string> = ref('')
 const password: Ref<string> = ref('')
@@ -36,6 +37,12 @@ async function handleFormSubmit() {
       displayName: response.displayName,
       role: response.role,
     })
+
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+    if (redirect.startsWith('/')) {
+      navigateTo(redirect)
+      return
+    }
 
     navigateTo(`/applicants/me`)
   } catch (authError: unknown) {

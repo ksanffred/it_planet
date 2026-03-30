@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { ApplicantResponsesLookup, OpportunityCardResponse } from '~/types'
 import { formatOpporunityFormat } from '~/utils/formatOpportunityFormat'
+import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -30,7 +31,7 @@ const hasExistingResponse = ref(false)
 
 const mediaList = computed(() => {
   const list = (opportunity.value?.media ?? [])
-    .map((item) => String(item ?? '').trim())
+    .map((item) => normalizeStorageAssetUrl(String(item ?? '').trim()))
     .filter((item) => item.length > 0 && item.toLowerCase() !== 'string')
   if (list.length > 0) {
     return list
@@ -61,6 +62,9 @@ const companyContacts = computed(() => {
   const contacts = employerData.value.contacts
   return [website, socials, contacts].filter(Boolean).join(' • ')
 })
+const companyLogoUrl = computed(() =>
+  normalizeStorageAssetUrl(String(employerData.value.logoUrl ?? '')),
+)
 const companyInitials = computed(() => {
   const source = companyName.value.trim()
   if (!source) return '?'
@@ -268,8 +272,8 @@ const applyToOpportunity = async () => {
         <article class="opportunity-page__company bordered">
           <div class="opportunity-page__company-logo">
             <img
-              v-if="opportunity.employer.logoUrl"
-              :src="opportunity.employer.logoUrl"
+              v-if="companyLogoUrl"
+              :src="companyLogoUrl"
               alt="Company logo"
               class="opportunity-page__company-logo-image"
             />

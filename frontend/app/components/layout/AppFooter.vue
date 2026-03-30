@@ -7,6 +7,7 @@
 
       <div class="app-footer__nav-actions">
         <NuxtLink class="reset-link" to="/">Возможности</NuxtLink>
+        <NuxtLink class="reset-link" to="/employers/register">Организациям</NuxtLink>
         <NuxtLink class="reset-link" to="/">Менторы</NuxtLink>
         <NuxtLink class="reset-link" to="/">События</NuxtLink>
         <NuxtLink class="reset-link" to="/">Контакты</NuxtLink>
