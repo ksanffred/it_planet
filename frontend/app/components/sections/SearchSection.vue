@@ -29,7 +29,6 @@ const initFromUrl = () => {
   if (!searchParam || !tags.value) return
 
   const searchParts = searchParam.split(' ')
-  const typeKeywords = ['стажировка', 'мероприятие', 'вакансия']
 
   const selectedTagNames: string[] = []
   const searchTextParts: string[] = []
@@ -88,11 +87,13 @@ const updateQuery = () => {
   router.push({ query: { ...route.query, search: search || undefined } })
 }
 
-watch(
-  [searchText, internshipOpportunity, eventOpportunity, vacansyOpportunity, searchTags],
-  updateQuery,
-  { deep: true },
-)
+const submitSearch = () => {
+  updateQuery()
+}
+
+watch([internshipOpportunity, eventOpportunity, vacansyOpportunity, searchTags], updateQuery, {
+  deep: true,
+})
 
 const toggleTag = (tag: Tag) => {
   const index = searchTags.value.findIndex((t) => t.id === tag.id)
@@ -245,7 +246,11 @@ onUnmounted(() => {
     </div>
 
     <div class="search-section__search-row container">
-      <BaseAppInput v-model="searchText" placeholder="Поиск стажировок, компаний, технологий..." />
+      <BaseAppInput
+        v-model="searchText"
+        placeholder="Поиск стажировок, компаний, технологий..."
+        @keydown.enter.prevent="submitSearch"
+      />
       <BaseAppButton variant="secondary" class="search-section__map-button" @click="toggleMapView">
         <img
           class="search-section__map-thumb"

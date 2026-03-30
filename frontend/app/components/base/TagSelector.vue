@@ -96,11 +96,13 @@ onUnmounted(() => {
   &__button {
     display: flex;
     align-items: center;
+    color: var(--text-inverted-color);
+
     gap: 6px;
 
     &--active {
       background-color: var(--primary-color);
-      color: var(--text-inverse-color);
+      color: var(--text-inverted-color);
     }
   }
 
@@ -143,11 +145,12 @@ onUnmounted(() => {
     cursor: pointer;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
-    color: var(--text-primary-color);
+    color: var(--text-inverted-color);
     transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--background-tertiary-color);
+      color: var(--text-primary-color);
     }
 
     &--selected {

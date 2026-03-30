@@ -25,7 +25,6 @@
 .app-footer {
   background-color: var(--background-tertiary-color);
   padding: 24px;
-  margin-top: 100vh;
 
   &__logo {
     color: var(--text-primary-color);

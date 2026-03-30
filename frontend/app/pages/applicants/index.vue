@@ -134,8 +134,8 @@ const handleCreateApplicant = async () => {
           required
           type="number"
           min="1900"
-          max="2100"
-          value="1900"
+          :max="2100"
+          :value="1900"
           id="graduationYear"
         />
         <FormInputField

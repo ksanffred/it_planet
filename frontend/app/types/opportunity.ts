@@ -17,6 +17,7 @@ export type OpportunityStatus = 'ACTIVE' | 'CLOSED' | 'PLANNED'
  * @property description - Краткое описание
  * @property employerName - Название компании/работодателя
  * @property format - Формат работы (OFFICE/HYBRID/REMOTE)
+ * @property type - Тип возможности (VACANSY/INTERNSHIP/MENTORSHIP/EVENT)
  * @property tags - Список тегов (технологии, уровень)
  */
 export interface OpportunityMiniCard {
@@ -26,6 +27,7 @@ export interface OpportunityMiniCard {
   description: string
   employerName: string
   format: OpportunityFormat
+  type: OpportunityType
   tags: string[]
 }
 

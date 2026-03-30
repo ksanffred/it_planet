@@ -1,23 +1,64 @@
 <script setup lang="ts">
 import type { OpportunityMiniCard } from '@/types/opportunity'
 
-const { id, media, title, description, employerName, format, tags } =
-  defineProps<OpportunityMiniCard>()
+type OpportunityCardProps = OpportunityMiniCard & {
+  isFavorite?: boolean
+  isFavoriteLoading?: boolean
+}
+
+const {
+  id,
+  media,
+  title,
+  description,
+  employerName,
+  format,
+  type,
+  tags,
+  isFavorite = false,
+  isFavoriteLoading = false,
+} = defineProps<OpportunityCardProps>()
+
+const emit = defineEmits<{
+  'toggle-favorite': [id: number]
+}>()
+
+const handleToggleFavorite = () => {
+  emit('toggle-favorite', id)
+}
 </script>
 
 <template>
   <div
     :class="[
       'opportunity-card',
-      // `opportunity-card--${type}`,
-      // type === 'job' ? 'bordered' : '',
+      `opportunity-card--${formatOpporunityType(type, 'en')}`,
+      formatOpporunityType(type, 'ru') === 'Вакансия' ? 'bordered' : '',
     ]"
   >
-    <NuxtLink to="/" class="opportunity-card__image-wrapper">
+    <button
+      class="opportunity-card__favorite"
+      type="button"
+      :aria-pressed="isFavorite"
+      :aria-label="
+        isFavorite ? 'Удалить возможность из избранного' : 'Добавить возможность в избранное'
+      "
+      :disabled="isFavoriteLoading"
+      @click.stop="handleToggleFavorite"
+    >
+      <NuxtIcon
+        :name="
+          isFavorite ? 'material-symbols:star-rounded' : 'material-symbols:star-outline-rounded'
+        "
+        size="22px"
+      />
+    </button>
+
+    <NuxtLink :to="`opportunities/${id}`" class="opportunity-card__image-wrapper">
       <NuxtIcon class="opportunity-card__icon" name="material-symbols:open-in-new" size="24px" />
       <NuxtImg
         class="opportunity-card__image"
-        :src="'/media/images/heroArt.webp'"
+        :src="media === 'string' ? '/media/images/heroArt.webp' : media"
         lazy
         alt="Opportunity image"
         fit="cover"
@@ -27,6 +68,8 @@ const { id, media, title, description, employerName, format, tags } =
     <h2 class="opportunity-card__title">{{ title }}</h2>
     <p class="opportunity-card__description">{{ description }}</p>
     <div class="opportunity-card__tags">
+      <span> {{ employerName }}</span>
+      <span> {{ formatOpporunityFormat(format, 'ru') }}</span>
       <span v-for="tag in tags" :key="tag">{{ tag }}</span>
     </div>
   </div>
@@ -51,6 +94,26 @@ const { id, media, title, description, employerName, format, tags } =
 
     .dark & {
       color: var(--background-primary-color);
+    }
+  }
+
+  &__favorite {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    z-index: 2;
+    border: none;
+    background: transparent;
+    color: #f6bc30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 
@@ -89,11 +152,11 @@ const { id, media, title, description, employerName, format, tags } =
       color: #c3d1e6 !important;
     }
 
-    #{$b}--internship & {
+    #{$b}--Internship & {
       color: var(--background-secondary-color);
     }
 
-    #{$b}--event & {
+    #{$b}--Event & {
       color: var(--background-secondary-color);
     }
 
@@ -106,14 +169,14 @@ const { id, media, title, description, employerName, format, tags } =
     }
   }
 
-  &--job {
+  &--Vacancy {
     background-color: var(--background-secondary-color);
   }
-  &--internship {
+  &--Internship {
     background-color: var(--tertiary-color);
     color: var(--text-primary-color);
   }
-  &--event {
+  &--Event {
     color: var(--text-primary-color);
 
     background-color: var(--primary-color);
