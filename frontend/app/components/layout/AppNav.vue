@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const tokenCookie = useCookie('auth_token')
+
+const isAuthorized = computed(() => !!tokenCookie.value)
 
 const isDark = computed({
   get: () => colorMode.value === 'dark',
@@ -24,12 +27,20 @@ const isDark = computed({
         <NuxtIcon v-if="!isDark" size="24px" name="material-symbols:wb-sunny-rounded" />
         <NuxtIcon size="24px" name="material-symbols:moon-stars-rounded" v-else />
       </BaseAppButton>
-      <BaseAppButton @click="navigateTo('/auth/login')" variant="secondary" bordered
-        >Войти</BaseAppButton
-      >
-      <BaseAppButton @click="navigateTo('/auth/register')" variant="primary"
-        >Регистрация</BaseAppButton
-      >
+
+      <template v-if="isAuthorized">
+        <BaseAppButton @click="navigateTo('/applicants/me')" variant="primary">
+          Личный кабинет
+        </BaseAppButton>
+      </template>
+      <template v-else>
+        <BaseAppButton @click="navigateTo('/auth/login')" variant="secondary" bordered>
+          Войти
+        </BaseAppButton>
+        <BaseAppButton @click="navigateTo('/auth/register')" variant="primary">
+          Регистрация
+        </BaseAppButton>
+      </template>
     </div>
   </nav>
 </template>

@@ -1,6 +1,5 @@
-<script lang="ts" setup>
-const route = useRoute()
-</script>
+<script lang="ts" setup></script>
+
 <template>
   <div class="user-account container">
     <header class="user-account__header">
@@ -17,9 +16,9 @@ const route = useRoute()
             size="lg"
           />
 
-          <BaseAppButton class="user-account__action-button" variant="primary"
-            >Добавить в контакты</BaseAppButton
-          >
+          <BaseAppButton class="user-account__action-button" variant="primary">
+            Добавить в контакты
+          </BaseAppButton>
         </div>
         <div class="user-account__main-info">
           <div class="user-account__card bordered">

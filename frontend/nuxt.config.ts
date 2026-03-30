@@ -29,6 +29,17 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: 'http://localhost:8080',
+      yandexMapsApiKey: '',
+    },
+  },
+  app: {
+    head: {
+      script: [
+        {
+          src: 'https://api-maps.yandex.ru/v3/?apikey=071323d3-8c9a-48c3-9baf-5c437af0f80e&lang=ru_RU',
+          type: 'text/javascript',
+        },
+      ],
     },
   },
 })
