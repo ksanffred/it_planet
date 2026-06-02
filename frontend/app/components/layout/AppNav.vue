@@ -73,20 +73,4 @@ const isDark = computed({
     padding: 8px;
   }
 }
-
-.app-nav :deep(.app-button--primary) {
-  color: #fff !important;
-}
-
-.app-nav :deep(.app-button--secondary) {
-  color: #161413 !important;
-}
-
-:global(html.dark) .app-nav__logo {
-  color: #f8fafc !important;
-}
-
-:global(html.dark) .app-nav :deep(.app-button--secondary) {
-  color: #f8fafc !important;
-}
 </style>
