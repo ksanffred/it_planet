@@ -58,5 +58,9 @@
       color: var(--secondary-color);
     }
   }
+
+  &__caption {
+    color: var(--text-tertiary-color);
+  }
 }
 </style>
