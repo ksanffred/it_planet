@@ -7,509 +7,471 @@ import type {
   ApplicantResponsesLookup,
   FavoriteOpportunityResponse,
   Tag,
-} from "~/types";
-import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
+} from '~/types'
+import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
-type FavoriteCard = Omit<FavoriteOpportunityResponse, "id"> & { id?: number };
-type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number };
-type ContactLookup = ApplicantContactListItem & Record<string, unknown>;
+type FavoriteCard = Omit<FavoriteOpportunityResponse, 'id'> & { id?: number }
+type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number }
+type ContactLookup = ApplicantContactListItem & Record<string, unknown>
 
-const config = useRuntimeConfig();
-const tokenCookie = useCookie<string | null>("auth_token");
+const config = useRuntimeConfig()
+const tokenCookie = useCookie<string | null>('auth_token')
 
 if (!tokenCookie.value) {
-  navigateTo("/auth/login");
+  navigateTo('/auth/login')
 }
 
 const authHeaders = {
   Authorization: `Bearer ${tokenCookie.value}`,
-};
+}
 
-const favoritesSearch = ref("");
-const responsesSearch = ref("");
-const isVisibilityLoading = ref(false);
-const visibilityError = ref("");
-const avatarFileInput = ref<HTMLInputElement | null>(null);
-const isAvatarUploading = ref(false);
-const avatarUploadError = ref("");
-const resumeFileInput = ref<HTMLInputElement | null>(null);
-const isResumeUploading = ref(false);
-const resumeUploadError = ref("");
+const favoritesSearch = ref('')
+const responsesSearch = ref('')
+const isVisibilityLoading = ref(false)
+const visibilityError = ref('')
+const avatarFileInput = ref<HTMLInputElement | null>(null)
+const isAvatarUploading = ref(false)
+const avatarUploadError = ref('')
+const resumeFileInput = ref<HTMLInputElement | null>(null)
+const isResumeUploading = ref(false)
+const resumeUploadError = ref('')
 
 /* ── Модальные окна редактирования ── */
-type EditSection =
-  | "name"
-  | "university"
-  | "additionalEducation"
-  | "skills"
-  | "portfolio"
-  | null;
+type EditSection = 'name' | 'university' | 'additionalEducation' | 'skills' | 'portfolio' | null
 
-const activeModal = ref<EditSection>(null);
+const activeModal = ref<EditSection>(null)
 
 const editUniversity = reactive({
-  university: "",
-  faculty: "",
-  currentFieldOfStudy: "",
+  university: '',
+  faculty: '',
+  currentFieldOfStudy: '',
   graduationYear: 0,
-});
-const editAdditionalEducation = ref("");
-const editPortfolioUrl = ref("");
-const editName = ref("");
-const editSkills = ref<Tag[]>([]);
-const availableTags = ref<Tag[]>([]);
-const isSavingSection = ref(false);
-const sectionSaveError = ref("");
+})
+const editAdditionalEducation = ref('')
+const editPortfolioUrl = ref('')
+const editName = ref('')
+const editSkills = ref<Tag[]>([])
+const availableTags = ref<Tag[]>([])
+const isSavingSection = ref(false)
+const sectionSaveError = ref('')
 
 const normalizeApplicantProfile = (profile: Applicant): Applicant => ({
   ...profile,
   avatarUrl: normalizeStorageAssetUrl(profile.avatarUrl),
   resumeUrl: normalizeStorageAssetUrl(profile.resumeUrl),
-});
+})
 
 const {
   data: applicant,
   pending: applicantPending,
   error: applicantError,
-} = await useFetch<Applicant>("/applicants/me", {
+} = await useFetch<Applicant>('/applicants/me', {
   baseURL: config.public.apiBase,
-  method: "GET",
+  method: 'GET',
   headers: authHeaders,
   transform: (profile) => normalizeApplicantProfile(profile),
-});
+})
 
-const { data: contacts } = await useFetch<ApplicantContactListItem[]>(
-  "/applicants/me/contacts",
-  {
-    baseURL: config.public.apiBase,
-    method: "GET",
-    headers: authHeaders,
-    default: () => [],
-  },
-);
-
-const { data: favorites } = await useFetch<FavoriteCard[]>(
-  "/applicants/me/favorites/opportunities",
-  {
-    baseURL: config.public.apiBase,
-    method: "GET",
-    headers: authHeaders,
-    default: () => [],
-  },
-);
-const { data: miniCards } = await useFetch<OpportunityMiniCard[]>(
-  "/opportunities/mini-cards",
-  {
-    baseURL: config.public.apiBase,
-    method: "GET",
-    default: () => [],
-  },
-);
-
-const { data: responses } = await useFetch<ApplicantResponsesLookup[]>(
-  "/opportunities/responses/me",
-  {
-    baseURL: config.public.apiBase,
-    method: "GET",
-    headers: authHeaders,
-    default: () => [],
-  },
-);
-
-const { data: tagsData } = await useFetch<Tag[]>("/tags", {
+const { data: contacts } = await useFetch<ApplicantContactListItem[]>('/applicants/me/contacts', {
   baseURL: config.public.apiBase,
-  method: "GET",
+  method: 'GET',
   headers: authHeaders,
   default: () => [],
-});
+})
+
+const { data: favorites } = await useFetch<FavoriteCard[]>(
+  '/applicants/me/favorites/opportunities',
+  {
+    baseURL: config.public.apiBase,
+    method: 'GET',
+    headers: authHeaders,
+    default: () => [],
+  },
+)
+const { data: miniCards } = await useFetch<OpportunityMiniCard[]>('/opportunities/mini-cards', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  default: () => [],
+})
+
+const { data: responses } = await useFetch<ApplicantResponsesLookup[]>(
+  '/opportunities/responses/me',
+  {
+    baseURL: config.public.apiBase,
+    method: 'GET',
+    headers: authHeaders,
+    default: () => [],
+  },
+)
+
+const { data: tagsData } = await useFetch<Tag[]>('/tags', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: authHeaders,
+  default: () => [],
+})
 
 watchEffect(() => {
-  availableTags.value = tagsData.value ?? [];
-});
+  availableTags.value = tagsData.value ?? []
+})
 
 watchEffect(() => {
   if (applicantError.value?.statusCode === 404) {
-    navigateTo("/applicants");
+    navigateTo('/applicants')
   }
 
   if (!applicantPending.value && !applicant.value) {
-    navigateTo("/applicants");
+    navigateTo('/applicants')
   }
-});
+})
 
 const applicantInitials = computed(() => {
-  const source = applicant.value?.name?.trim();
-  if (!source) return "??";
+  const source = applicant.value?.name?.trim()
+  if (!source) return '??'
 
-  const parts = source.split(/\s+/).filter(Boolean);
+  const parts = source.split(/\s+/).filter(Boolean)
   return parts
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-});
+    .join('')
+})
 
 const filteredFavorites = computed(() => {
-  const query = favoritesSearch.value.trim().toLowerCase();
-  if (!query) return favorites.value ?? [];
+  const query = favoritesSearch.value.trim().toLowerCase()
+  if (!query) return favorites.value ?? []
 
   return (favorites.value ?? []).filter((item) =>
     `${item.title} ${item.company_name}`.toLowerCase().includes(query),
-  );
-});
+  )
+})
 
 const filteredResponses = computed(() => {
-  const query = responsesSearch.value.trim().toLowerCase();
-  if (!query) return responses.value ?? [];
+  const query = responsesSearch.value.trim().toLowerCase()
+  if (!query) return responses.value ?? []
 
   return (responses.value ?? []).filter((item) =>
     `${item.title} ${item.company_name}`.toLowerCase().includes(query),
-  );
-});
+  )
+})
 
 const favoriteStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    ACTIVE: "Активна",
-    CLOSED: "Закрыто",
-    PLANNED: "Запланировано",
-  };
-  return map[status] ?? status;
-};
+    ACTIVE: 'Активна',
+    CLOSED: 'Закрыто',
+    PLANNED: 'Запланировано',
+  }
+  return map[status] ?? status
+}
 
 const responseStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    NOT_REVIEWED: "Не рассмотрен",
-    REVIEWED: "В резерве",
-    ACCEPTED: "Принят",
-    REJECTED: "Отклонен",
-  };
-  return map[status] ?? status;
-};
+    NOT_REVIEWED: 'Не рассмотрен',
+    REVIEWED: 'В резерве',
+    ACCEPTED: 'Принят',
+    REJECTED: 'Отклонен',
+  }
+  return map[status] ?? status
+}
 
 const responseStatusClass = (status: string) => {
   const map: Record<string, string> = {
-    NOT_REVIEWED: "neutral",
-    REVIEWED: "neutral",
-    ACCEPTED: "success",
-    REJECTED: "danger",
-  };
-  return map[status] ?? "neutral";
-};
+    NOT_REVIEWED: 'neutral',
+    REVIEWED: 'neutral',
+    ACCEPTED: 'success',
+    REJECTED: 'danger',
+  }
+  return map[status] ?? 'neutral'
+}
 
 const toNumberOrNull = (value: unknown) => {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) ? parsed : null;
-};
+  const parsed = Number(value)
+  return Number.isInteger(parsed) ? parsed : null
+}
 
 const resolveContactApplicantId = (contact: ApplicantContactListItem) => {
-  const typedContact = contact as ContactLookup;
-  const selfApplicantId = toNumberOrNull(applicant.value?.id);
+  const typedContact = contact as ContactLookup
+  const selfApplicantId = toNumberOrNull(applicant.value?.id)
 
   const directKeys = [
-    "applicantId",
-    "applicant_id",
-    "contactApplicantId",
-    "contact_applicant_id",
-    "id",
-    "profileId",
-    "profile_id",
-    "requesterApplicantId",
-    "requester_applicant_id",
-    "recipientApplicantId",
-    "recipient_applicant_id",
-    "userId",
-    "user_id",
-  ];
+    'applicantId',
+    'applicant_id',
+    'contactApplicantId',
+    'contact_applicant_id',
+    'id',
+    'profileId',
+    'profile_id',
+    'requesterApplicantId',
+    'requester_applicant_id',
+    'recipientApplicantId',
+    'recipient_applicant_id',
+    'userId',
+    'user_id',
+  ]
 
-  const pairCandidates: number[] = [];
+  const pairCandidates: number[] = []
 
   for (const key of directKeys) {
-    const parsed = toNumberOrNull(typedContact[key]);
+    const parsed = toNumberOrNull(typedContact[key])
     if (parsed) {
-      pairCandidates.push(parsed);
+      pairCandidates.push(parsed)
     }
   }
 
-  const nestedApplicant = typedContact.applicant;
-  if (nestedApplicant && typeof nestedApplicant === "object") {
-    const nestedId = toNumberOrNull(
-      (nestedApplicant as Record<string, unknown>).id,
-    );
+  const nestedApplicant = typedContact.applicant
+  if (nestedApplicant && typeof nestedApplicant === 'object') {
+    const nestedId = toNumberOrNull((nestedApplicant as Record<string, unknown>).id)
     if (nestedId) {
-      pairCandidates.push(nestedId);
+      pairCandidates.push(nestedId)
     }
   }
 
-  const uniqueCandidates = [...new Set(pairCandidates)];
+  const uniqueCandidates = [...new Set(pairCandidates)]
   if (uniqueCandidates.length === 0) {
-    return null;
+    return null
   }
 
   if (!selfApplicantId) {
-    return uniqueCandidates[0] ?? null;
+    return uniqueCandidates[0] ?? null
   }
 
-  return uniqueCandidates.find((id) => id !== selfApplicantId) ?? null;
-};
+  return uniqueCandidates.find((id) => id !== selfApplicantId) ?? null
+}
 
 const goToContactProfile = (contact: ApplicantContactListItem) => {
-  const contactApplicantId = resolveContactApplicantId(contact);
+  const contactApplicantId = resolveContactApplicantId(contact)
   if (!contactApplicantId) {
-    return;
+    return
   }
 
-  navigateTo(`/applicants/${contactApplicantId}`);
-};
+  navigateTo(`/applicants/${contactApplicantId}`)
+}
 
 const normalizeValue = (value: unknown) =>
-  String(value ?? "")
+  String(value ?? '')
     .trim()
-    .toLowerCase();
-const buildFavoriteSignature = (
-  title: unknown,
-  companyName: unknown,
-  type: unknown,
-) =>
-  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`;
+    .toLowerCase()
+const buildFavoriteSignature = (title: unknown, companyName: unknown, type: unknown) =>
+  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`
 
 const miniCardIdBySignature = computed(() => {
-  const map = new Map<string, number>();
+  const map = new Map<string, number>()
   for (const card of miniCards.value ?? []) {
-    map.set(
-      buildFavoriteSignature(card.title, card.employerName, card.type),
-      card.id,
-    );
+    map.set(buildFavoriteSignature(card.title, card.employerName, card.type), card.id)
   }
-  return map;
-});
+  return map
+})
 
 const resolveFavoriteOpportunityId = (item: FavoriteCard) => {
   const typedItem = item as FavoriteCardWithOpportunityId & {
-    opportunity?: { id?: number | string };
-  };
+    opportunity?: { id?: number | string }
+  }
   const directId =
     toNumberOrNull(typedItem.id) ??
     toNumberOrNull(typedItem.opportunityId) ??
-    toNumberOrNull(typedItem.opportunity?.id);
+    toNumberOrNull(typedItem.opportunity?.id)
 
   if (directId) {
-    return directId;
+    return directId
   }
 
   return (
     miniCardIdBySignature.value.get(
-      buildFavoriteSignature(
-        typedItem.title,
-        typedItem.company_name,
-        typedItem.type,
-      ),
+      buildFavoriteSignature(typedItem.title, typedItem.company_name, typedItem.type),
     ) ?? null
-  );
-};
+  )
+}
 
 const goToFavoriteOpportunity = (item: FavoriteCard) => {
-  const opportunityId = resolveFavoriteOpportunityId(item);
+  const opportunityId = resolveFavoriteOpportunityId(item)
   if (!opportunityId) {
-    return;
+    return
   }
 
-  navigateTo(`/opportunities/${opportunityId}`);
-};
+  navigateTo(`/opportunities/${opportunityId}`)
+}
 
-const isFavoriteItemClickable = (item: FavoriteCard) =>
-  Boolean(resolveFavoriteOpportunityId(item));
+const isFavoriteItemClickable = (item: FavoriteCard) => Boolean(resolveFavoriteOpportunityId(item))
 
-const visibilityIsPublic = computed(
-  () => applicant.value?.visibility === "PUBLIC",
-);
+const visibilityIsPublic = computed(() => applicant.value?.visibility === 'PUBLIC')
 
 const toggleVisibility = async () => {
   if (!applicant.value || isVisibilityLoading.value) {
-    return;
+    return
   }
 
   const nextVisibility: ApplicantVisibility =
-    applicant.value.visibility === "PUBLIC" ? "PRIVATE" : "PUBLIC";
+    applicant.value.visibility === 'PUBLIC' ? 'PRIVATE' : 'PUBLIC'
 
-  isVisibilityLoading.value = true;
-  visibilityError.value = "";
+  isVisibilityLoading.value = true
+  visibilityError.value = ''
 
   try {
-    const updatedApplicant = await $fetch<Applicant>(
-      "/applicants/me/visibility",
-      {
-        baseURL: config.public.apiBase,
-        method: "PUT",
-        headers: authHeaders,
-        body: {
-          visibility: nextVisibility,
-        },
+    const updatedApplicant = await $fetch<Applicant>('/applicants/me/visibility', {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body: {
+        visibility: nextVisibility,
       },
-    );
+    })
 
-    applicant.value = normalizeApplicantProfile(updatedApplicant);
+    applicant.value = normalizeApplicantProfile(updatedApplicant)
   } catch (error) {
-    visibilityError.value = "Не удалось изменить видимость профиля";
-    console.error("Failed to update profile visibility", error);
+    visibilityError.value = 'Не удалось изменить видимость профиля'
+    console.error('Failed to update profile visibility', error)
   } finally {
-    isVisibilityLoading.value = false;
+    isVisibilityLoading.value = false
   }
-};
+}
 
 const openAvatarPicker = () => {
   if (isAvatarUploading.value) {
-    return;
+    return
   }
 
-  avatarFileInput.value?.click();
-};
+  avatarFileInput.value?.click()
+}
 
 const uploadAvatar = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
 
   if (!file || !applicant.value?.id) {
-    return;
+    return
   }
 
-  const isImage = file.type.startsWith("image/");
+  const isImage = file.type.startsWith('image/')
   if (!isImage) {
-    avatarUploadError.value = "Можно загрузить только изображение";
-    input.value = "";
-    return;
+    avatarUploadError.value = 'Можно загрузить только изображение'
+    input.value = ''
+    return
   }
 
-  isAvatarUploading.value = true;
-  avatarUploadError.value = "";
+  isAvatarUploading.value = true
+  avatarUploadError.value = ''
 
   try {
-    const formData = new FormData();
-    formData.append("file", file);
+    const formData = new FormData()
+    formData.append('file', file)
 
     const response = await $fetch<{ path?: string; url?: string }>(
       `/applicants/${applicant.value.id}/avatar`,
       {
         baseURL: config.public.apiBase,
-        method: "POST",
+        method: 'POST',
         headers: authHeaders,
         body: formData,
       },
-    );
+    )
 
-    const nextAvatarUrl = normalizeStorageAssetUrl(
-      response.url ?? response.path ?? "",
-    );
+    const nextAvatarUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
     if (nextAvatarUrl && applicant.value) {
       applicant.value = {
         ...applicant.value,
         avatarUrl: nextAvatarUrl,
-      };
+      }
     }
   } catch (error) {
-    avatarUploadError.value = "Не удалось загрузить аватар";
-    console.error("Failed to upload avatar", error);
+    avatarUploadError.value = 'Не удалось загрузить аватар'
+    console.error('Failed to upload avatar', error)
   } finally {
-    isAvatarUploading.value = false;
-    input.value = "";
+    isAvatarUploading.value = false
+    input.value = ''
   }
-};
+}
 
 const openResumePicker = () => {
   if (isResumeUploading.value) {
-    return;
+    return
   }
 
-  resumeFileInput.value?.click();
-};
+  resumeFileInput.value?.click()
+}
 
 const uploadResume = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
 
   if (!file || !applicant.value?.id) {
-    return;
+    return
   }
 
-  const isPdf =
-    file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
   if (!isPdf) {
-    resumeUploadError.value = "Можно загрузить только PDF файл";
-    input.value = "";
-    return;
+    resumeUploadError.value = 'Можно загрузить только PDF файл'
+    input.value = ''
+    return
   }
 
-  isResumeUploading.value = true;
-  resumeUploadError.value = "";
+  isResumeUploading.value = true
+  resumeUploadError.value = ''
 
   try {
-    const formData = new FormData();
-    formData.append("file", file);
+    const formData = new FormData()
+    formData.append('file', file)
 
     const response = await $fetch<{ path?: string; url?: string }>(
       `/applicants/${applicant.value.id}/resume`,
       {
         baseURL: config.public.apiBase,
-        method: "POST",
+        method: 'POST',
         headers: authHeaders,
         body: formData,
       },
-    );
+    )
 
-    const nextResumeUrl = normalizeStorageAssetUrl(
-      response.url ?? response.path ?? "",
-    );
+    const nextResumeUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
     if (nextResumeUrl && applicant.value) {
       applicant.value = {
         ...applicant.value,
         resumeUrl: nextResumeUrl,
-      };
+      }
     }
   } catch (error) {
-    resumeUploadError.value = "Не удалось загрузить резюме";
-    console.error("Failed to upload resume", error);
+    resumeUploadError.value = 'Не удалось загрузить резюме'
+    console.error('Failed to upload resume', error)
   } finally {
-    isResumeUploading.value = false;
-    input.value = "";
+    isResumeUploading.value = false
+    input.value = ''
   }
-};
+}
 
 /* ── Открытие модалок ── */
 const openEditName = () => {
-  editName.value = applicant.value?.name ?? "";
-  activeModal.value = "name";
-};
+  editName.value = applicant.value?.name ?? ''
+  activeModal.value = 'name'
+}
 
 const openEditUniversity = () => {
-  if (!applicant.value) return;
-  editUniversity.university = applicant.value.university ?? "";
-  editUniversity.faculty = applicant.value.faculty ?? "";
-  editUniversity.currentFieldOfStudy =
-    applicant.value.currentFieldOfStudy ?? "";
-  editUniversity.graduationYear = applicant.value.graduationYear ?? 0;
-  activeModal.value = "university";
-};
+  if (!applicant.value) return
+  editUniversity.university = applicant.value.university ?? ''
+  editUniversity.faculty = applicant.value.faculty ?? ''
+  editUniversity.currentFieldOfStudy = applicant.value.currentFieldOfStudy ?? ''
+  editUniversity.graduationYear = applicant.value.graduationYear ?? 0
+  activeModal.value = 'university'
+}
 
 const openEditAdditionalEducation = () => {
-  editAdditionalEducation.value =
-    applicant.value?.additionalEducationDetails ?? "";
-  activeModal.value = "additionalEducation";
-};
+  editAdditionalEducation.value = applicant.value?.additionalEducationDetails ?? ''
+  activeModal.value = 'additionalEducation'
+}
 
 const openEditSkills = () => {
-  editSkills.value = [...(applicant.value?.skills ?? [])];
-  activeModal.value = "skills";
-};
+  editSkills.value = [...(applicant.value?.skills ?? [])]
+  activeModal.value = 'skills'
+}
 
 const openEditPortfolio = () => {
-  editPortfolioUrl.value = applicant.value?.portfolioUrl ?? "";
-  activeModal.value = "portfolio";
-};
+  editPortfolioUrl.value = applicant.value?.portfolioUrl ?? ''
+  activeModal.value = 'portfolio'
+}
 
 /* ── Сохранение ── */
 const saveSection = async () => {
-  if (!applicant.value || isSavingSection.value || !activeModal.value) return;
+  if (!applicant.value || isSavingSection.value || !activeModal.value) return
 
-  isSavingSection.value = true;
-  sectionSaveError.value = "";
+  isSavingSection.value = true
+  sectionSaveError.value = ''
 
   const body: Record<string, unknown> = {
     name: applicant.value.name,
@@ -519,66 +481,65 @@ const saveSection = async () => {
     desiredPosition: applicant.value.desiredPosition ?? null,
     major: applicant.value.major ?? null,
     graduationYear: applicant.value.graduationYear ?? null,
-    additionalEducationDetails:
-      applicant.value.additionalEducationDetails ?? null,
+    additionalEducationDetails: applicant.value.additionalEducationDetails ?? null,
     portfolioUrl: applicant.value.portfolioUrl ?? null,
     resumeUrl: applicant.value.resumeUrl ?? null,
     skillTagIds: (applicant.value.skills ?? []).map((s) => s.id),
-  };
+  }
 
   switch (activeModal.value) {
-    case "name":
-      body.name = editName.value || null;
-      break;
-    case "university":
-      body.university = editUniversity.university || null;
-      body.faculty = editUniversity.faculty || null;
-      body.currentFieldOfStudy = editUniversity.currentFieldOfStudy || null;
+    case 'name':
+      body.name = editName.value || null
+      break
+    case 'university':
+      body.university = editUniversity.university || null
+      body.faculty = editUniversity.faculty || null
+      body.currentFieldOfStudy = editUniversity.currentFieldOfStudy || null
       body.graduationYear = editUniversity.graduationYear
         ? Number(editUniversity.graduationYear)
-        : null;
-      break;
-    case "additionalEducation":
-      body.additionalEducationDetails = editAdditionalEducation.value || null;
-      break;
-    case "skills":
-      body.skillTagIds = editSkills.value.map((t) => t.id);
-      break;
-    case "portfolio":
-      body.portfolioUrl = editPortfolioUrl.value || null;
-      break;
+        : null
+      break
+    case 'additionalEducation':
+      body.additionalEducationDetails = editAdditionalEducation.value || null
+      break
+    case 'skills':
+      body.skillTagIds = editSkills.value.map((t) => t.id)
+      break
+    case 'portfolio':
+      body.portfolioUrl = editPortfolioUrl.value || null
+      break
   }
 
   try {
-    const updated = await $fetch<Applicant>("/applicants/me", {
+    const updated = await $fetch<Applicant>('/applicants/me', {
       baseURL: config.public.apiBase,
-      method: "PUT",
+      method: 'PUT',
       headers: authHeaders,
       body,
-    });
-    applicant.value = normalizeApplicantProfile(updated);
-    activeModal.value = null;
+    })
+    applicant.value = normalizeApplicantProfile(updated)
+    activeModal.value = null
   } catch (err) {
-    sectionSaveError.value = "Не удалось сохранить изменения";
-    console.error("Failed to save section", err);
+    sectionSaveError.value = 'Не удалось сохранить изменения'
+    console.error('Failed to save section', err)
   } finally {
-    isSavingSection.value = false;
+    isSavingSection.value = false
   }
-};
+}
 
 const closeModal = () => {
-  activeModal.value = null;
-  sectionSaveError.value = "";
-};
+  activeModal.value = null
+  sectionSaveError.value = ''
+}
 
-const showLogoutModal = ref(false);
+const showLogoutModal = ref(false)
 
 const handleLogout = () => {
-  tokenCookie.value = null;
-  const userCookie = useCookie<string | null>("user_data");
-  userCookie.value = null;
-  navigateTo("/auth/login");
-};
+  tokenCookie.value = null
+  const userCookie = useCookie<string | null>('user_data')
+  userCookie.value = null
+  navigateTo('/auth/login')
+}
 </script>
 
 <template>
@@ -615,7 +576,7 @@ const handleLogout = () => {
           <div class="user-account__identity-text">
             <div class="user-account__name-row">
               <p class="user-account__name">
-                {{ applicant?.name || "Пользователь" }}
+                {{ applicant?.name || 'Пользователь' }}
               </p>
               <button
                 class="user-account__edit-btn"
@@ -627,9 +588,7 @@ const handleLogout = () => {
               </button>
             </div>
             <p class="user-account__subtitle">Профиль пользователя</p>
-            <p v-if="isAvatarUploading" class="user-account__muted">
-              Загружаем аватар...
-            </p>
+            <p v-if="isAvatarUploading" class="user-account__muted">Загружаем аватар...</p>
             <p v-if="avatarUploadError" class="user-account__error">
               {{ avatarUploadError }}
             </p>
@@ -647,7 +606,7 @@ const handleLogout = () => {
             />
             <span class="user-account__visibility-slider" />
             <span class="user-account__visibility-label">
-              {{ visibilityIsPublic ? "Профиль виден" : "Профиль скрыт" }}
+              {{ visibilityIsPublic ? 'Профиль виден' : 'Профиль скрыт' }}
             </span>
           </label>
           <p v-if="visibilityError" class="user-account__error">
@@ -659,9 +618,7 @@ const handleLogout = () => {
       <div class="user-account__profile-grid">
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
-            <h3 class="user-account__panel-title">
-              Общая информация об университете
-            </h3>
+            <h3 class="user-account__panel-title">Общая информация об университете</h3>
             <button
               class="user-account__edit-btn"
               type="button"
@@ -671,19 +628,15 @@ const handleLogout = () => {
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
-          <p>Университет: {{ applicant?.university || "Не указано" }}</p>
-          <p>Факультет: {{ applicant?.faculty || "Не указано" }}</p>
-          <p>
-            Направление: {{ applicant?.currentFieldOfStudy || "Не указано" }}
-          </p>
-          <p>Год выпуска: {{ applicant?.graduationYear || "Не указано" }}</p>
+          <p>Университет: {{ applicant?.university || 'Не указано' }}</p>
+          <p>Факультет: {{ applicant?.faculty || 'Не указано' }}</p>
+          <p>Направление: {{ applicant?.currentFieldOfStudy || 'Не указано' }}</p>
+          <p>Год выпуска: {{ applicant?.graduationYear || 'Не указано' }}</p>
         </article>
 
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
-            <h3 class="user-account__panel-title">
-              Ключевое дополнительное образование
-            </h3>
+            <h3 class="user-account__panel-title">Ключевое дополнительное образование</h3>
             <button
               class="user-account__edit-btn"
               type="button"
@@ -694,10 +647,7 @@ const handleLogout = () => {
             </button>
           </div>
           <p>
-            {{
-              applicant?.additionalEducationDetails ||
-              "Дополнительное образование не заполнено"
-            }}
+            {{ applicant?.additionalEducationDetails || 'Дополнительное образование не заполнено' }}
           </p>
         </article>
 
@@ -728,9 +678,7 @@ const handleLogout = () => {
         </article>
       </div>
 
-      <div
-        class="user-account__profile-grid user-account__profile-grid--bottom"
-      >
+      <div class="user-account__profile-grid user-account__profile-grid--bottom">
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
             <h3 class="user-account__panel-title">Портфолио</h3>
@@ -799,11 +747,7 @@ const handleLogout = () => {
         label="Университет"
         v-model="editUniversity.university"
       />
-      <FormInputField
-        id="edit-faculty"
-        label="Факультет"
-        v-model="editUniversity.faculty"
-      />
+      <FormInputField id="edit-faculty" label="Факультет" v-model="editUniversity.faculty" />
       <FormInputField
         id="edit-field"
         label="Направление"
@@ -875,10 +819,7 @@ const handleLogout = () => {
       <FormInputField id="edit-name" label="Имя" v-model="editName" />
     </BaseAppModal>
 
-    <p
-      v-if="sectionSaveError"
-      class="user-account__error user-account__error--centered"
-    >
+    <p v-if="sectionSaveError" class="user-account__error user-account__error--centered">
       {{ sectionSaveError }}
     </p>
 
@@ -899,7 +840,7 @@ const handleLogout = () => {
           @click="goToContactProfile(contact)"
         >
           <div class="user-account__contact-avatar">
-            {{ (contact.name || "?").charAt(0).toUpperCase() }}
+            {{ (contact.name || '?').charAt(0).toUpperCase() }}
           </div>
           <div class="user-account__contact-info">
             <p class="user-account__contact-name">{{ contact.name }}</p>
@@ -908,19 +849,14 @@ const handleLogout = () => {
             </p>
           </div>
         </article>
-        <p v-if="!contacts?.length" class="user-account__muted">
-          Контактов пока нет
-        </p>
+        <p v-if="!contacts?.length" class="user-account__muted">Контактов пока нет</p>
       </div>
     </section>
 
     <section class="user-account__columns">
       <article class="user-account__column bordered">
         <h2 class="user-account__section-title">Избранные возможности</h2>
-        <BaseAppInput
-          v-model="favoritesSearch"
-          placeholder="Поиск по возможностям"
-        />
+        <BaseAppInput v-model="favoritesSearch" placeholder="Поиск по возможностям" />
 
         <div class="user-account__list">
           <div
@@ -929,8 +865,7 @@ const handleLogout = () => {
             :class="[
               'user-account__list-item bordered',
               {
-                'user-account__list-item--interactive':
-                  isFavoriteItemClickable(item),
+                'user-account__list-item--interactive': isFavoriteItemClickable(item),
               },
             ]"
             @click="goToFavoriteOpportunity(item)"
@@ -975,18 +910,12 @@ const handleLogout = () => {
               {{ responseStatusLabel(item.response_status) }}
             </span>
           </div>
-          <p v-if="!filteredResponses.length" class="user-account__muted">
-            Откликов пока нет
-          </p>
+          <p v-if="!filteredResponses.length" class="user-account__muted">Откликов пока нет</p>
         </div>
       </article>
     </section>
     <div class="user-account__logout-row">
-      <BaseAppButton
-        variant="secondary"
-        class="bordered"
-        @click="showLogoutModal = true"
-      >
+      <BaseAppButton variant="secondary" class="bordered" @click="showLogoutModal = true">
         Выйти из профиля
       </BaseAppButton>
     </div>
@@ -999,9 +928,7 @@ const handleLogout = () => {
     @confirm="handleLogout"
     @cancel="showLogoutModal = false"
   >
-    <p class="user-account__logout-confirm-text">
-      Вы уверены, что хотите выйти?
-    </p>
+    <p class="user-account__logout-confirm-text">Вы уверены, что хотите выйти?</p>
   </BaseAppModal>
 </template>
 
@@ -1022,7 +949,7 @@ const handleLogout = () => {
 
   &__page-title {
     margin: 0;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 32px;
     line-height: 1;
     font-weight: 800;
@@ -1057,7 +984,7 @@ const handleLogout = () => {
     color: #2052d4;
     display: grid;
     place-items: center;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
     font-size: 14px;
     background: #dce9fa;
@@ -1100,7 +1027,7 @@ const handleLogout = () => {
     margin: 0;
     font-size: 34px;
     line-height: 1;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
     color: var(--text-inverted-color);
   }
@@ -1161,7 +1088,7 @@ const handleLogout = () => {
     transition: background-color 0.2s ease;
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       left: 2px;
       top: 2px;
@@ -1220,7 +1147,7 @@ const handleLogout = () => {
     margin: 0 0 6px;
     font-size: 12px;
     line-height: 1.2;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--text-inverted-color);
     font-weight: 800;
   }
@@ -1310,7 +1237,7 @@ const handleLogout = () => {
 
   &__section-title {
     margin: 0 0 8px;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 24px;
     font-weight: 800;
     color: var(--text-inverted-color);
@@ -1362,7 +1289,7 @@ const handleLogout = () => {
   &__contact-name {
     margin: 0;
     font-size: 11px;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     color: var(--text-inverted-color);
     line-height: 1.2;
@@ -1423,7 +1350,7 @@ const handleLogout = () => {
   &__item-title {
     margin: 0;
     font-size: 13px;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     color: var(--text-inverted-color);
     line-height: 1.2;

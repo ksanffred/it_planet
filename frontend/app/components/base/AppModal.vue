@@ -33,9 +33,9 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
             <BaseAppButton variant="secondary" type="button" @click="emit('cancel')"
               >Отмена</BaseAppButton
             >
-            <BaseAppButton variant="primary" type="button" @click="emit('confirm')"
-              >{{ confirmText ?? 'Сохранить' }}</BaseAppButton
-            >
+            <BaseAppButton variant="primary" type="button" @click="emit('confirm')">{{
+              confirmText ?? 'Сохранить'
+            }}</BaseAppButton>
           </footer>
         </div>
       </div>

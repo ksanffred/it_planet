@@ -133,6 +133,8 @@ const applicantLoadErrorMessage = computed(() => {
   return 'Не удалось загрузить профиль пользователя'
 })
 
+const isPrivate = computed(() => applicant.value?.visibility === 'PRIVATE')
+
 const applicantInitials = computed(() => {
   const source = applicant.value?.name?.trim()
   if (!source) return '??'
@@ -304,7 +306,9 @@ const loadMyContacts = async () => {
   }
 }
 
-watch([applicantId, applicant, tokenCookie], loadMyContacts, { immediate: true })
+watch([applicantId, applicant, tokenCookie], loadMyContacts, {
+  immediate: true,
+})
 
 const addToContacts = async () => {
   if (
@@ -359,8 +363,12 @@ const addToContacts = async () => {
         <div class="user-account__identity">
           <div class="user-account__avatar">{{ applicantInitials }}</div>
           <div class="user-account__identity-text">
-            <p class="user-account__name">{{ applicant?.name || 'Пользователь' }}</p>
-            <p class="user-account__subtitle">Публичный профиль</p>
+            <p class="user-account__name">
+              {{ applicant?.name || 'Пользователь' }}
+            </p>
+            <p class="user-account__subtitle">
+              {{ isPrivate ? 'Закрытый профиль' : 'Публичный профиль' }}
+            </p>
           </div>
         </div>
 
@@ -373,9 +381,11 @@ const addToContacts = async () => {
           {{ contactButtonLabel }}
         </BaseAppButton>
       </div>
-      <p v-if="addContactError" class="user-account__error">{{ addContactError }}</p>
+      <p v-if="addContactError" class="user-account__error">
+        {{ addContactError }}
+      </p>
 
-      <div class="user-account__profile-grid">
+      <div v-if="!isPrivate" class="user-account__profile-grid">
         <article class="user-account__panel bordered">
           <h3 class="user-account__panel-title">Общая информация об университете</h3>
           <p>Университет: {{ applicant?.university || 'Не указано' }}</p>
@@ -430,9 +440,10 @@ const addToContacts = async () => {
           <span v-else class="user-account__muted">Резюме не загружено</span>
         </article>
       </div>
+      <div v-else class="user-account__private-message">Профиль пользователя скрыт</div>
     </section>
 
-    <section v-if="!applicantLoadErrorMessage" class="user-account__columns">
+    <section v-if="!applicantLoadErrorMessage && !isPrivate" class="user-account__columns">
       <article class="user-account__column bordered">
         <h2 class="user-account__section-title">Избранные возможности</h2>
         <BaseAppInput v-model="favoritesSearch" placeholder="Поиск по возможностям" />
@@ -443,7 +454,9 @@ const addToContacts = async () => {
             :key="idx"
             :class="[
               'user-account__list-item bordered',
-              { 'user-account__list-item--interactive': isFavoriteItemClickable(item) },
+              {
+                'user-account__list-item--interactive': isFavoriteItemClickable(item),
+              },
             ]"
             @click="goToFavoriteOpportunity(item)"
           >
@@ -493,7 +506,9 @@ const addToContacts = async () => {
     </section>
 
     <section v-else class="user-account__error-card bordered">
-      <p class="user-account__error-card-text">{{ applicantLoadErrorMessage }}</p>
+      <p class="user-account__error-card-text">
+        {{ applicantLoadErrorMessage }}
+      </p>
     </section>
   </div>
 </template>
@@ -648,6 +663,15 @@ const addToContacts = async () => {
     margin: 0;
     color: var(--text-tertiary-color);
     font-size: 12px;
+  }
+
+  &__private-message {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    padding: 48px 20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-inverted-color);
   }
 
   &__section-title {
