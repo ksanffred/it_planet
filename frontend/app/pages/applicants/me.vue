@@ -438,10 +438,14 @@ const uploadResume = async (event: Event) => {
             @change="uploadAvatar"
           />
           <div class="user-account__identity-text">
-            <p class="user-account__name">{{ applicant?.name || 'Пользователь' }}</p>
+            <p class="user-account__name">
+              {{ applicant?.name || 'Пользователь' }}
+            </p>
             <p class="user-account__subtitle">Профиль пользователя</p>
             <p v-if="isAvatarUploading" class="user-account__muted">Загружаем аватар...</p>
-            <p v-if="avatarUploadError" class="user-account__error">{{ avatarUploadError }}</p>
+            <p v-if="avatarUploadError" class="user-account__error">
+              {{ avatarUploadError }}
+            </p>
           </div>
         </div>
 
@@ -462,7 +466,9 @@ const uploadResume = async (event: Event) => {
               {{ visibilityIsPublic ? 'Профиль виден' : 'Профиль скрыт' }}
             </span>
           </label>
-          <p v-if="visibilityError" class="user-account__error">{{ visibilityError }}</p>
+          <p v-if="visibilityError" class="user-account__error">
+            {{ visibilityError }}
+          </p>
         </div>
       </div>
 
@@ -488,6 +494,7 @@ const uploadResume = async (event: Event) => {
             <BaseAppTag
               v-for="skill in applicant?.skills || []"
               :key="skill.id"
+              text-color="var(--text-primary-color)"
               class="user-account__skill-tag"
               >{{ skill.name }}</BaseAppTag
             >
@@ -537,7 +544,9 @@ const uploadResume = async (event: Event) => {
             >{{ applicant.resumeUrl }}</a
           >
           <span v-else class="user-account__muted">Резюме не загружено</span>
-          <p v-if="resumeUploadError" class="user-account__error">{{ resumeUploadError }}</p>
+          <p v-if="resumeUploadError" class="user-account__error">
+            {{ resumeUploadError }}
+          </p>
         </article>
       </div>
     </section>
@@ -563,7 +572,9 @@ const uploadResume = async (event: Event) => {
           </div>
           <div class="user-account__contact-info">
             <p class="user-account__contact-name">{{ contact.name }}</p>
-            <p class="user-account__contact-role">{{ contact.desired_profession }}</p>
+            <p class="user-account__contact-role">
+              {{ contact.desired_profession }}
+            </p>
           </div>
         </article>
         <p v-if="!contacts?.length" class="user-account__muted">Контактов пока нет</p>
@@ -581,7 +592,9 @@ const uploadResume = async (event: Event) => {
             :key="idx"
             :class="[
               'user-account__list-item bordered',
-              { 'user-account__list-item--interactive': isFavoriteItemClickable(item) },
+              {
+                'user-account__list-item--interactive': isFavoriteItemClickable(item),
+              },
             ]"
             @click="goToFavoriteOpportunity(item)"
           >
