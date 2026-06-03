@@ -367,7 +367,7 @@ const addToContacts = async () => {
               {{ applicant?.name || 'Пользователь' }}
             </p>
             <p class="user-account__subtitle">
-              {{ isPrivate ? 'Закрытый профиль' : 'Публичный профиль' }}
+              {{ applicant?.desiredPosition || 'Публичный профиль' }}
             </p>
           </div>
         </div>

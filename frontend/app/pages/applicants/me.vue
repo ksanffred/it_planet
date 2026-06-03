@@ -37,7 +37,7 @@ const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
 
 /* ── Модальные окна редактирования ── */
-type EditSection = 'name' | 'university' | 'additionalEducation' | 'skills' | 'portfolio' | null
+type EditSection = 'name' | 'university' | 'additionalEducation' | 'skills' | 'portfolio' | 'desiredPosition' | null
 
 const activeModal = ref<EditSection>(null)
 
@@ -50,6 +50,7 @@ const editUniversity = reactive({
 const editAdditionalEducation = ref('')
 const editPortfolioUrl = ref('')
 const editName = ref('')
+const editDesiredPosition = ref('')
 const editSkills = ref<Tag[]>([])
 const availableTags = ref<Tag[]>([])
 const isSavingSection = ref(false)
@@ -466,6 +467,11 @@ const openEditPortfolio = () => {
   activeModal.value = 'portfolio'
 }
 
+const openEditDesiredPosition = () => {
+  editDesiredPosition.value = applicant.value?.desiredPosition ?? ''
+  activeModal.value = 'desiredPosition'
+}
+
 /* ── Сохранение ── */
 const saveSection = async () => {
   if (!applicant.value || isSavingSection.value || !activeModal.value) return
@@ -507,6 +513,9 @@ const saveSection = async () => {
       break
     case 'portfolio':
       body.portfolioUrl = editPortfolioUrl.value || null
+      break
+    case 'desiredPosition':
+      body.desiredPosition = editDesiredPosition.value || null
       break
   }
 
@@ -587,7 +596,17 @@ const handleLogout = () => {
                 <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
               </button>
             </div>
-            <p class="user-account__subtitle">Профиль пользователя</p>
+            <div class="user-account__subtitle-row">
+              <p class="user-account__subtitle">{{ applicant?.desiredPosition || 'Профиль пользователя' }}</p>
+              <button
+                class="user-account__edit-btn"
+                type="button"
+                @click="openEditDesiredPosition"
+                aria-label="Редактировать позицию"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
             <p v-if="isAvatarUploading" class="user-account__muted">Загружаем аватар...</p>
             <p v-if="avatarUploadError" class="user-account__error">
               {{ avatarUploadError }}
@@ -811,6 +830,19 @@ const handleLogout = () => {
     </BaseAppModal>
 
     <BaseAppModal
+      :visible="activeModal === 'desiredPosition'"
+      title="Желаемая позиция"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-desiredPosition"
+        label="Позиция"
+        v-model="editDesiredPosition"
+      />
+    </BaseAppModal>
+
+    <BaseAppModal
       :visible="activeModal === 'name'"
       title="Имя пользователя"
       @confirm="saveSection"
@@ -1030,6 +1062,12 @@ const handleLogout = () => {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
     color: var(--text-inverted-color);
+  }
+
+  &__subtitle-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   &__subtitle {

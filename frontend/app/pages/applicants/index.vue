@@ -7,6 +7,7 @@ const graduationYear = ref(0)
 const portfolioUrl = ref('')
 const additionalEducationDetails = ref('')
 const currentFieldOfStudy = ref('')
+const desiredPosition = ref('')
 
 const graduationDate = computed({
   get: () => (graduationYear.value ? `${graduationYear.value}-01-01` : ''),
@@ -155,6 +156,7 @@ const handleCreateApplicant = async () => {
         portfolioUrl: portfolioUrl.value,
         additionalEducationDetails: additionalEducationDetails.value,
         currentFieldOfStudy: currentFieldOfStudy.value,
+        desiredPosition: desiredPosition.value,
         skillTagIds: selectedTags.value.map((tag) => tag.id),
       },
     })
@@ -231,6 +233,14 @@ const removeTag = (tag: Tag) => {
           required
           type="text"
           id="currentFieldOfStudy"
+        />
+        <FormInputField
+          label="Желаемая позиция"
+          v-model="desiredPosition"
+          placeholder="Junior Backend Developer"
+          required
+          type="text"
+          id="desiredPosition"
         />
         <FormInputField
           label="Дополнительное образование"
