@@ -104,7 +104,7 @@ onUnmounted(() => {
 
     &--active {
       background-color: var(--primary-color);
-      color: var(--text-inverted-color);
+      color: var(--text-primary-color);
     }
   }
 
@@ -157,7 +157,7 @@ onUnmounted(() => {
 
     &--selected {
       background-color: var(--primary-color);
-      color: var(--text-inverse-color);
+      color: var(--text-primary-color);
     }
   }
 
