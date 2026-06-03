@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const model = defineModel()
+
+defineProps<{ type?: string }>()
 </script>
 
 <template>
-  <input class="app-input reset-input bordered" type="text" v-model="model" />
+  <input class="app-input reset-input bordered" :type="type || 'text'" v-model="model" />
 </template>
 
 <style lang="scss" scoped>

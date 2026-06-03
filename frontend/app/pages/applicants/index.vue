@@ -1,68 +1,153 @@
 <script lang="ts" setup>
-import type { Tag } from '~/types'
+import type { Tag } from "~/types";
 
-const university = ref('')
-const faculty = ref('')
-const graduationYear = ref(0)
-const portfolioUrl = ref('')
-const additionalEducationDetails = ref('')
-const currentFieldOfStudy = ref('')
-const availableTags = ref<Tag[]>([])
-const selectedTags = ref<Tag[]>([])
+const university = ref("");
+const faculty = ref("");
+const graduationYear = ref(0);
+const portfolioUrl = ref("");
+const additionalEducationDetails = ref("");
+const currentFieldOfStudy = ref("");
 
-const userCookie = useCookie('user_data')
-const tokenCookie = useCookie('auth_token')
-const config = useRuntimeConfig()
+const graduationDate = computed({
+  get: () => (graduationYear.value ? `${graduationYear.value}-01-01` : ""),
+  set: (val: string) => {
+    graduationYear.value = val ? parseInt(val.split("-")[0] ?? "", 10) : 0;
+  },
+});
+const availableTags = ref<Tag[]>([]);
+const selectedTags = ref<Tag[]>([]);
+
+const userCookie = useCookie("user_data");
+const tokenCookie = useCookie("auth_token");
+const config = useRuntimeConfig();
 
 if (!tokenCookie.value) {
-  navigateTo('/auth/login')
+  navigateTo("/auth/login");
 }
 
-const { data, pending, error } = await useFetch('/applicants/me', {
+const { data, pending, error } = await useFetch("/applicants/me", {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   headers: {
     Authorization: `Bearer ${tokenCookie.value}`,
   },
-})
+});
 
 watchEffect(() => {
-  if (pending.value) return
+  if (pending.value) return;
 
   if (data.value) {
-    navigateTo('/applicants/me')
-    return
+    navigateTo("/applicants/me");
+    return;
   }
 
   if (error.value && error.value.statusCode !== 404) {
-    navigateTo('/auth/login')
+    navigateTo("/auth/login");
   }
-})
+});
 
-const { data: tagsData } = await useFetch<Tag[]>('/tags', {
+const { data: tagsData } = await useFetch<Tag[]>("/tags", {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   headers: {
     Authorization: `Bearer ${tokenCookie.value}`,
   },
   default: () => [],
-})
+});
 
 watchEffect(() => {
-  availableTags.value = tagsData.value ?? []
-})
+  availableTags.value = tagsData.value ?? [];
+});
+
+const tagsContainerRef = ref<HTMLElement | null>(null);
+const formRef = ref<HTMLElement | null>(null);
+const visibleTags = ref<Tag[]>([]);
+const hiddenTagsCount = ref(0);
+
+const computeVisibleTags = () => {
+  if (!tagsContainerRef.value) return;
+
+  const container = tagsContainerRef.value;
+  const formEl = container.closest(".applicant__form") as HTMLElement | null;
+  const containerWidth = formEl ? formEl.offsetWidth : container.offsetWidth;
+  const tagElements = container.querySelectorAll<HTMLDivElement>(
+    ".applicant__tag-item",
+  );
+
+  if (!tagElements || tagElements.length === 0) {
+    visibleTags.value = [...selectedTags.value];
+    hiddenTagsCount.value = 0;
+    return;
+  }
+
+  let totalWidth = 0;
+  let visibleCount = 0;
+  const gap = 8;
+
+  for (let i = 0; i < tagElements.length; i++) {
+    const el = tagElements[i];
+    if (!el) break;
+    totalWidth += el.offsetWidth + gap;
+    if (totalWidth <= containerWidth) {
+      visibleCount++;
+    } else {
+      totalWidth -= el.offsetWidth + gap;
+      break;
+    }
+  }
+
+  if (visibleCount >= selectedTags.value.length) {
+    visibleTags.value = [...selectedTags.value];
+    hiddenTagsCount.value = 0;
+  } else {
+    const moreEl = container.querySelector<HTMLDivElement>(
+      ".applicant__tag-more",
+    );
+    const moreWidth = moreEl ? moreEl.offsetWidth + gap : 110;
+
+    while (visibleCount > 0 && totalWidth + moreWidth > containerWidth) {
+      visibleCount--;
+      totalWidth -= (tagElements[visibleCount]?.offsetWidth ?? 0) + gap;
+    }
+
+    visibleTags.value = selectedTags.value.slice(0, visibleCount);
+    hiddenTagsCount.value = selectedTags.value.length - visibleCount;
+  }
+};
+
+watch(
+  selectedTags,
+  () => {
+    visibleTags.value = [...selectedTags.value];
+    hiddenTagsCount.value = 0;
+    nextTick(() => computeVisibleTags());
+  },
+  { deep: true, immediate: true },
+);
+
+onMounted(() => window.addEventListener("resize", computeVisibleTags));
+onUnmounted(() => window.removeEventListener("resize", computeVisibleTags));
+
+onMounted(() => {
+  nextTick(() => {
+    if (formRef.value) {
+      const w = formRef.value.offsetWidth;
+      formRef.value.style.maxWidth = `${w}px`;
+    }
+  });
+});
 
 const handleCreateApplicant = async () => {
   try {
     if (!userCookie.value) {
-      navigateTo('/auth/login')
-      return
+      navigateTo("/auth/login");
+      return;
     }
-    const userId = JSON.parse(userCookie.value).id
+    const userId = JSON.parse(userCookie.value).id;
 
     const response = await $fetch(`/applicants`, {
       baseURL: config.public.apiBase,
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${tokenCookie.value}`,
       },
@@ -76,13 +161,17 @@ const handleCreateApplicant = async () => {
         currentFieldOfStudy: currentFieldOfStudy.value,
         skillTagIds: selectedTags.value.map((tag) => tag.id),
       },
-    })
+    });
 
-    navigateTo('/applicants/me')
+    navigateTo("/applicants/me");
   } catch (error) {
-    console.error(`File error: ${error}`)
+    console.error(`File error: ${error}`);
   }
-}
+};
+
+const removeTag = (tag: Tag) => {
+  selectedTags.value = selectedTags.value.filter((t) => t.id !== tag.id);
+};
 
 // const handleFileChange = async (event: Event) => {
 //   try {
@@ -122,7 +211,11 @@ const handleCreateApplicant = async () => {
       title="Заполните профиль"
       description="Немного информации о вас"
     >
-      <form @submit.prevent="handleCreateApplicant" class="applicant__form">
+      <form
+        ref="formRef"
+        @submit.prevent="handleCreateApplicant"
+        class="applicant__form"
+      >
         <FormInputField
           label="Университет"
           placeholder="Название вашего университета"
@@ -157,13 +250,10 @@ const handleCreateApplicant = async () => {
         />
         <FormInputField
           label="Год окончания"
-          v-model="graduationYear"
-          placeholder="Год когда вы закончили обучение"
+          v-model="graduationDate"
+          placeholder="Дата окончания обучения"
           required
-          type="number"
-          min="1900"
-          :max="2100"
-          :value="1900"
+          type="date"
           id="graduationYear"
         />
         <FormInputField
@@ -177,20 +267,50 @@ const handleCreateApplicant = async () => {
         <div class="applicant__tags">
           <div class="applicant__tags-top">
             <p class="applicant__tags-title">Выберите теги навыков</p>
-            <BaseTagSelector v-model:selected-tags="selectedTags" :available-tags="availableTags" />
+            <BaseTagSelector
+              v-model:selected-tags="selectedTags"
+              :available-tags="availableTags"
+            />
           </div>
 
-          <div v-if="selectedTags.length > 0" class="applicant__tags-list">
-            <BaseAppTag
-              v-for="tag in selectedTags"
+          <div
+            v-if="selectedTags.length > 0"
+            class="applicant__tags-list"
+            ref="tagsContainerRef"
+          >
+            <div
+              v-for="tag in visibleTags"
               :key="tag.id"
-              :bordered="true"
-              class="applicant__tag"
+              class="applicant__tag-item"
+              @click="removeTag(tag)"
             >
-              {{ tag.name }}
-            </BaseAppTag>
+              <BaseAppTag
+                :bordered="true"
+                class="applicant__tag"
+                text-color="var(--text-primary-color)"
+              >
+                <span class="applicant__tag-text">{{ tag.name }}</span>
+                <span class="applicant__tag-close-overlay">
+                  <NuxtIcon name="material-symbols:close-rounded" size="14px" />
+                </span>
+              </BaseAppTag>
+            </div>
+            <div
+              v-if="hiddenTagsCount > 0"
+              class="applicant__tag-item applicant__tag-more"
+            >
+              <BaseAppTag
+                text-color="var(--text-primary-color)"
+                :bordered="true"
+                class="applicant__tag"
+              >
+                и ещё {{ hiddenTagsCount }}
+              </BaseAppTag>
+            </div>
           </div>
-          <p v-else class="applicant__tags-hint">Можно выбрать несколько тегов</p>
+          <p v-else class="applicant__tags-hint">
+            Можно выбрать несколько тегов
+          </p>
         </div>
         <!-- <FormInputField
           @change="handleFileChange"
@@ -200,7 +320,9 @@ const handleCreateApplicant = async () => {
           accept="application/pdf"
           id="resumeUrl"
         /> -->
-        <BaseAppButton type="submit" variant="primary">Создать профиль</BaseAppButton>
+        <BaseAppButton type="submit" variant="primary"
+          >Создать профиль</BaseAppButton
+        >
       </form>
     </AppForm>
   </div>
@@ -213,7 +335,6 @@ const handleCreateApplicant = async () => {
 
   &__card {
     text-align: center;
-    text-wrap: nowrap;
     width: auto;
   }
 
@@ -228,6 +349,7 @@ const handleCreateApplicant = async () => {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    max-width: 100%;
   }
 
   &__tags-top {
@@ -247,11 +369,48 @@ const handleCreateApplicant = async () => {
 
   &__tags-list {
     display: flex;
-    flex-wrap: wrap;
+    overflow: hidden;
+    flex-wrap: nowrap;
     gap: 8px;
+    max-width: 100%;
+  }
+
+  &__tag-item {
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
   }
 
   &__tag {
+    position: relative;
+    cursor: pointer;
+  }
+
+  &__tag-text {
+    display: inline;
+  }
+
+  &__tag-close-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50vw;
+    background-color: var(--background-secondary-color);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-inverted-color);
+  }
+
+  &__tag-item:hover &__tag-text {
+    visibility: hidden;
+  }
+
+  &__tag-item:hover &__tag-close-overlay {
+    display: flex;
+  }
+
+  &__tag-more {
+    flex-shrink: 0;
     cursor: default;
   }
 

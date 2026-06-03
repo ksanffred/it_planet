@@ -234,7 +234,10 @@ onUnmounted(() => {
             :bordered="true"
             class="search-section__tag"
           >
-            {{ tag.name }}
+            <span class="search-section__tag-text">{{ tag.name }}</span>
+            <span class="search-section__tag-close-overlay">
+              <NuxtIcon name="material-symbols:close-rounded" size="14px" />
+            </span>
           </BaseAppTag>
         </div>
         <div v-if="hiddenTagsCount > 0" class="search-section__tag-item search-section__tag-more">
@@ -316,10 +319,35 @@ onUnmounted(() => {
     gap: 6px;
     flex-shrink: 0;
     cursor: pointer;
+    position: relative;
 
     .search-section__tag {
       cursor: pointer;
+      position: relative;
     }
+  }
+
+  &__tag-text {
+    display: inline;
+  }
+
+  &__tag-close-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50vw;
+    background-color: var(--background-secondary-color);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-inverted-color);
+  }
+
+  &__tag-item:hover &__tag-text {
+    visibility: hidden;
+  }
+
+  &__tag-item:hover &__tag-close-overlay {
+    display: flex;
   }
 
   &__tag-more {

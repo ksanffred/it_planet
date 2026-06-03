@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-defineProps<{ visible: boolean; title: string }>()
+defineProps<{ visible: boolean; title: string; confirmText?: string }>()
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
 
 const onKeydown = (e: KeyboardEvent) => {
@@ -34,7 +34,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
               >Отмена</BaseAppButton
             >
             <BaseAppButton variant="primary" type="button" @click="emit('confirm')"
-              >Сохранить</BaseAppButton
+              >{{ confirmText ?? 'Сохранить' }}</BaseAppButton
             >
           </footer>
         </div>
