@@ -48,6 +48,7 @@ frontend/
 │   │   │   ├── AppButton.vue     # Кнопка (primary/secondary/bordered)
 │   │   │   ├── AppInput.vue      # Текстовое поле
 │   │   │   ├── AppLogo.vue       # Логотип «трамплин»
+│   │   │   ├── AppModal.vue      # Модальное окно (подтверждение/отмена)
 │   │   │   ├── AppTag.vue        # Цветной тег/бейдж
 │   │   │   ├── BackButton.vue    # Кнопка «Назад»
 │   │   │   ├── OpportunityCard.vue # Карточка возможности
@@ -117,21 +118,21 @@ frontend/
 
 ## Страницы и маршруты
 
-| Маршрут                 | Файл                             | Описание                                                     | Лейаут  | Middleware |
-| ----------------------- | -------------------------------- | ------------------------------------------------------------ | ------- | ---------- |
-| `/`                     | `pages/index.vue`                | Главная (герой + поиск + карта/список)                       | default | —          |
-| `/me`                   | `pages/me.vue`                   | Заглушка профиля                                             | default | —          |
-| `/auth/login`           | `pages/auth/login.vue`           | Вход (email + пароль)                                        | false   | guest-only |
-| `/auth/register`        | `pages/auth/register.vue`        | Регистрация (роль APPLICANT/EMPLOYER)                        | false   | guest-only |
-| `/auth/verify`          | `pages/auth/verify.vue`          | Верификация email по токену                                  | false   | —          |
-| `/applicants`           | `pages/applicants/index.vue`     | Создание профиля соискателя                                  | default | —          |
-| `/applicants/me`        | `pages/applicants/me.vue`        | ЛК соискателя (аватар, резюме, контакты, избранное, отклики) | default | —          |
-| `/applicants/:id`       | `pages/applicants/[id].vue`      | Публичный профиль соискателя                                 | default | —          |
-| `/employers/register`   | `pages/employers/register.vue`   | Регистрация работодателя (данные компании)                   | default | —          |
-| `/employers/me`         | `pages/employers/me.vue`         | ЛК работодателя (возможности, отклики)                       | default | —          |
-| `/employers/:id`        | `pages/employers/[id].vue`       | Профиль работодателя                                         | default | —          |
-| `/opportunities/create` | `pages/opportunities/create.vue` | Создание возможности                                         | default | —          |
-| `/opportunities/:id`    | `pages/opportunities/[id].vue`   | Детальный просмотр возможности                               | default | —          |
+| Маршрут                 | Файл                             | Описание                                                                                                           | Лейаут  | Middleware |
+| ----------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------- | ---------- |
+| `/`                     | `pages/index.vue`                | Главная (герой + поиск + карта/список)                                                                             | default | —          |
+| `/me`                   | `pages/me.vue`                   | Заглушка профиля                                                                                                   | default | —          |
+| `/auth/login`           | `pages/auth/login.vue`           | Вход (email + пароль)                                                                                              | false   | guest-only |
+| `/auth/register`        | `pages/auth/register.vue`        | Регистрация (роль APPLICANT/EMPLOYER)                                                                              | false   | guest-only |
+| `/auth/verify`          | `pages/auth/verify.vue`          | Верификация email по токену                                                                                        | false   | —          |
+| `/applicants`           | `pages/applicants/index.vue`     | Создание профиля соискателя                                                                                        | default | —          |
+| `/applicants/me`        | `pages/applicants/me.vue`        | ЛК соискателя (аватар, резюме, контакты, избранное, отклики, редактирование разделов профиля через модальные окна) | default | —          |
+| `/applicants/:id`       | `pages/applicants/[id].vue`      | Публичный профиль соискателя                                                                                       | default | —          |
+| `/employers/register`   | `pages/employers/register.vue`   | Регистрация работодателя (данные компании)                                                                         | default | —          |
+| `/employers/me`         | `pages/employers/me.vue`         | ЛК работодателя (возможности, отклики)                                                                             | default | —          |
+| `/employers/:id`        | `pages/employers/[id].vue`       | Профиль работодателя                                                                                               | default | —          |
+| `/opportunities/create` | `pages/opportunities/create.vue` | Создание возможности                                                                                               | default | —          |
+| `/opportunities/:id`    | `pages/opportunities/[id].vue`   | Детальный просмотр возможности                                                                                     | default | —          |
 
 ---
 
@@ -144,6 +145,7 @@ frontend/
 | `AppButton`       | `label`, `type` (button/submit), `variant` (primary/secondary/bordered), `disabled`, `loading` | Переиспользуемая кнопка        |
 | `AppInput`        | `type` (text/email/password/number/url), `placeholder`, `modelValue`                           | Текстовое поле ввода           |
 | `AppLogo`         | `dot` (показывать точку), `tagline` (показывать слоган)                                        | Логотип платформы              |
+| `AppModal`        | `visible` (boolean), `title` (string), emits `confirm` / `cancel`                              | Модальное окно с оверлеем      |
 | `AppTag`          | `tag` (объект с `id`, `name`, `color`)                                                         | Цветной тег                    |
 | `BackButton`      | —                                                                                              | Кнопка возврата на главную     |
 | `OpportunityCard` | `opportunity` (объект), `favoriteIds` (Set), `onToggleFavorite`                                | Карточка возможности           |
@@ -298,6 +300,7 @@ interface OpportunityCard {
 | GET   | `/applicants/me`                           | Мой профиль соискателя        |
 | POST  | `/applicants`                              | Создать профиль соискателя    |
 | GET   | `/applicants/{id}`                         | Профиль соискателя по ID      |
+| PUT   | `/applicants/me`                           | Обновить профиль соискателя   |
 | PUT   | `/applicants/me/visibility`                | Переключить видимость профиля |
 | POST  | `/applicants/{id}/avatar`                  | Загрузить аватар              |
 | POST  | `/applicants/{id}/resume`                  | Загрузить резюме (PDF)        |
@@ -429,3 +432,4 @@ app/assets/styles/
 - **Избранное** — dual-режим: `localStorage` для анонимов, API для авторизованных. Идентификация возможностей при отсутствии ID — через сигнатуру `title|company|type`.
 - **Язык** — весь UI на русском, утилиты `formatOpportunityFormat`/`formatOpportunityType` используются только для CSS-классов, не для текста.
 - **Валидация email** — при регистрации EMPLOYER проверяется, что домен не входит в список публичных почтовых сервисов (файл `public/media/data/domains.json`).
+- **Редактирование профиля соискателя** — на странице `/applicants/me` у каждого раздела профиля (университет, доп. образование, навыки, портфолио, резюме) есть иконка-карандаш, открывающая `AppModal` с формой. Изменения отправляются через `PUT /applicants/me` и применяются только после подтверждения. При закрытии модалки изменения сбрасываются.

@@ -1,0 +1,145 @@
+PUT
+/applicants/me
+Update current applicant profile
+Parameters
+
+No parameters
+Request body
+
+{
+  "name": "Ivan Ivanov",
+  "university": "National Research University",
+  "faculty": "Faculty of Computer Science",
+  "currentFieldOfStudy": "Software Engineering",
+  "desiredPosition": "Backend Developer Intern",
+  "major": "Applied Informatics",
+  "graduationYear": 2027,
+  "additionalEducationDetails": "string",
+  "portfolioUrl": "https://github.com/username",
+  "resumeUrl": "applicants/15/resume/1234.pdf",
+  "skillTagIds": [
+    0
+  ]
+}
+
+Responses
+Code	Description	Links
+200	
+
+Applicant profile updated
+Media type
+Controls Accept header.
+
+{
+  "id": 1,
+  "userId": 12,
+  "name": "Ivan Ivanov",
+  "university": "National Research University",
+  "faculty": "Faculty of Computer Science",
+  "currentFieldOfStudy": "Software Engineering",
+  "desiredPosition": "Backend Developer Intern",
+  "major": "Applied Informatics",
+  "graduationYear": 2027,
+  "additionalEducationDetails": "string",
+  "portfolioUrl": "string",
+  "avatarUrl": "string",
+  "resumeUrl": "string",
+  "visibility": "PRIVATE",
+  "skills": [
+    {
+      "id": 3,
+      "name": "Java",
+      "category": "TECHNOLOGY"
+    }
+  ]
+}
+
+	No links
+401	
+
+Missing or invalid JWT token
+Media type
+
+{
+  "id": 1,
+  "userId": 12,
+  "name": "Ivan Ivanov",
+  "university": "National Research University",
+  "faculty": "Faculty of Computer Science",
+  "currentFieldOfStudy": "Software Engineering",
+  "desiredPosition": "Backend Developer Intern",
+  "major": "Applied Informatics",
+  "graduationYear": 2027,
+  "additionalEducationDetails": "string",
+  "portfolioUrl": "string",
+  "avatarUrl": "string",
+  "resumeUrl": "string",
+  "visibility": "PRIVATE",
+  "skills": [
+    {
+      "id": 3,
+      "name": "Java",
+      "category": "TECHNOLOGY"
+    }
+  ]
+}
+
+	No links
+403	
+
+Current user is not an applicant
+Media type
+
+{
+  "id": 1,
+  "userId": 12,
+  "name": "Ivan Ivanov",
+  "university": "National Research University",
+  "faculty": "Faculty of Computer Science",
+  "currentFieldOfStudy": "Software Engineering",
+  "desiredPosition": "Backend Developer Intern",
+  "major": "Applied Informatics",
+  "graduationYear": 2027,
+  "additionalEducationDetails": "string",
+  "portfolioUrl": "string",
+  "avatarUrl": "string",
+  "resumeUrl": "string",
+  "visibility": "PRIVATE",
+  "skills": [
+    {
+      "id": 3,
+      "name": "Java",
+      "category": "TECHNOLOGY"
+    }
+  ]
+}
+
+	No links
+404	
+
+Applicant profile not found
+Media type
+
+{
+  "id": 1,
+  "userId": 12,
+  "name": "Ivan Ivanov",
+  "university": "National Research University",
+  "faculty": "Faculty of Computer Science",
+  "currentFieldOfStudy": "Software Engineering",
+  "desiredPosition": "Backend Developer Intern",
+  "major": "Applied Informatics",
+  "graduationYear": 2027,
+  "additionalEducationDetails": "string",
+  "portfolioUrl": "string",
+  "avatarUrl": "string",
+  "resumeUrl": "string",
+  "visibility": "PRIVATE",
+  "skills": [
+    {
+      "id": 3,
+      "name": "Java",
+      "category": "TECHNOLOGY"
+    }
+  ]
+}

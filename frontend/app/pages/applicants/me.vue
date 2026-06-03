@@ -6,6 +6,7 @@ import type {
   OpportunityMiniCard,
   ApplicantResponsesLookup,
   FavoriteOpportunityResponse,
+  Tag,
 } from '~/types'
 import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
@@ -34,6 +35,24 @@ const avatarUploadError = ref('')
 const resumeFileInput = ref<HTMLInputElement | null>(null)
 const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
+
+/* ── Модальные окна редактирования ── */
+type EditSection = 'university' | 'additionalEducation' | 'skills' | 'portfolio' | null
+
+const activeModal = ref<EditSection>(null)
+
+const editUniversity = reactive({
+  university: '',
+  faculty: '',
+  currentFieldOfStudy: '',
+  graduationYear: 0,
+})
+const editAdditionalEducation = ref('')
+const editPortfolioUrl = ref('')
+const editSkills = ref<Tag[]>([])
+const availableTags = ref<Tag[]>([])
+const isSavingSection = ref(false)
+const sectionSaveError = ref('')
 
 const normalizeApplicantProfile = (profile: Applicant): Applicant => ({
   ...profile,
@@ -83,6 +102,17 @@ const { data: responses } = await useFetch<ApplicantResponsesLookup[]>(
     default: () => [],
   },
 )
+
+const { data: tagsData } = await useFetch<Tag[]>('/tags', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: authHeaders,
+  default: () => [],
+})
+
+watchEffect(() => {
+  availableTags.value = tagsData.value ?? []
+})
 
 watchEffect(() => {
   if (applicantError.value?.statusCode === 404) {
@@ -404,6 +434,94 @@ const uploadResume = async (event: Event) => {
     input.value = ''
   }
 }
+
+/* ── Открытие модалок ── */
+const openEditUniversity = () => {
+  if (!applicant.value) return
+  editUniversity.university = applicant.value.university ?? ''
+  editUniversity.faculty = applicant.value.faculty ?? ''
+  editUniversity.currentFieldOfStudy = applicant.value.currentFieldOfStudy ?? ''
+  editUniversity.graduationYear = applicant.value.graduationYear ?? 0
+  activeModal.value = 'university'
+}
+
+const openEditAdditionalEducation = () => {
+  editAdditionalEducation.value = applicant.value?.additionalEducationDetails ?? ''
+  activeModal.value = 'additionalEducation'
+}
+
+const openEditSkills = () => {
+  editSkills.value = [...(applicant.value?.skills ?? [])]
+  activeModal.value = 'skills'
+}
+
+const openEditPortfolio = () => {
+  editPortfolioUrl.value = applicant.value?.portfolioUrl ?? ''
+  activeModal.value = 'portfolio'
+}
+
+/* ── Сохранение ── */
+const saveSection = async () => {
+  if (!applicant.value || isSavingSection.value || !activeModal.value) return
+
+  isSavingSection.value = true
+  sectionSaveError.value = ''
+
+  const body: Record<string, unknown> = {
+    name: applicant.value.name,
+    university: applicant.value.university ?? null,
+    faculty: applicant.value.faculty ?? null,
+    currentFieldOfStudy: applicant.value.currentFieldOfStudy ?? null,
+    desiredPosition: applicant.value.desiredPosition ?? null,
+    major: applicant.value.major ?? null,
+    graduationYear: applicant.value.graduationYear ?? null,
+    additionalEducationDetails: applicant.value.additionalEducationDetails ?? null,
+    portfolioUrl: applicant.value.portfolioUrl ?? null,
+    resumeUrl: applicant.value.resumeUrl ?? null,
+    skillTagIds: (applicant.value.skills ?? []).map((s) => s.id),
+  }
+
+  switch (activeModal.value) {
+    case 'university':
+      body.university = editUniversity.university || null
+      body.faculty = editUniversity.faculty || null
+      body.currentFieldOfStudy = editUniversity.currentFieldOfStudy || null
+      body.graduationYear = editUniversity.graduationYear
+        ? Number(editUniversity.graduationYear)
+        : null
+      break
+    case 'additionalEducation':
+      body.additionalEducationDetails = editAdditionalEducation.value || null
+      break
+    case 'skills':
+      body.skillTagIds = editSkills.value.map((t) => t.id)
+      break
+    case 'portfolio':
+      body.portfolioUrl = editPortfolioUrl.value || null
+      break
+  }
+
+  try {
+    const updated = await $fetch<Applicant>('/applicants/me', {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body,
+    })
+    applicant.value = normalizeApplicantProfile(updated)
+    activeModal.value = null
+  } catch (err) {
+    sectionSaveError.value = 'Не удалось сохранить изменения'
+    console.error('Failed to save section', err)
+  } finally {
+    isSavingSection.value = false
+  }
+}
+
+const closeModal = () => {
+  activeModal.value = null
+  sectionSaveError.value = ''
+}
 </script>
 
 <template>
@@ -471,7 +589,17 @@ const uploadResume = async (event: Event) => {
 
       <div class="user-account__profile-grid">
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Общая информация об университете</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Общая информация об университете</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditUniversity"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p>Университет: {{ applicant?.university || 'Не указано' }}</p>
           <p>Факультет: {{ applicant?.faculty || 'Не указано' }}</p>
           <p>Направление: {{ applicant?.currentFieldOfStudy || 'Не указано' }}</p>
@@ -479,14 +607,34 @@ const uploadResume = async (event: Event) => {
         </article>
 
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Ключевое дополнительное образование</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Ключевое дополнительное образование</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditAdditionalEducation"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p>
             {{ applicant?.additionalEducationDetails || 'Дополнительное образование не заполнено' }}
           </p>
         </article>
 
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Навыки</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Навыки</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditSkills"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <div class="user-account__skills">
             <BaseAppTag
               v-for="skill in applicant?.skills || []"
@@ -502,7 +650,17 @@ const uploadResume = async (event: Event) => {
         </article>
 
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Портфолио</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Портфолио</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditPortfolio"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <a
             v-if="applicant?.portfolioUrl"
             :href="applicant.portfolioUrl"
@@ -516,15 +674,15 @@ const uploadResume = async (event: Event) => {
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
             <h3 class="user-account__panel-title">Резюме</h3>
-            <BaseAppButton
+            <button
               type="button"
-              class="user-account__resume-edit-btn"
-              variant="secondary"
+              class="user-account__edit-btn"
               :disabled="isResumeUploading"
               @click="openResumePicker"
+              aria-label="Загрузить резюме"
             >
-              {{ isResumeUploading ? 'Загрузка...' : 'Редактировать' }}
-            </BaseAppButton>
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
             <input
               ref="resumeFileInput"
               type="file"
@@ -547,6 +705,84 @@ const uploadResume = async (event: Event) => {
         </article>
       </div>
     </section>
+
+    <BaseAppModal
+      :visible="activeModal === 'university'"
+      title="Общая информация об университете"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-university"
+        label="Университет"
+        v-model="editUniversity.university"
+      />
+      <FormInputField id="edit-faculty" label="Факультет" v-model="editUniversity.faculty" />
+      <FormInputField
+        id="edit-field"
+        label="Направление"
+        v-model="editUniversity.currentFieldOfStudy"
+      />
+      <FormInputField
+        id="edit-year"
+        label="Год выпуска"
+        type="number"
+        v-model="editUniversity.graduationYear"
+      />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'additionalEducation'"
+      title="Ключевое дополнительное образование"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-edu"
+        label="Дополнительное образование"
+        v-model="editAdditionalEducation"
+      />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'skills'"
+      title="Навыки"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <BaseTagSelector
+        :available-tags="availableTags"
+        :selected-tags="editSkills"
+        @update:selected-tags="editSkills = $event"
+      />
+      <div v-if="editSkills.length" class="user-account__edit-skills-preview">
+        <BaseAppTag
+          v-for="tag in editSkills"
+          :key="tag.id"
+          text-color="var(--text-primary-color)"
+          class="user-account__skill-tag"
+          >{{ tag.name }}</BaseAppTag
+        >
+      </div>
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'portfolio'"
+      title="Портфолио"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-portfolio"
+        label="Ссылка на портфолио"
+        type="url"
+        v-model="editPortfolioUrl"
+      />
+    </BaseAppModal>
+
+    <p v-if="sectionSaveError" class="user-account__error user-account__error--centered">
+      {{ sectionSaveError }}
+    </p>
 
     <section class="user-account__contacts bordered">
       <h2 class="user-account__section-title">Профессиональные контакты</h2>
@@ -858,12 +1094,40 @@ const uploadResume = async (event: Event) => {
     gap: 8px;
   }
 
-  &__resume-edit-btn {
-    padding-inline: 10px;
-    min-height: 30px;
-    font-size: 11px;
-    border-radius: 10px;
+  &__edit-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
     flex-shrink: 0;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary-color);
+      color: var(--primary-color);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__error--centered {
+    text-align: center;
+  }
+
+  &__edit-skills-preview {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
   }
 
   &__resume-input {
