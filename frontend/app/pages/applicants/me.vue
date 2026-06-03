@@ -284,7 +284,7 @@ const toggleVisibility = async () => {
       },
     })
 
-    applicant.value = updatedApplicant
+    applicant.value = normalizeApplicantProfile(updatedApplicant)
   } catch (error) {
     visibilityError.value = 'Не удалось изменить видимость профиля'
     console.error('Failed to update profile visibility', error)
@@ -450,9 +450,6 @@ const uploadResume = async (event: Event) => {
         </div>
 
         <div class="user-account__actions">
-          <BaseAppButton class="user-account__contact-button" variant="primary">
-            Изменить профиль
-          </BaseAppButton>
           <label class="user-account__visibility-toggle">
             <input
               class="user-account__visibility-input"
