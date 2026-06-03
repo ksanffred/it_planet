@@ -37,7 +37,14 @@ const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
 
 /* ── Модальные окна редактирования ── */
-type EditSection = 'name' | 'university' | 'additionalEducation' | 'skills' | 'portfolio' | 'desiredPosition' | null
+type EditSection =
+  | 'name'
+  | 'university'
+  | 'additionalEducation'
+  | 'skills'
+  | 'portfolio'
+  | 'desiredPosition'
+  | null
 
 const activeModal = ref<EditSection>(null)
 
@@ -597,7 +604,9 @@ const handleLogout = () => {
               </button>
             </div>
             <div class="user-account__subtitle-row">
-              <p class="user-account__subtitle">{{ applicant?.desiredPosition || 'Профиль пользователя' }}</p>
+              <p class="user-account__subtitle">
+                {{ applicant?.desiredPosition || 'Профиль пользователя' }}
+              </p>
               <button
                 class="user-account__edit-btn"
                 type="button"
@@ -835,11 +844,7 @@ const handleLogout = () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField
-        id="edit-desiredPosition"
-        label="Позиция"
-        v-model="editDesiredPosition"
-      />
+      <FormInputField id="edit-desiredPosition" label="Позиция" v-model="editDesiredPosition" />
     </BaseAppModal>
 
     <BaseAppModal
