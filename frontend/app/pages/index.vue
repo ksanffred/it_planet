@@ -1,17 +1,17 @@
 <script setup lang="ts">
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
-const showMap = computed(() => route.query.view === "map");
+const showMap = computed(() => route.query.view === 'map')
 
 const toggleMap = (value: boolean) => {
   router.push({
     query: {
       ...route.query,
-      view: value ? "map" : undefined,
+      view: value ? 'map' : undefined,
     },
-  });
-};
+  })
+}
 </script>
 
 <template>

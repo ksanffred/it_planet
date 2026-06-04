@@ -28,7 +28,11 @@ if (!tokenCookie.value) {
 
 const userData = (() => {
   if (!userCookie.value) return null
-  try { return JSON.parse(userCookie.value) } catch { return null }
+  try {
+    return JSON.parse(userCookie.value)
+  } catch {
+    return null
+  }
 })()
 
 if (userData?.role === 'EMPLOYER') {

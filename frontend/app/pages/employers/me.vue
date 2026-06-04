@@ -172,9 +172,7 @@ const logoFileInput = ref<HTMLInputElement | null>(null)
 const isSavingSection = ref(false)
 const sectionSaveError = ref('')
 
-const logoSaveText = computed(() =>
-  logoMode.value === 'file' ? 'Загрузить' : 'Сохранить',
-)
+const logoSaveText = computed(() => (logoMode.value === 'file' ? 'Загрузить' : 'Сохранить'))
 
 const openEditDescription = () => {
   editDescription.value = employer.value?.description ?? ''
@@ -339,7 +337,6 @@ const handleLogout = () => {
             <p class="employer-cabinet__subtitle">Профиль компании</p>
           </div>
         </div>
-
       </div>
 
       <div class="employer-cabinet__profile-fields">
@@ -462,11 +459,7 @@ const handleLogout = () => {
     @confirm="saveSection"
     @cancel="closeSectionModal"
   >
-    <FormInputField
-      id="edit-description"
-      label="Описание"
-      v-model="editDescription"
-    />
+    <FormInputField id="edit-description" label="Описание" v-model="editDescription" />
   </BaseAppModal>
 
   <BaseAppModal
@@ -475,17 +468,8 @@ const handleLogout = () => {
     @confirm="saveSection"
     @cancel="closeSectionModal"
   >
-    <FormInputField
-      id="edit-website"
-      label="Сайт"
-      v-model="editWebsite"
-      type="url"
-    />
-    <FormInputField
-      id="edit-socials"
-      label="Соцсети/контакты"
-      v-model="editSocials"
-    />
+    <FormInputField id="edit-website" label="Сайт" v-model="editWebsite" type="url" />
+    <FormInputField id="edit-socials" label="Соцсети/контакты" v-model="editSocials" />
   </BaseAppModal>
 
   <BaseAppModal
@@ -498,14 +482,20 @@ const handleLogout = () => {
     <div class="employer-cabinet__logo-tabs">
       <button
         type="button"
-        :class="['employer-cabinet__logo-tab', { 'employer-cabinet__logo-tab--active': logoMode === 'file' }]"
+        :class="[
+          'employer-cabinet__logo-tab',
+          { 'employer-cabinet__logo-tab--active': logoMode === 'file' },
+        ]"
         @click="logoMode = 'file'"
       >
         Загрузить файл
       </button>
       <button
         type="button"
-        :class="['employer-cabinet__logo-tab', { 'employer-cabinet__logo-tab--active': logoMode === 'url' }]"
+        :class="[
+          'employer-cabinet__logo-tab',
+          { 'employer-cabinet__logo-tab--active': logoMode === 'url' },
+        ]"
         @click="logoMode = 'url'"
       >
         Указать ссылку
@@ -541,12 +531,7 @@ const handleLogout = () => {
     </template>
 
     <template v-else>
-      <FormInputField
-        id="edit-logo"
-        label="Ссылка на логотип"
-        type="url"
-        v-model="editLogoUrl"
-      />
+      <FormInputField id="edit-logo" label="Ссылка на логотип" type="url" v-model="editLogoUrl" />
     </template>
   </BaseAppModal>
 
@@ -739,7 +724,9 @@ const handleLogout = () => {
     display: grid;
     place-items: center;
     flex-shrink: 0;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
 
     &:hover {
       background-color: var(--background-tertiary-color);
