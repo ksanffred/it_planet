@@ -3,15 +3,25 @@ import type {
   Applicant,
   ApplicantVisibility,
   ApplicantContactListItem,
+  CurrentUserResponse,
+  FavoriteOpportunityResponse,
   OpportunityMiniCard,
   ApplicantResponsesLookup,
-  FavoriteOpportunityResponse,
+  Tag,
 } from '~/types'
 import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
 type FavoriteCard = Omit<FavoriteOpportunityResponse, 'id'> & { id?: number }
 type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number }
 type ContactLookup = ApplicantContactListItem & Record<string, unknown>
+
+type EmployerListItem = {
+  id: number
+  companyName: string
+  inn: string
+  status: string
+  logoUrl?: string
+}
 
 const config = useRuntimeConfig()
 const tokenCookie = useCookie<string | null>('auth_token')
@@ -24,6 +34,15 @@ const authHeaders = {
   Authorization: `Bearer ${tokenCookie.value}`,
 }
 
+const { data: currentUser } = await useFetch<CurrentUserResponse>('/auth/me', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: authHeaders,
+  immediate: Boolean(tokenCookie.value),
+})
+
+const isCurator = computed(() => currentUser.value?.role === 'CURATOR')
+
 const favoritesSearch = ref('')
 const responsesSearch = ref('')
 const isVisibilityLoading = ref(false)
@@ -34,6 +53,63 @@ const avatarUploadError = ref('')
 const resumeFileInput = ref<HTMLInputElement | null>(null)
 const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
+const newCompaniesSearch = ref('')
+const rawEmployers = ref<EmployerListItem[]>([])
+const isFetchingEmployers = ref(false)
+
+const fetchAllEmployers = async () => {
+  isFetchingEmployers.value = true
+  const results: EmployerListItem[] = []
+  const batchSize = 10
+  let consecutiveMisses = 0
+  const MAX_MISSES = 5
+
+  for (let start = 1; start <= 500 && consecutiveMisses < MAX_MISSES; start += batchSize) {
+    const promises = Array.from({ length: batchSize }, (_, i) =>
+      $fetch<EmployerListItem>(`/employers/${start + i}`, {
+        baseURL: config.public.apiBase,
+        headers: authHeaders,
+      }).catch(() => null),
+    )
+    const batch = await Promise.all(promises)
+    const hits = batch.filter((x): x is EmployerListItem => x !== null)
+    if (hits.length === 0) {
+      consecutiveMisses++
+    } else {
+      consecutiveMisses = 0
+      results.push(...hits)
+    }
+  }
+  rawEmployers.value = results
+  isFetchingEmployers.value = false
+}
+
+/* ── Модальные окна редактирования ── */
+type EditSection =
+  | 'name'
+  | 'university'
+  | 'additionalEducation'
+  | 'skills'
+  | 'portfolio'
+  | 'desiredPosition'
+  | null
+
+const activeModal = ref<EditSection>(null)
+
+const editUniversity = reactive({
+  university: '',
+  faculty: '',
+  currentFieldOfStudy: '',
+  graduationYear: 0,
+})
+const editAdditionalEducation = ref('')
+const editPortfolioUrl = ref('')
+const editName = ref('')
+const editDesiredPosition = ref('')
+const editSkills = ref<Tag[]>([])
+const availableTags = ref<Tag[]>([])
+const isSavingSection = ref(false)
+const sectionSaveError = ref('')
 
 const normalizeApplicantProfile = (profile: Applicant): Applicant => ({
   ...profile,
@@ -84,6 +160,17 @@ const { data: responses } = await useFetch<ApplicantResponsesLookup[]>(
   },
 )
 
+const { data: tagsData } = await useFetch<Tag[]>('/tags', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: authHeaders,
+  default: () => [],
+})
+
+watchEffect(() => {
+  availableTags.value = tagsData.value ?? []
+})
+
 watchEffect(() => {
   if (applicantError.value?.statusCode === 404) {
     navigateTo('/applicants')
@@ -122,6 +209,76 @@ const filteredResponses = computed(() => {
     `${item.title} ${item.company_name}`.toLowerCase().includes(query),
   )
 })
+
+const newCompanies = computed(() => rawEmployers.value.filter((e) => e.status !== 'full_verified'))
+
+const filteredNewCompanies = computed(() => {
+  const q = newCompaniesSearch.value.trim().toLowerCase()
+  if (!q) return newCompanies.value
+  return newCompanies.value.filter(
+    (e) => e.companyName.toLowerCase().includes(q) || e.inn.toLowerCase().includes(q),
+  )
+})
+
+onMounted(() => {
+  if (isCurator.value) fetchAllEmployers()
+})
+
+const approveCompany = async (item: EmployerListItem) => {
+  try {
+    const full = (await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      headers: authHeaders,
+    })) as Record<string, unknown>
+    await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body: {
+        userId: full.userId,
+        companyName: full.companyName,
+        description: full.description ?? null,
+        inn: full.inn,
+        website: full.website ?? null,
+        socials: full.socials ?? null,
+        logoUrl: full.logoUrl ?? null,
+        verifiedOrgName: full.verifiedOrgName ?? null,
+        status: 'full_verified',
+      },
+    })
+    rawEmployers.value = rawEmployers.value.filter((e) => e.id !== item.id)
+  } catch (err) {
+    console.error('Failed to approve company', err)
+  }
+}
+
+const rejectCompany = async (item: EmployerListItem) => {
+  try {
+    const full = (await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      headers: authHeaders,
+    })) as Record<string, unknown>
+    await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body: {
+        userId: full.userId,
+        companyName: full.companyName,
+        description: full.description ?? null,
+        inn: full.inn,
+        website: full.website ?? null,
+        socials: full.socials ?? null,
+        logoUrl: full.logoUrl ?? null,
+        verifiedOrgName: full.verifiedOrgName ?? null,
+        status: 'auto_rejected',
+      },
+    })
+    rawEmployers.value = rawEmployers.value.filter((e) => e.id !== item.id)
+  } catch (err) {
+    console.error('Failed to reject company', err)
+  }
+}
 
 const favoriteStatusLabel = (status: string) => {
   const map: Record<string, string> = {
@@ -284,7 +441,7 @@ const toggleVisibility = async () => {
       },
     })
 
-    applicant.value = updatedApplicant
+    applicant.value = normalizeApplicantProfile(updatedApplicant)
   } catch (error) {
     visibilityError.value = 'Не удалось изменить видимость профиля'
     console.error('Failed to update profile visibility', error)
@@ -404,6 +561,119 @@ const uploadResume = async (event: Event) => {
     input.value = ''
   }
 }
+
+/* ── Открытие модалок ── */
+const openEditName = () => {
+  editName.value = applicant.value?.name ?? ''
+  activeModal.value = 'name'
+}
+
+const openEditUniversity = () => {
+  if (!applicant.value) return
+  editUniversity.university = applicant.value.university ?? ''
+  editUniversity.faculty = applicant.value.faculty ?? ''
+  editUniversity.currentFieldOfStudy = applicant.value.currentFieldOfStudy ?? ''
+  editUniversity.graduationYear = applicant.value.graduationYear ?? 0
+  activeModal.value = 'university'
+}
+
+const openEditAdditionalEducation = () => {
+  editAdditionalEducation.value = applicant.value?.additionalEducationDetails ?? ''
+  activeModal.value = 'additionalEducation'
+}
+
+const openEditSkills = () => {
+  editSkills.value = [...(applicant.value?.skills ?? [])]
+  activeModal.value = 'skills'
+}
+
+const openEditPortfolio = () => {
+  editPortfolioUrl.value = applicant.value?.portfolioUrl ?? ''
+  activeModal.value = 'portfolio'
+}
+
+const openEditDesiredPosition = () => {
+  editDesiredPosition.value = applicant.value?.desiredPosition ?? ''
+  activeModal.value = 'desiredPosition'
+}
+
+/* ── Сохранение ── */
+const saveSection = async () => {
+  if (!applicant.value || isSavingSection.value || !activeModal.value) return
+
+  isSavingSection.value = true
+  sectionSaveError.value = ''
+
+  const body: Record<string, unknown> = {
+    name: applicant.value.name,
+    university: applicant.value.university ?? null,
+    faculty: applicant.value.faculty ?? null,
+    currentFieldOfStudy: applicant.value.currentFieldOfStudy ?? null,
+    desiredPosition: applicant.value.desiredPosition ?? null,
+    major: applicant.value.major ?? null,
+    graduationYear: applicant.value.graduationYear ?? null,
+    additionalEducationDetails: applicant.value.additionalEducationDetails ?? null,
+    portfolioUrl: applicant.value.portfolioUrl ?? null,
+    resumeUrl: applicant.value.resumeUrl ?? null,
+    skillTagIds: (applicant.value.skills ?? []).map((s) => s.id),
+  }
+
+  switch (activeModal.value) {
+    case 'name':
+      body.name = editName.value || null
+      break
+    case 'university':
+      body.university = editUniversity.university || null
+      body.faculty = editUniversity.faculty || null
+      body.currentFieldOfStudy = editUniversity.currentFieldOfStudy || null
+      body.graduationYear = editUniversity.graduationYear
+        ? Number(editUniversity.graduationYear)
+        : null
+      break
+    case 'additionalEducation':
+      body.additionalEducationDetails = editAdditionalEducation.value || null
+      break
+    case 'skills':
+      body.skillTagIds = editSkills.value.map((t) => t.id)
+      break
+    case 'portfolio':
+      body.portfolioUrl = editPortfolioUrl.value || null
+      break
+    case 'desiredPosition':
+      body.desiredPosition = editDesiredPosition.value || null
+      break
+  }
+
+  try {
+    const updated = await $fetch<Applicant>('/applicants/me', {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body,
+    })
+    applicant.value = normalizeApplicantProfile(updated)
+    activeModal.value = null
+  } catch (err) {
+    sectionSaveError.value = 'Не удалось сохранить изменения'
+    console.error('Failed to save section', err)
+  } finally {
+    isSavingSection.value = false
+  }
+}
+
+const closeModal = () => {
+  activeModal.value = null
+  sectionSaveError.value = ''
+}
+
+const showLogoutModal = ref(false)
+
+const handleLogout = () => {
+  tokenCookie.value = null
+  const userCookie = useCookie<string | null>('user_data')
+  userCookie.value = null
+  navigateTo('/auth/login')
+}
 </script>
 
 <template>
@@ -438,17 +708,40 @@ const uploadResume = async (event: Event) => {
             @change="uploadAvatar"
           />
           <div class="user-account__identity-text">
-            <p class="user-account__name">{{ applicant?.name || 'Пользователь' }}</p>
-            <p class="user-account__subtitle">Профиль пользователя</p>
+            <div class="user-account__name-row">
+              <p class="user-account__name">
+                {{ applicant?.name || 'Пользователь' }}
+              </p>
+              <button
+                class="user-account__edit-btn"
+                type="button"
+                @click="openEditName"
+                aria-label="Редактировать имя"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
+            <div class="user-account__subtitle-row">
+              <p class="user-account__subtitle">
+                {{ applicant?.desiredPosition || 'Профиль пользователя' }}
+              </p>
+              <button
+                class="user-account__edit-btn"
+                type="button"
+                @click="openEditDesiredPosition"
+                aria-label="Редактировать позицию"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
             <p v-if="isAvatarUploading" class="user-account__muted">Загружаем аватар...</p>
-            <p v-if="avatarUploadError" class="user-account__error">{{ avatarUploadError }}</p>
+            <p v-if="avatarUploadError" class="user-account__error">
+              {{ avatarUploadError }}
+            </p>
           </div>
         </div>
 
         <div class="user-account__actions">
-          <BaseAppButton class="user-account__contact-button" variant="primary">
-            Изменить профиль
-          </BaseAppButton>
           <label class="user-account__visibility-toggle">
             <input
               class="user-account__visibility-input"
@@ -462,13 +755,25 @@ const uploadResume = async (event: Event) => {
               {{ visibilityIsPublic ? 'Профиль виден' : 'Профиль скрыт' }}
             </span>
           </label>
-          <p v-if="visibilityError" class="user-account__error">{{ visibilityError }}</p>
+          <p v-if="visibilityError" class="user-account__error">
+            {{ visibilityError }}
+          </p>
         </div>
       </div>
 
       <div class="user-account__profile-grid">
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Общая информация об университете</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Общая информация об университете</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditUniversity"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p>Университет: {{ applicant?.university || 'Не указано' }}</p>
           <p>Факультет: {{ applicant?.faculty || 'Не указано' }}</p>
           <p>Направление: {{ applicant?.currentFieldOfStudy || 'Не указано' }}</p>
@@ -476,18 +781,39 @@ const uploadResume = async (event: Event) => {
         </article>
 
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Ключевое дополнительное образование</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Ключевое дополнительное образование</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditAdditionalEducation"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p>
             {{ applicant?.additionalEducationDetails || 'Дополнительное образование не заполнено' }}
           </p>
         </article>
 
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Навыки</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Навыки</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditSkills"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <div class="user-account__skills">
             <BaseAppTag
               v-for="skill in applicant?.skills || []"
               :key="skill.id"
+              text-color="var(--text-primary-color)"
               class="user-account__skill-tag"
               >{{ skill.name }}</BaseAppTag
             >
@@ -496,9 +822,21 @@ const uploadResume = async (event: Event) => {
             >
           </div>
         </article>
+      </div>
 
+      <div class="user-account__profile-grid user-account__profile-grid--bottom">
         <article class="user-account__panel bordered">
-          <h3 class="user-account__panel-title">Портфолио</h3>
+          <div class="user-account__panel-head">
+            <h3 class="user-account__panel-title">Портфолио</h3>
+            <button
+              class="user-account__edit-btn"
+              type="button"
+              @click="openEditPortfolio"
+              aria-label="Редактировать"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <a
             v-if="applicant?.portfolioUrl"
             :href="applicant.portfolioUrl"
@@ -512,15 +850,15 @@ const uploadResume = async (event: Event) => {
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
             <h3 class="user-account__panel-title">Резюме</h3>
-            <BaseAppButton
+            <button
               type="button"
-              class="user-account__resume-edit-btn"
-              variant="secondary"
+              class="user-account__edit-btn"
               :disabled="isResumeUploading"
               @click="openResumePicker"
+              aria-label="Загрузить резюме"
             >
-              {{ isResumeUploading ? 'Загрузка...' : 'Редактировать' }}
-            </BaseAppButton>
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
             <input
               ref="resumeFileInput"
               type="file"
@@ -537,10 +875,108 @@ const uploadResume = async (event: Event) => {
             >{{ applicant.resumeUrl }}</a
           >
           <span v-else class="user-account__muted">Резюме не загружено</span>
-          <p v-if="resumeUploadError" class="user-account__error">{{ resumeUploadError }}</p>
+          <p v-if="resumeUploadError" class="user-account__error">
+            {{ resumeUploadError }}
+          </p>
         </article>
       </div>
     </section>
+
+    <BaseAppModal
+      :visible="activeModal === 'university'"
+      title="Общая информация об университете"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-university"
+        label="Университет"
+        v-model="editUniversity.university"
+      />
+      <FormInputField id="edit-faculty" label="Факультет" v-model="editUniversity.faculty" />
+      <FormInputField
+        id="edit-field"
+        label="Направление"
+        v-model="editUniversity.currentFieldOfStudy"
+      />
+      <FormInputField
+        id="edit-year"
+        label="Год выпуска"
+        type="number"
+        v-model="editUniversity.graduationYear"
+      />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'additionalEducation'"
+      title="Ключевое дополнительное образование"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-edu"
+        label="Дополнительное образование"
+        v-model="editAdditionalEducation"
+      />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'skills'"
+      title="Навыки"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <BaseTagSelector
+        :available-tags="availableTags"
+        :selected-tags="editSkills"
+        @update:selected-tags="editSkills = $event"
+      />
+      <div v-if="editSkills.length" class="user-account__edit-skills-preview">
+        <BaseAppTag
+          v-for="tag in editSkills"
+          :key="tag.id"
+          text-color="var(--text-primary-color)"
+          class="user-account__skill-tag"
+          >{{ tag.name }}</BaseAppTag
+        >
+      </div>
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'portfolio'"
+      title="Портфолио"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField
+        id="edit-portfolio"
+        label="Ссылка на портфолио"
+        type="url"
+        v-model="editPortfolioUrl"
+      />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'desiredPosition'"
+      title="Желаемая позиция"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField id="edit-desiredPosition" label="Позиция" v-model="editDesiredPosition" />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'name'"
+      title="Имя пользователя"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField id="edit-name" label="Имя" v-model="editName" />
+    </BaseAppModal>
+
+    <p v-if="sectionSaveError" class="user-account__error user-account__error--centered">
+      {{ sectionSaveError }}
+    </p>
 
     <section class="user-account__contacts bordered">
       <h2 class="user-account__section-title">Профессиональные контакты</h2>
@@ -563,7 +999,9 @@ const uploadResume = async (event: Event) => {
           </div>
           <div class="user-account__contact-info">
             <p class="user-account__contact-name">{{ contact.name }}</p>
-            <p class="user-account__contact-role">{{ contact.desired_profession }}</p>
+            <p class="user-account__contact-role">
+              {{ contact.desired_profession }}
+            </p>
           </div>
         </article>
         <p v-if="!contacts?.length" class="user-account__muted">Контактов пока нет</p>
@@ -581,7 +1019,9 @@ const uploadResume = async (event: Event) => {
             :key="idx"
             :class="[
               'user-account__list-item bordered',
-              { 'user-account__list-item--interactive': isFavoriteItemClickable(item) },
+              {
+                'user-account__list-item--interactive': isFavoriteItemClickable(item),
+              },
             ]"
             @click="goToFavoriteOpportunity(item)"
           >
@@ -600,36 +1040,97 @@ const uploadResume = async (event: Event) => {
       </article>
 
       <article class="user-account__column bordered">
-        <h2 class="user-account__section-title">Отклики по возможностям</h2>
-        <BaseAppInput
-          v-model="responsesSearch"
-          placeholder="Поиск по откликам выбранной возможности"
-        />
+        <template v-if="!isCurator">
+          <h2 class="user-account__section-title">Отклики по возможностям</h2>
+          <BaseAppInput
+            v-model="responsesSearch"
+            placeholder="Поиск по откликам выбранной возможности"
+          />
 
-        <div class="user-account__list">
-          <div
-            v-for="(item, idx) in filteredResponses"
-            :key="idx"
-            class="user-account__list-item bordered"
-          >
-            <div>
-              <p class="user-account__item-title">{{ item.title }}</p>
-              <p class="user-account__item-subtitle">{{ item.company_name }}</p>
-            </div>
-            <span
-              :class="[
-                'user-account__badge',
-                `user-account__badge--${responseStatusClass(item.response_status)}`,
-              ]"
+          <div class="user-account__list">
+            <div
+              v-for="(item, idx) in filteredResponses"
+              :key="idx"
+              class="user-account__list-item bordered"
             >
-              {{ responseStatusLabel(item.response_status) }}
-            </span>
+              <div>
+                <p class="user-account__item-title">{{ item.title }}</p>
+                <p class="user-account__item-subtitle">{{ item.company_name }}</p>
+              </div>
+              <span
+                :class="[
+                  'user-account__badge',
+                  `user-account__badge--${responseStatusClass(item.response_status)}`,
+                ]"
+              >
+                {{ responseStatusLabel(item.response_status) }}
+              </span>
+            </div>
+            <p v-if="!filteredResponses.length" class="user-account__muted">Откликов пока нет</p>
           </div>
-          <p v-if="!filteredResponses.length" class="user-account__muted">Откликов пока нет</p>
-        </div>
+        </template>
+
+        <template v-else>
+          <h2 class="user-account__section-title">Новые Компании</h2>
+          <BaseAppInput v-model="newCompaniesSearch" placeholder="Поиск по компаниям" />
+
+          <div class="user-account__list">
+            <div
+              v-for="item in filteredNewCompanies"
+              :key="item.id"
+              class="user-account__list-item bordered user-account__list-item--clickable"
+              @click="navigateTo(`/employers/${item.id}`)"
+            >
+              <div>
+                <p class="user-account__item-title">{{ item.companyName }}</p>
+                <p class="user-account__item-subtitle">ИНН {{ item.inn }}</p>
+              </div>
+              <div class="user-account__company-actions">
+                <button
+                  class="user-account__action-btn user-account__action-btn--approve"
+                  type="button"
+                  title="Утвердить"
+                  @click.stop="approveCompany(item)"
+                >
+                  <NuxtIcon name="material-symbols:check-rounded" size="18px" />
+                </button>
+                <button
+                  class="user-account__action-btn user-account__action-btn--reject"
+                  type="button"
+                  title="Отклонить"
+                  @click.stop="rejectCompany(item)"
+                >
+                  <NuxtIcon name="material-symbols:close-rounded" size="18px" />
+                </button>
+              </div>
+            </div>
+            <p
+              v-if="!filteredNewCompanies.length && !isFetchingEmployers"
+              class="user-account__muted"
+            >
+              Новых компаний нет
+            </p>
+            <p v-if="isFetchingEmployers" class="user-account__muted">Загрузка...</p>
+          </div>
+        </template>
       </article>
     </section>
+    <div class="user-account__logout-row">
+      <BaseAppButton variant="secondary" class="bordered" @click="showLogoutModal = true">
+        Выйти из профиля
+      </BaseAppButton>
+    </div>
   </div>
+
+  <BaseAppModal
+    :visible="showLogoutModal"
+    title="Выход из профиля"
+    confirm-text="Выйти"
+    @confirm="handleLogout"
+    @cancel="showLogoutModal = false"
+  >
+    <p class="user-account__logout-confirm-text">Вы уверены, что хотите выйти?</p>
+  </BaseAppModal>
 </template>
 
 <style lang="scss" scoped>
@@ -717,6 +1218,12 @@ const uploadResume = async (event: Event) => {
     gap: 2px;
   }
 
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   &__name {
     margin: 0;
     font-size: 34px;
@@ -724,6 +1231,12 @@ const uploadResume = async (event: Event) => {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
     color: var(--text-inverted-color);
+  }
+
+  &__subtitle-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   &__subtitle {
@@ -817,6 +1330,11 @@ const uploadResume = async (event: Event) => {
     display: grid;
     grid-template-columns: 1.1fr 1fr 1.4fr;
     gap: 10px;
+
+    &--bottom {
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 10px;
+    }
   }
 
   &__panel {
@@ -848,12 +1366,40 @@ const uploadResume = async (event: Event) => {
     gap: 8px;
   }
 
-  &__resume-edit-btn {
-    padding-inline: 10px;
-    min-height: 30px;
-    font-size: 11px;
-    border-radius: 10px;
+  &__edit-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
     flex-shrink: 0;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary-color);
+      color: var(--primary-color);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__error--centered {
+    text-align: center;
+  }
+
+  &__edit-skills-preview {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
   }
 
   &__resume-input {
@@ -876,6 +1422,18 @@ const uploadResume = async (event: Event) => {
     margin: 0;
     color: var(--text-tertiary-color);
     font-size: 12px;
+  }
+
+  &__logout-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  &__logout-confirm-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-inverted-color);
   }
 
   &__contacts {
@@ -993,6 +1551,43 @@ const uploadResume = async (event: Event) => {
 
     &:hover .user-account__item-title {
       text-decoration: underline;
+    }
+  }
+
+  &__list-item--clickable {
+    cursor: pointer;
+  }
+
+  &__company-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &--approve {
+      background-color: #4e8f62;
+      color: #fff;
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+
+    &--reject {
+      background-color: #c74e4e;
+      color: #fff;
+      &:hover {
+        opacity: 0.85;
+      }
     }
   }
 

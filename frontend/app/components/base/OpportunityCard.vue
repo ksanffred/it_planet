@@ -2,6 +2,22 @@
 import type { OpportunityMiniCard } from '@/types/opportunity'
 import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
+const userCookie = useCookie<string | null>('user_data')
+
+const currentUserData = computed(() => {
+  if (!userCookie.value) return null
+  try {
+    return JSON.parse(userCookie.value) as { id: number; email: string; role: string }
+  } catch {
+    return null
+  }
+})
+
+const showFavorite = computed(() => {
+  const role = currentUserData.value?.role
+  return role !== 'EMPLOYER' && role !== 'CURATOR'
+})
+
 type OpportunityCardProps = OpportunityMiniCard & {
   isFavorite?: boolean
   isFavoriteLoading?: boolean
@@ -46,6 +62,7 @@ const normalizedMedia = computed(() => {
     ]"
   >
     <button
+      v-if="showFavorite"
       class="opportunity-card__favorite"
       type="button"
       :aria-pressed="isFavorite"

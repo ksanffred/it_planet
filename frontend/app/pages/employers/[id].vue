@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
+import type { CurrentUserResponse } from '~/types'
 
 type EmployerProfileById = {
   id: number
@@ -54,6 +55,37 @@ if (!tokenCookie.value) {
 const authHeaders = {
   Authorization: `Bearer ${tokenCookie.value}`,
 }
+
+const { data: currentUser } = await useFetch<CurrentUserResponse>('/auth/me', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: authHeaders,
+  immediate: Boolean(tokenCookie.value),
+})
+
+const isCurator = computed(() => currentUser.value?.role === 'CURATOR')
+
+const isOwnProfile = computed(() => employer.value?.userId === currentUser.value?.userId)
+
+type EditSection = 'companyName' | 'description' | 'links' | 'logo' | null
+
+const activeModal = ref<EditSection>(null)
+const editDescription = ref('')
+const editWebsite = ref('')
+const editSocials = ref('')
+const editCompanyName = ref('')
+const editLogoUrl = ref('')
+const logoMode = ref<'file' | 'url'>('url')
+const logoFile = ref<File | null>(null)
+const logoFilePreview = ref('')
+const isLogoUploading = ref(false)
+const logoUploadError = ref('')
+const logoFileInput = ref<HTMLInputElement | null>(null)
+const isSavingSection = ref(false)
+const sectionSaveError = ref('')
+const showDeleteModal = ref(false)
+const isDeleting = ref(false)
+const deleteError = ref('')
 
 const opportunitiesSearch = ref('')
 const responsesSearch = ref('')
@@ -164,6 +196,159 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
   if (Number.isNaN(date.getTime())) return ''
   return `до ${date.toLocaleDateString('ru-RU')}`
 }
+
+const openEditDescription = () => {
+  editDescription.value = employer.value?.description ?? ''
+  activeModal.value = 'description'
+}
+
+const openEditLinks = () => {
+  editWebsite.value = employer.value?.website ?? ''
+  editSocials.value = employer.value?.socials ?? ''
+  activeModal.value = 'links'
+}
+
+const openEditCompanyName = () => {
+  editCompanyName.value = employer.value?.companyName ?? ''
+  activeModal.value = 'companyName'
+}
+
+const openEditLogo = () => {
+  editLogoUrl.value = employer.value?.logoUrl ?? ''
+  logoMode.value = 'url'
+  logoFile.value = null
+  logoFilePreview.value = ''
+  logoUploadError.value = ''
+  activeModal.value = 'logo'
+}
+
+const handleLogoFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+  if (!file.type.startsWith('image/')) {
+    logoUploadError.value = 'Можно загрузить только изображение'
+    return
+  }
+  logoFile.value = file
+  logoFilePreview.value = URL.createObjectURL(file)
+  logoUploadError.value = ''
+}
+
+const uploadLogoFile = async () => {
+  if (!logoFile.value || !employer.value) return
+  isLogoUploading.value = true
+  logoUploadError.value = ''
+  try {
+    const formData = new FormData()
+    formData.append('file', logoFile.value)
+    const response = await $fetch<{ path?: string; url?: string }>(
+      `/employers/${employer.value.id}/logo`,
+      {
+        baseURL: config.public.apiBase,
+        method: 'POST',
+        headers: authHeaders,
+        body: formData,
+      },
+    )
+    const nextLogoUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
+    if (nextLogoUrl && employer.value) {
+      employer.value = { ...employer.value, logoUrl: nextLogoUrl }
+    }
+    activeModal.value = null
+  } catch (err) {
+    logoUploadError.value = 'Не удалось загрузить логотип'
+    console.error('Failed to upload logo', err)
+  } finally {
+    isLogoUploading.value = false
+  }
+}
+
+const confirmLogoSave = () => {
+  if (logoMode.value === 'file' && logoFile.value) {
+    uploadLogoFile()
+  } else {
+    saveSection()
+  }
+}
+
+const logoSaveText = computed(() => (logoMode.value === 'file' ? 'Загрузить' : 'Сохранить'))
+
+const closeModal = () => {
+  activeModal.value = null
+  sectionSaveError.value = ''
+  logoUploadError.value = ''
+}
+
+const saveSection = async () => {
+  if (!employer.value || isSavingSection.value || !activeModal.value) return
+
+  isSavingSection.value = true
+  sectionSaveError.value = ''
+
+  const body: Record<string, unknown> = {
+    userId: employer.value.userId,
+    companyName: employer.value.companyName,
+    description: employer.value.description ?? null,
+    inn: employer.value.inn,
+    website: employer.value.website ?? null,
+    socials: employer.value.socials ?? null,
+    logoUrl: employer.value.logoUrl ?? null,
+    verifiedOrgName: employer.value.verifiedOrgName ?? null,
+    status: employer.value.status,
+  }
+
+  switch (activeModal.value) {
+    case 'companyName':
+      body.companyName = editCompanyName.value || null
+      break
+    case 'description':
+      body.description = editDescription.value || null
+      break
+    case 'links':
+      body.website = editWebsite.value || null
+      body.socials = editSocials.value || null
+      break
+    case 'logo':
+      body.logoUrl = editLogoUrl.value || null
+      break
+  }
+
+  try {
+    const updated = await $fetch<EmployerProfileById>(`/employers/${employer.value.id}`, {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body,
+    })
+    employer.value = updated
+    activeModal.value = null
+  } catch (err) {
+    sectionSaveError.value = 'Не удалось сохранить изменения'
+    console.error('[curator-edit] Failed to save employer section', err)
+  } finally {
+    isSavingSection.value = false
+  }
+}
+
+const handleDeleteProfile = async () => {
+  if (!employerId.value || isDeleting.value) return
+  isDeleting.value = true
+  deleteError.value = ''
+  try {
+    await $fetch(`/employers/${employerId.value}`, {
+      baseURL: config.public.apiBase,
+      method: 'DELETE',
+      headers: authHeaders,
+    })
+    await navigateTo('/')
+  } catch (err) {
+    deleteError.value = 'Не удалось удалить профиль'
+    console.error('[curator-delete] Failed to delete employer profile', err)
+  } finally {
+    isDeleting.value = false
+  }
+}
 </script>
 
 <template>
@@ -176,34 +361,69 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     <section class="employer-cabinet__profile bordered">
       <div class="employer-cabinet__profile-top">
         <div class="employer-cabinet__identity">
-          <div class="employer-cabinet__avatar">
-            <img
-              v-if="employerLogoUrl"
-              :src="employerLogoUrl"
-              alt="Логотип компании"
-              class="employer-cabinet__avatar-image"
-            />
-            <span v-else>{{ employerInitials }}</span>
+          <div class="employer-cabinet__avatar-wrapper">
+            <div
+              class="employer-cabinet__avatar"
+              :class="{ 'employer-cabinet__avatar--clickable': isCurator }"
+              @click="isCurator ? openEditLogo() : undefined"
+            >
+              <img
+                v-if="employerLogoUrl"
+                :src="employerLogoUrl"
+                alt="Логотип компании"
+                class="employer-cabinet__avatar-image"
+              />
+              <span v-else>{{ employerInitials }}</span>
+            </div>
           </div>
           <div class="employer-cabinet__identity-text">
-            <p class="employer-cabinet__name">{{ employer?.companyName || 'Компания' }}</p>
+            <div class="employer-cabinet__name-row">
+              <p class="employer-cabinet__name">{{ employer?.companyName || 'Компания' }}</p>
+              <button
+                v-if="isCurator"
+                class="employer-cabinet__pencil-btn"
+                type="button"
+                @click="openEditCompanyName"
+                aria-label="Редактировать название"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
             <p class="employer-cabinet__subtitle">Профиль компании</p>
           </div>
         </div>
-
-        <BaseAppButton type="button" class="employer-cabinet__edit-btn" variant="primary">
-          Редактировать
-        </BaseAppButton>
       </div>
 
       <div class="employer-cabinet__profile-fields">
         <article class="employer-cabinet__profile-field bordered">
-          <h3 class="employer-cabinet__profile-field-title">Описание</h3>
+          <div class="employer-cabinet__field-head">
+            <h3 class="employer-cabinet__profile-field-title">Описание</h3>
+            <button
+              v-if="isCurator"
+              class="employer-cabinet__pencil-btn"
+              type="button"
+              @click="openEditDescription"
+              aria-label="Редактировать описание"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p class="employer-cabinet__profile-field-text">{{ profileDescription }}</p>
         </article>
 
         <article class="employer-cabinet__profile-field bordered">
-          <h3 class="employer-cabinet__profile-field-title">Ссылки</h3>
+          <div class="employer-cabinet__field-head">
+            <h3 class="employer-cabinet__profile-field-title">Ссылки</h3>
+            <button
+              v-if="isCurator"
+              class="employer-cabinet__pencil-btn"
+              type="button"
+              @click="openEditLinks"
+              aria-label="Редактировать ссылки"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p class="employer-cabinet__profile-field-text">{{ profileLinks }}</p>
         </article>
 
@@ -218,7 +438,12 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
       <article class="employer-cabinet__column bordered">
         <div class="employer-cabinet__column-head">
           <h2 class="employer-cabinet__section-title">Возможности</h2>
-          <BaseAppButton type="button" variant="primary" class="employer-cabinet__new-btn">
+          <BaseAppButton
+            v-if="isOwnProfile"
+            type="button"
+            variant="primary"
+            class="employer-cabinet__new-btn"
+          >
             Новая возможность
           </BaseAppButton>
         </div>
@@ -283,6 +508,127 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
         </div>
       </article>
     </section>
+
+    <div v-if="isCurator" class="employer-cabinet__logout-row">
+      <BaseAppButton variant="secondary" class="bordered" @click="showDeleteModal = true">
+        Удалить профиль
+      </BaseAppButton>
+    </div>
+
+    <p v-if="sectionSaveError" class="employer-cabinet__error employer-cabinet__error--centered">
+      {{ sectionSaveError }}
+    </p>
+
+    <BaseAppModal
+      :visible="activeModal === 'companyName'"
+      title="Название компании"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField id="cur-edit-company-name" label="Название" v-model="editCompanyName" />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'description'"
+      title="Описание компании"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <label class="employer-cabinet__modal-field">
+        Описание
+        <textarea
+          v-model="editDescription"
+          class="employer-cabinet__modal-textarea bordered"
+          rows="5"
+        />
+      </label>
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'links'"
+      title="Ссылки"
+      @confirm="saveSection"
+      @cancel="closeModal"
+    >
+      <FormInputField id="cur-edit-website" label="Веб-сайт" type="url" v-model="editWebsite" />
+      <FormInputField id="cur-edit-socials" label="Социальные сети" v-model="editSocials" />
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="activeModal === 'logo'"
+      title="Логотип компании"
+      :confirm-text="logoSaveText"
+      @confirm="confirmLogoSave"
+      @cancel="closeModal"
+    >
+      <div class="employer-cabinet__logo-tabs">
+        <button
+          type="button"
+          :class="[
+            'employer-cabinet__logo-tab',
+            { 'employer-cabinet__logo-tab--active': logoMode === 'file' },
+          ]"
+          @click="logoMode = 'file'"
+        >
+          Загрузить файл
+        </button>
+        <button
+          type="button"
+          :class="[
+            'employer-cabinet__logo-tab',
+            { 'employer-cabinet__logo-tab--active': logoMode === 'url' },
+          ]"
+          @click="logoMode = 'url'"
+        >
+          Указать ссылку
+        </button>
+      </div>
+
+      <template v-if="logoMode === 'file'">
+        <button
+          type="button"
+          class="employer-cabinet__logo-file-btn"
+          :disabled="isLogoUploading"
+          @click="logoFileInput?.click()"
+        >
+          {{ logoFile ? 'Изменить файл' : 'Выбрать изображение' }}
+        </button>
+        <input
+          ref="logoFileInput"
+          type="file"
+          accept="image/*"
+          hidden
+          @change="handleLogoFileChange"
+        />
+        <img
+          v-if="logoFilePreview"
+          :src="logoFilePreview"
+          alt="Предпросмотр"
+          class="employer-cabinet__logo-preview"
+        />
+        <p v-if="isLogoUploading" class="employer-cabinet__muted">Загружаем...</p>
+        <p v-if="logoUploadError" class="employer-cabinet__save-error">
+          {{ logoUploadError }}
+        </p>
+      </template>
+
+      <template v-else>
+        <FormInputField id="edit-logo" label="Ссылка на логотип" type="url" v-model="editLogoUrl" />
+      </template>
+    </BaseAppModal>
+
+    <BaseAppModal
+      :visible="showDeleteModal"
+      title="Удаление профиля"
+      confirm-text="Удалить"
+      @confirm="handleDeleteProfile"
+      @cancel="showDeleteModal = false"
+    >
+      <p class="employer-cabinet__logout-confirm-text">
+        Вы уверены, что хотите удалить этот профиль?
+      </p>
+      <p v-if="deleteError" class="employer-cabinet__error">{{ deleteError }}</p>
+    </BaseAppModal>
   </div>
 </template>
 
@@ -374,10 +720,13 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     font-weight: 500;
   }
 
-  &__edit-btn {
-    padding-inline: 14px;
-    font-size: 12px;
-    border-radius: 14px;
+  &__avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  &__avatar--clickable {
+    cursor: pointer;
   }
 
   &__profile-fields {
@@ -405,6 +754,151 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     margin: 0;
     font-size: 14px;
     color: var(--text-inverted-color);
+  }
+
+  &__logo-tabs {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  &__logo-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &--active {
+      background-color: var(--background-tertiary-color);
+      color: var(--text-inverted-color);
+    }
+
+    &:not(&--active):hover {
+      background-color: var(--background-primary-color);
+    }
+  }
+
+  &__logo-file-btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px dashed var(--border-color);
+    background: transparent;
+    color: var(--text-tertiary-color);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-primary-color);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__logo-preview {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+  }
+
+  &__save-error {
+    margin: 0;
+    color: #c74e4e;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__pencil-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-inverted-color);
+    }
+  }
+
+  &__field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__logout-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  &__logout-confirm-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-inverted-color);
+  }
+
+  &__error {
+    margin: 0 0 10px;
+    color: #c74e4e;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  &__error--centered {
+    text-align: center;
+    margin: 8px 0;
+  }
+
+  &__modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-inverted-color);
+  }
+
+  &__modal-textarea {
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px 14px;
+    background-color: var(--background-secondary-color);
+    color: var(--text-inverted-color);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 96px;
+    font-family: inherit;
   }
 
   &__columns {

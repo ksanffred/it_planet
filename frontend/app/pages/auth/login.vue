@@ -44,7 +44,11 @@ async function handleFormSubmit() {
       return
     }
 
-    navigateTo(`/applicants/me`)
+    if (response.role === 'EMPLOYER') {
+      navigateTo('/employers/me')
+    } else {
+      navigateTo('/applicants/me')
+    }
   } catch (authError: unknown) {
     email.value = ''
     password.value = ''

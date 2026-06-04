@@ -1,7 +1,11 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const colorMode = useColorMode()
+</script>
 <template>
   <div class="auth-wrapper">
-    <NuxtImg src="/media/images/loginPanel.webp" />
+    <NuxtImg v-if="colorMode.value === 'light'" src="/media/images/loginPanel.webp" />
+    <NuxtImg v-else="colorMode.value === 'dark'" src="/media/images/loginPanelDark.webp" />
+
     <slot></slot>
   </div>
 </template>

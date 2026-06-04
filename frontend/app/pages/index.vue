@@ -30,5 +30,3 @@ const toggleMap = (value: boolean) => {
     </main>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

@@ -1,8 +1,19 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
 const tokenCookie = useCookie('auth_token')
+const userCookie = useCookie<string | null>('user_data')
 
 const isAuthorized = computed(() => !!tokenCookie.value)
+
+const cabinetLink = computed(() => {
+  if (!userCookie.value) return '/applicants/me'
+  try {
+    const data = JSON.parse(userCookie.value)
+    return data.role === 'EMPLOYER' ? '/employers/me' : '/applicants/me'
+  } catch {
+    return '/applicants/me'
+  }
+})
 
 const isDark = computed({
   get: () => colorMode.value === 'dark',
@@ -29,7 +40,7 @@ const isDark = computed({
       </BaseAppButton>
 
       <template v-if="isAuthorized">
-        <BaseAppButton @click="navigateTo('/applicants/me')" variant="primary">
+        <BaseAppButton @click="navigateTo(cabinetLink)" variant="primary">
           Личный кабинет
         </BaseAppButton>
       </template>
@@ -72,21 +83,5 @@ const isDark = computed({
     justify-content: center;
     padding: 8px;
   }
-}
-
-.app-nav :deep(.app-button--primary) {
-  color: #fff !important;
-}
-
-.app-nav :deep(.app-button--secondary) {
-  color: #161413 !important;
-}
-
-:global(html.dark) .app-nav__logo {
-  color: #f8fafc !important;
-}
-
-:global(html.dark) .app-nav :deep(.app-button--secondary) {
-  color: #f8fafc !important;
 }
 </style>

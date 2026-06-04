@@ -10,6 +10,8 @@ const route = useRoute()
 const tokenCookie = useCookie<string | null>('auth_token')
 const FAVORITES_STORAGE_KEY = 'opportunity-favorite-ids'
 
+const { activeTypes } = useOpportunityFilters()
+
 const searchQuery = computed(() => {
   const value = route.query.search
   return typeof value === 'string' ? value.trim() : ''
@@ -32,9 +34,15 @@ const {
 const PAGE_SIZE = 9
 const visibleCardsCount = ref(PAGE_SIZE)
 
-const visibleCards = computed(() => (miniCards.value ?? []).slice(0, visibleCardsCount.value))
-const hasMoreCards = computed(() => visibleCardsCount.value < (miniCards.value?.length ?? 0))
-const totalCardsCount = computed(() => miniCards.value?.length ?? 0)
+const filteredCards = computed(() => {
+  if (!miniCards.value) return []
+  if (activeTypes.value.length === 0) return miniCards.value
+  return miniCards.value.filter((card) => activeTypes.value.includes(card.type))
+})
+
+const visibleCards = computed(() => filteredCards.value.slice(0, visibleCardsCount.value))
+const hasMoreCards = computed(() => visibleCardsCount.value < filteredCards.value.length)
+const totalCardsCount = computed(() => filteredCards.value.length)
 const showEmptyState = computed(() => !pending.value && totalCardsCount.value === 0)
 const showEndState = computed(
   () => !pending.value && totalCardsCount.value > 0 && !hasMoreCards.value,
@@ -226,6 +234,10 @@ const loadMoreCards = () => {
 }
 
 watch(searchQuery, () => {
+  visibleCardsCount.value = PAGE_SIZE
+})
+
+watch(activeTypes, () => {
   visibleCardsCount.value = PAGE_SIZE
 })
 

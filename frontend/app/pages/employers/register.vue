@@ -22,6 +22,14 @@ const socials = ref('')
 const logoUrl = ref('')
 const error = ref('')
 const isSubmitting = ref(false)
+const showLogoutModal = ref(false)
+
+const handleLogout = () => {
+  tokenCookie.value = null
+  const uc = useCookie<string | null>('user_data')
+  uc.value = null
+  navigateTo('/auth/login')
+}
 
 const { data: domainsData } = await useFetch<DomainItem[]>('/media/data/domains.json', {
   method: 'GET',
@@ -212,6 +220,21 @@ const handleFormSubmit = async () => {
         </BaseAppButton>
       </form>
     </AppForm>
+    <div class="employer-register__logout-row">
+      <BaseAppButton variant="secondary" class="bordered" @click="showLogoutModal = true">
+        Выйти из профиля
+      </BaseAppButton>
+    </div>
+
+    <BaseAppModal
+      :visible="showLogoutModal"
+      title="Выход из профиля"
+      confirm-text="Выйти"
+      @confirm="handleLogout"
+      @cancel="showLogoutModal = false"
+    >
+      <p>Вы уверены, что хотите выйти?</p>
+    </BaseAppModal>
   </AuthWrapper>
 </template>
 
@@ -228,6 +251,12 @@ const handleFormSubmit = async () => {
     color: var(--error-color);
     font-size: 13px;
     font-weight: 600;
+  }
+
+  &__logout-row {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
   }
 }
 

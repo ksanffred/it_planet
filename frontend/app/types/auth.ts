@@ -23,8 +23,9 @@ export interface AuthResponse {
 }
 
 export interface CurrentUserResponse {
-  id: number
+  userId: number
   email: string
   displayName: string
   role: UserRole
+  verified: boolean
 }

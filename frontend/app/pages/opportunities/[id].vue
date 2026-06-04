@@ -6,6 +6,18 @@ import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 const route = useRoute()
 const config = useRuntimeConfig()
 const tokenCookie = useCookie<string | null>('auth_token')
+const userCookie = useCookie<string | null>('user_data')
+
+const currentUserData = computed(() => {
+  if (!userCookie.value) return null
+  try {
+    return JSON.parse(userCookie.value) as { id: number; email: string; role: string }
+  } catch {
+    return null
+  }
+})
+
+const isEmployer = computed(() => currentUserData.value?.role === 'EMPLOYER')
 
 const opportunityId = computed(() => {
   const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
@@ -134,7 +146,7 @@ const goToSlide = (index: number) => {
 }
 
 const loadExistingResponse = async () => {
-  if (!tokenCookie.value || !opportunity.value) {
+  if (!tokenCookie.value || !opportunity.value || isEmployer.value) {
     hasExistingResponse.value = false
     return
   }
@@ -170,7 +182,7 @@ const loadExistingResponse = async () => {
 watch([opportunity, tokenCookie, companyName], loadExistingResponse, { immediate: true })
 
 const applyToOpportunity = async () => {
-  if (!opportunity.value?.id || isApplyDisabled.value) {
+  if (!opportunity.value?.id || isApplyDisabled.value || isEmployer.value) {
     return
   }
 
@@ -257,6 +269,7 @@ const applyToOpportunity = async () => {
       <section class="opportunity-page__title-row bordered">
         <h1 class="opportunity-page__title">{{ opportunity.title }}</h1>
         <BaseAppButton
+          v-if="!isEmployer"
           type="button"
           variant="primary"
           class="opportunity-page__apply"
