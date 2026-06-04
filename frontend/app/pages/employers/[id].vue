@@ -392,7 +392,6 @@ const handleDeleteProfile = async () => {
             <p class="employer-cabinet__subtitle">Профиль компании</p>
           </div>
         </div>
-
       </div>
 
       <div class="employer-cabinet__profile-fields">
@@ -433,14 +432,18 @@ const handleDeleteProfile = async () => {
           <p class="employer-cabinet__profile-field-text">Не указан</p>
         </article>
       </div>
-
     </section>
 
     <section class="employer-cabinet__columns">
       <article class="employer-cabinet__column bordered">
         <div class="employer-cabinet__column-head">
           <h2 class="employer-cabinet__section-title">Возможности</h2>
-          <BaseAppButton v-if="isOwnProfile" type="button" variant="primary" class="employer-cabinet__new-btn">
+          <BaseAppButton
+            v-if="isOwnProfile"
+            type="button"
+            variant="primary"
+            class="employer-cabinet__new-btn"
+          >
             Новая возможность
           </BaseAppButton>
         </div>
@@ -522,11 +525,7 @@ const handleDeleteProfile = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField
-        id="cur-edit-company-name"
-        label="Название"
-        v-model="editCompanyName"
-      />
+      <FormInputField id="cur-edit-company-name" label="Название" v-model="editCompanyName" />
     </BaseAppModal>
 
     <BaseAppModal
@@ -537,7 +536,11 @@ const handleDeleteProfile = async () => {
     >
       <label class="employer-cabinet__modal-field">
         Описание
-        <textarea v-model="editDescription" class="employer-cabinet__modal-textarea bordered" rows="5" />
+        <textarea
+          v-model="editDescription"
+          class="employer-cabinet__modal-textarea bordered"
+          rows="5"
+        />
       </label>
     </BaseAppModal>
 
@@ -621,7 +624,9 @@ const handleDeleteProfile = async () => {
       @confirm="handleDeleteProfile"
       @cancel="showDeleteModal = false"
     >
-      <p class="employer-cabinet__logout-confirm-text">Вы уверены, что хотите удалить этот профиль?</p>
+      <p class="employer-cabinet__logout-confirm-text">
+        Вы уверены, что хотите удалить этот профиль?
+      </p>
       <p v-if="deleteError" class="employer-cabinet__error">{{ deleteError }}</p>
     </BaseAppModal>
   </div>
@@ -722,6 +727,33 @@ const handleDeleteProfile = async () => {
 
   &__avatar--clickable {
     cursor: pointer;
+  }
+
+  &__profile-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__profile-field {
+    background-color: var(--background-primary-color);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  &__profile-field-title {
+    margin: 0 0 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-inverted-color);
+    font-weight: 800;
+  }
+
+  &__profile-field-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-inverted-color);
   }
 
   &__logo-tabs {

@@ -1,11 +1,7 @@
 <script lang="ts" setup>
-import type {
-  CreateOpportunityRequest,
-  OpportunityFormat,
-  OpportunityType,
-  Tag,
-} from '~/types'
+import type { CreateOpportunityRequest, MediaUploadResponse, OpportunityFormat, OpportunityType, Tag } from '~/types'
 import type { FetchError } from 'ofetch'
+import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
 type EmployerMeResponse = {
   id: number
@@ -43,6 +39,11 @@ const isSubmitting = ref(false)
 const isGeocoding = ref(false)
 const error = ref('')
 
+const uploadedMedia = ref<MediaUploadResponse[]>([])
+const isUploadingMedia = ref(false)
+const mediaUploadError = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
+
 const { data: employer, error: employerError } = await useFetch<EmployerMeResponse>(
   '/employers/me',
   { baseURL: config.public.apiBase, method: 'GET', headers: authHeaders },
@@ -50,14 +51,19 @@ const { data: employer, error: employerError } = await useFetch<EmployerMeRespon
 
 watchEffect(() => {
   if (employerError.value?.statusCode === 404) navigateTo('/employers/register')
-  else if (employerError.value?.statusCode === 401) navigateTo('/auth/login?redirect=/opportunities/create')
+  else if (employerError.value?.statusCode === 401)
+    navigateTo('/auth/login?redirect=/opportunities/create')
 })
 
 const { data: tagsData } = await useFetch<Tag[]>('/tags', {
-  baseURL: config.public.apiBase, method: 'GET', default: () => [],
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  default: () => [],
 })
 
-watchEffect(() => { availableTags.value = tagsData.value ?? [] })
+watchEffect(() => {
+  availableTags.value = tagsData.value ?? []
+})
 
 const showSalary = computed(() => opportunityType.value !== 'EVENT')
 
@@ -77,16 +83,22 @@ const displaySalary = computed(() => {
   if (!showSalary.value || (!editSalaryFrom.value && !editSalaryTo.value)) return ''
   return [editSalaryFrom.value, editSalaryTo.value]
     .filter(Boolean)
-    .map(s => `${Number(s).toLocaleString('ru-RU')} ₽`)
+    .map((s) => `${Number(s).toLocaleString('ru-RU')} ₽`)
     .join(' — ')
 })
 
 const displayFormatLabel = computed(() => {
-  const map: Record<OpportunityFormat, string> = { REMOTE: 'Удалённо', OFFICE: 'Офис', HYBRID: 'Гибрид' }
+  const map: Record<OpportunityFormat, string> = {
+    REMOTE: 'Удалённо',
+    OFFICE: 'Офис',
+    HYBRID: 'Гибрид',
+  }
   return map[editFormat.value] || 'Не указано'
 })
 
-const displayPlace = computed(() => [editCity.value, editAddress.value].filter(Boolean).join(', ') || 'Не указано')
+const displayPlace = computed(
+  () => [editCity.value, editAddress.value].filter(Boolean).join(', ') || 'Не указано',
+)
 
 const displayDate = computed(() => {
   if (!editExpiresAt.value) return 'Дата не указана'
@@ -95,13 +107,28 @@ const displayDate = computed(() => {
 
 const displayDescription = computed(() => editDescription.value || 'Описание отсутствует')
 
-const openEditTitle = () => { activeModal.value = 'title' }
-const openEditDescription = () => { activeModal.value = 'description' }
-const openEditTags = () => { activeModal.value = 'tags' }
-const openEditFormat = () => { activeModal.value = 'format' }
-const openEditPlace = () => { activeModal.value = 'place' }
-const openEditDate = () => { activeModal.value = 'date' }
-const closeSectionModal = () => { activeModal.value = null; error.value = '' }
+const openEditTitle = () => {
+  activeModal.value = 'title'
+}
+const openEditDescription = () => {
+  activeModal.value = 'description'
+}
+const openEditTags = () => {
+  activeModal.value = 'tags'
+}
+const openEditFormat = () => {
+  activeModal.value = 'format'
+}
+const openEditPlace = () => {
+  activeModal.value = 'place'
+}
+const openEditDate = () => {
+  activeModal.value = 'date'
+}
+const closeSectionModal = () => {
+  activeModal.value = null
+  error.value = ''
+}
 
 const resolveGeocodeApiKey = () =>
   String(config.public.yandexMapsApiKey || '071323d3-8c9a-48c3-9baf-5c437af0f80e').trim()
@@ -126,7 +153,8 @@ const geocodeAddress = async (query: string) => {
     console.error('[create-opportunity] geocode failed', { query, geocodeError })
     throw geocodeError
   }
-  const pos = response.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos ?? ''
+  const pos =
+    response.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos ?? ''
   const [lngRaw, latRaw] = String(pos).trim().split(/\s+/)
   const lat = Number(latRaw)
   const lng = Number(lngRaw)
@@ -147,18 +175,90 @@ const toIsoDate = (value: string) => {
   return new Date(n).toISOString()
 }
 
+const triggerMediaUpload = () => fileInput.value?.click()
+
+const uploadMedia = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    mediaUploadError.value = 'Можно загружать только изображения'
+    input.value = ''
+    return
+  }
+
+  isUploadingMedia.value = true
+  mediaUploadError.value = ''
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await $fetch<MediaUploadResponse>('/opportunities/media', {
+      baseURL: config.public.apiBase,
+      method: 'POST',
+      headers: authHeaders,
+      body: formData,
+    })
+
+    uploadedMedia.value.push(response)
+  } catch {
+    mediaUploadError.value = 'Не удалось загрузить изображение'
+  } finally {
+    isUploadingMedia.value = false
+    input.value = ''
+  }
+}
+
+const removeMedia = (index: number) => {
+  uploadedMedia.value.splice(index, 1)
+  if (currentMediaSlide.value >= uploadedMedia.value.length) {
+    currentMediaSlide.value = Math.max(0, uploadedMedia.value.length - 1)
+  }
+}
+
+const currentMediaSlide = ref(0)
+const mediaSlideCount = computed(() => uploadedMedia.value.length)
+const currentMediaItem = computed(() => uploadedMedia.value[currentMediaSlide.value])
+
+const prevMediaSlide = () => {
+  if (mediaSlideCount.value <= 1) return
+  currentMediaSlide.value =
+    (currentMediaSlide.value - 1 + mediaSlideCount.value) % mediaSlideCount.value
+}
+
+const nextMediaSlide = () => {
+  if (mediaSlideCount.value <= 1) return
+  currentMediaSlide.value =
+    (currentMediaSlide.value + 1) % mediaSlideCount.value
+}
+
+const goToMediaSlide = (index: number) => {
+  if (index < 0 || index >= mediaSlideCount.value) return
+  currentMediaSlide.value = index
+}
+
 const handlePublish = async () => {
   if (isSubmitting.value) return
   error.value = ''
-  if (!editTitle.value.trim()) { error.value = 'Укажите название возможности'; return }
-  if (!employer.value?.id) { error.value = 'Не удалось определить организацию'; return }
+  if (!editTitle.value.trim()) {
+    error.value = 'Укажите название возможности'
+    return
+  }
+  if (!employer.value?.id) {
+    error.value = 'Не удалось определить организацию'
+    return
+  }
 
   isSubmitting.value = true
   isGeocoding.value = true
 
   try {
     let coordinates: { lat: number; lng: number } | null = null
-    const geocodeQuery = [editCity.value.trim(), editAddress.value.trim()].filter(Boolean).join(', ')
+    const geocodeQuery = [editCity.value.trim(), editAddress.value.trim()]
+      .filter(Boolean)
+      .join(', ')
     if (geocodeQuery) {
       coordinates = await geocodeAddress(geocodeQuery)
       if (!coordinates) {
@@ -181,7 +281,8 @@ const handlePublish = async () => {
       salaryTo: showSalary.value ? toOptionalNumber(editSalaryTo.value) : undefined,
       expiresAt: toIsoDate(editExpiresAt.value),
       status: 'ACTIVE' as const,
-      tagIds: editTags.value.map(t => t.id),
+      tagIds: editTags.value.map((t) => t.id),
+      media: uploadedMedia.value.map((m) => m.path || m.url),
     }
 
     const response = await $fetch<CreatedOpportunityResponse>('/opportunities', {
@@ -195,19 +296,30 @@ const handlePublish = async () => {
     else await navigateTo('/employers/me')
   } catch (requestError) {
     const typedError = requestError as FetchError<{ error?: string; message?: string }>
-    const backendMessage = typedError.data?.error || typedError.data?.message || typedError.message || ''
-    console.error('[create-opportunity] create failed', { statusCode: typedError.statusCode, data: typedError.data, requestError })
+    const backendMessage =
+      typedError.data?.error || typedError.data?.message || typedError.message || ''
+    console.error('[create-opportunity] create failed', {
+      statusCode: typedError.statusCode,
+      data: typedError.data,
+      requestError,
+    })
 
     if (typedError.statusCode === 400) {
-      error.value = backendMessage ? `Проверьте данные: ${backendMessage}` : 'Проверьте корректность введенных данных'
+      error.value = backendMessage
+        ? `Проверьте данные: ${backendMessage}`
+        : 'Проверьте корректность введенных данных'
     } else if (typedError.statusCode === 401) {
       error.value = 'Требуется авторизация'
     } else if (typedError.statusCode === 403) {
       error.value = 'Недостаточно прав для создания возможности'
     } else if (typedError.statusCode === 0 || !typedError.statusCode) {
-      error.value = backendMessage ? `Сетевая ошибка: ${backendMessage}` : 'Сетевая ошибка при создании возможности'
+      error.value = backendMessage
+        ? `Сетевая ошибка: ${backendMessage}`
+        : 'Сетевая ошибка при создании возможности'
     } else {
-      error.value = backendMessage ? `Не удалось создать возможность: ${backendMessage}` : 'Не удалось создать возможность'
+      error.value = backendMessage
+        ? `Не удалось создать возможность: ${backendMessage}`
+        : 'Не удалось создать возможность'
     }
   } finally {
     isGeocoding.value = false
@@ -224,7 +336,72 @@ const handlePublish = async () => {
     </button>
 
     <section class="opportunity-create__media bordered">
-      <img src="/media/images/heroArt.webp" alt="" class="opportunity-create__media-image" />
+      <input
+        ref="fileInput"
+        type="file"
+        accept="image/*"
+        hidden
+        @change="uploadMedia"
+      />
+      <div v-if="uploadedMedia.length" class="opportunity-create__media-carousel">
+        <button
+          type="button"
+          class="opportunity-create__media-nav opportunity-create__media-nav--prev"
+          @click="prevMediaSlide"
+        >
+          <NuxtIcon name="material-symbols:chevron-left-rounded" size="28px" />
+        </button>
+        <div class="opportunity-create__media-slide">
+          <img
+            :src="normalizeStorageAssetUrl(currentMediaItem?.url || currentMediaItem?.path || '')"
+            alt=""
+          />
+          <button
+            type="button"
+            class="opportunity-create__media-remove"
+            @click="removeMedia(currentMediaSlide)"
+          >
+            <NuxtIcon name="material-symbols:close-rounded" size="16px" />
+          </button>
+        </div>
+        <button
+          type="button"
+          class="opportunity-create__media-nav opportunity-create__media-nav--next"
+          @click="nextMediaSlide"
+        >
+          <NuxtIcon name="material-symbols:chevron-right-rounded" size="28px" />
+        </button>
+        <div v-if="mediaSlideCount > 1" class="opportunity-create__dots">
+          <button
+            v-for="(_, index) in uploadedMedia"
+            :key="index"
+            type="button"
+            :class="[
+              'opportunity-create__dot',
+              { 'opportunity-create__dot--active': index === currentMediaSlide },
+            ]"
+            @click="goToMediaSlide(index)"
+          />
+        </div>
+      </div>
+      <img
+        v-else
+        src="/media/images/heroArt.webp"
+        alt=""
+        class="opportunity-create__media-image"
+      />
+      <button
+        type="button"
+        class="opportunity-create__media-add"
+        :disabled="isUploadingMedia"
+        @click="triggerMediaUpload"
+      >
+        <NuxtIcon name="material-symbols:add-photo-alternate-rounded" size="20px" />
+        {{ isUploadingMedia ? 'Загрузка...' : 'Добавить' }}
+      </button>
+      <p v-if="mediaUploadError" class="opportunity-create__media-error">
+        {{ mediaUploadError }}
+      </p>
     </section>
 
     <section class="opportunity-create__title-row" :style="{ backgroundColor: titleRowBg }">
@@ -244,7 +421,9 @@ const handlePublish = async () => {
         :disabled="isSubmitting"
         @click="handlePublish"
       >
-        {{ isSubmitting ? (isGeocoding ? 'Определяем адрес...' : 'Публикация...') : 'Опубликовать' }}
+        {{
+          isSubmitting ? (isGeocoding ? 'Определяем адрес...' : 'Публикация...') : 'Опубликовать'
+        }}
       </BaseAppButton>
     </section>
     <p v-if="error" class="opportunity-create__error">{{ error }}</p>
@@ -292,7 +471,9 @@ const handlePublish = async () => {
       </article>
 
       <div class="opportunity-create__meta-grid">
-        <article class="opportunity-create__meta-card opportunity-create__meta-card--format bordered">
+        <article
+          class="opportunity-create__meta-card opportunity-create__meta-card--format bordered"
+        >
           <div class="opportunity-create__meta-head">
             <p class="opportunity-create__meta-label">Формат</p>
             <button class="opportunity-create__edit-btn" type="button" @click="openEditFormat">
@@ -342,8 +523,18 @@ const handlePublish = async () => {
       </select>
     </label>
     <template v-if="showSalary">
-      <FormInputField id="edit-salary-from" label="Зарплата от" type="number" v-model="editSalaryFrom" />
-      <FormInputField id="edit-salary-to" label="Зарплата до" type="number" v-model="editSalaryTo" />
+      <FormInputField
+        id="edit-salary-from"
+        label="Зарплата от"
+        type="number"
+        v-model="editSalaryFrom"
+      />
+      <FormInputField
+        id="edit-salary-to"
+        label="Зарплата до"
+        type="number"
+        v-model="editSalaryTo"
+      />
     </template>
   </BaseAppModal>
 
@@ -355,7 +546,11 @@ const handlePublish = async () => {
   >
     <label class="opportunity-create__modal-field">
       Описание и требования
-      <textarea v-model="editDescription" class="opportunity-create__modal-textarea bordered" rows="5" />
+      <textarea
+        v-model="editDescription"
+        class="opportunity-create__modal-textarea bordered"
+        rows="5"
+      />
     </label>
   </BaseAppModal>
 
@@ -407,7 +602,11 @@ const handlePublish = async () => {
   >
     <label class="opportunity-create__modal-field">
       Дата окончания публикации
-      <input v-model="editExpiresAt" type="date" class="opportunity-create__modal-control bordered" />
+      <input
+        v-model="editExpiresAt"
+        type="date"
+        class="opportunity-create__modal-control bordered"
+      />
     </label>
   </BaseAppModal>
 </template>
@@ -435,6 +634,7 @@ const handlePublish = async () => {
   }
 
   &__media {
+    position: relative;
     border-radius: 24px;
     overflow: hidden;
     height: 360px;
@@ -446,6 +646,125 @@ const handlePublish = async () => {
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  &__media-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  &__media-nav {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &--prev { left: 12px; }
+    &--next { right: 12px; }
+  }
+
+  &__media-slide {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__media-remove {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3;
+  }
+
+  &__dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+
+    &--active {
+      background: #fff;
+      border-color: #fff;
+    }
+  }
+
+  &__media-add {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: #fff;
+    border-radius: 999px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 2;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__media-error {
+    position: absolute;
+    bottom: 60px;
+    left: 16px;
+    margin: 0;
+    color: #e74c4c;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 4px 10px;
+    border-radius: 6px;
   }
 
   &__title-row {
@@ -686,7 +1005,9 @@ const handlePublish = async () => {
     display: grid;
     place-items: center;
     flex-shrink: 0;
-    transition: opacity 0.2s ease, background-color 0.2s ease;
+    transition:
+      opacity 0.2s ease,
+      background-color 0.2s ease;
 
     &:hover {
       opacity: 1;

@@ -47,8 +47,17 @@ const { data: currentUser } = await useFetch<CurrentUserResponse>('/auth/me', {
 })
 
 const isCurator = computed(() => currentUser.value?.role === 'CURATOR')
+const isEmployer = computed(() => currentUser.value?.role === 'EMPLOYER')
 
-type EditSection = 'name' | 'desiredPosition' | 'university' | 'additionalEducation' | 'skills' | 'portfolio' | 'resume' | null
+type EditSection =
+  | 'name'
+  | 'desiredPosition'
+  | 'university'
+  | 'additionalEducation'
+  | 'skills'
+  | 'portfolio'
+  | 'resume'
+  | null
 
 const activeModal = ref<EditSection>(null)
 const editName = ref('')
@@ -413,7 +422,9 @@ const { data: tagsData } = await useFetch<Tag[]>('/tags', {
   default: () => [],
 })
 
-watchEffect(() => { availableTags.value = tagsData.value ?? [] })
+watchEffect(() => {
+  availableTags.value = tagsData.value ?? []
+})
 
 const openEditName = () => {
   editName.value = applicant.value?.name ?? ''
@@ -538,7 +549,12 @@ const saveSection = async () => {
       <div class="user-account__profile-top">
         <div class="user-account__identity">
           <div class="user-account__avatar">
-            <img v-if="applicantAvatarUrl" :src="applicantAvatarUrl" alt="" class="user-account__avatar-image" />
+            <img
+              v-if="applicantAvatarUrl"
+              :src="applicantAvatarUrl"
+              alt=""
+              class="user-account__avatar-image"
+            />
             <span v-else>{{ applicantInitials }}</span>
           </div>
           <div class="user-account__identity-text">
@@ -574,6 +590,7 @@ const saveSection = async () => {
         </div>
 
         <BaseAppButton
+          v-if="!isEmployer"
           class="user-account__contact-button"
           variant="primary"
           :disabled="isContactButtonDisabled"
@@ -792,7 +809,11 @@ const saveSection = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-desired-position" label="Позиция" v-model="editDesiredPosition" />
+      <FormInputField
+        id="cur-edit-desired-position"
+        label="Позиция"
+        v-model="editDesiredPosition"
+      />
     </BaseAppModal>
 
     <BaseAppModal
@@ -801,10 +822,23 @@ const saveSection = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-university" label="Университет" v-model="editUniversity.university" />
+      <FormInputField
+        id="cur-edit-university"
+        label="Университет"
+        v-model="editUniversity.university"
+      />
       <FormInputField id="cur-edit-faculty" label="Факультет" v-model="editUniversity.faculty" />
-      <FormInputField id="cur-edit-field" label="Направление" v-model="editUniversity.currentFieldOfStudy" />
-      <FormInputField id="cur-edit-year" label="Год выпуска" type="number" v-model="editUniversity.graduationYear" />
+      <FormInputField
+        id="cur-edit-field"
+        label="Направление"
+        v-model="editUniversity.currentFieldOfStudy"
+      />
+      <FormInputField
+        id="cur-edit-year"
+        label="Год выпуска"
+        type="number"
+        v-model="editUniversity.graduationYear"
+      />
     </BaseAppModal>
 
     <BaseAppModal
@@ -813,7 +847,11 @@ const saveSection = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-edu" label="Дополнительное образование" v-model="editAdditionalEducation" />
+      <FormInputField
+        id="cur-edit-edu"
+        label="Дополнительное образование"
+        v-model="editAdditionalEducation"
+      />
     </BaseAppModal>
 
     <BaseAppModal
@@ -828,11 +866,9 @@ const saveSection = async () => {
         @update:selected-tags="editSkills = $event"
       />
       <div v-if="editSkills.length" class="user-account__edit-skills-preview">
-        <BaseAppTag
-          v-for="tag in editSkills"
-          :key="tag.id"
-          class="user-account__skill-tag"
-        >{{ tag.name }}</BaseAppTag>
+        <BaseAppTag v-for="tag in editSkills" :key="tag.id" class="user-account__skill-tag">{{
+          tag.name
+        }}</BaseAppTag>
       </div>
     </BaseAppModal>
 
@@ -842,7 +878,12 @@ const saveSection = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-portfolio" label="Ссылка на портфолио" type="url" v-model="editPortfolioUrl" />
+      <FormInputField
+        id="cur-edit-portfolio"
+        label="Ссылка на портфолио"
+        type="url"
+        v-model="editPortfolioUrl"
+      />
     </BaseAppModal>
 
     <BaseAppModal
@@ -851,7 +892,12 @@ const saveSection = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-resume" label="Ссылка на резюме" type="url" v-model="editResumeUrl" />
+      <FormInputField
+        id="cur-edit-resume"
+        label="Ссылка на резюме"
+        type="url"
+        v-model="editResumeUrl"
+      />
     </BaseAppModal>
 
     <BaseAppModal

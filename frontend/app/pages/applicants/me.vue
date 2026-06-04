@@ -3,9 +3,10 @@ import type {
   Applicant,
   ApplicantVisibility,
   ApplicantContactListItem,
+  CurrentUserResponse,
+  FavoriteOpportunityResponse,
   OpportunityMiniCard,
   ApplicantResponsesLookup,
-  FavoriteOpportunityResponse,
   Tag,
 } from '~/types'
 import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
@@ -13,6 +14,14 @@ import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 type FavoriteCard = Omit<FavoriteOpportunityResponse, 'id'> & { id?: number }
 type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number }
 type ContactLookup = ApplicantContactListItem & Record<string, unknown>
+
+type EmployerListItem = {
+  id: number
+  companyName: string
+  inn: string
+  status: string
+  logoUrl?: string
+}
 
 const config = useRuntimeConfig()
 const tokenCookie = useCookie<string | null>('auth_token')
@@ -25,6 +34,15 @@ const authHeaders = {
   Authorization: `Bearer ${tokenCookie.value}`,
 }
 
+const { data: currentUser } = await useFetch<CurrentUserResponse>('/auth/me', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: authHeaders,
+  immediate: Boolean(tokenCookie.value),
+})
+
+const isCurator = computed(() => currentUser.value?.role === 'CURATOR')
+
 const favoritesSearch = ref('')
 const responsesSearch = ref('')
 const isVisibilityLoading = ref(false)
@@ -35,6 +53,36 @@ const avatarUploadError = ref('')
 const resumeFileInput = ref<HTMLInputElement | null>(null)
 const isResumeUploading = ref(false)
 const resumeUploadError = ref('')
+const newCompaniesSearch = ref('')
+const rawEmployers = ref<EmployerListItem[]>([])
+const isFetchingEmployers = ref(false)
+
+const fetchAllEmployers = async () => {
+  isFetchingEmployers.value = true
+  const results: EmployerListItem[] = []
+  const batchSize = 10
+  let consecutiveMisses = 0
+  const MAX_MISSES = 5
+
+  for (let start = 1; start <= 500 && consecutiveMisses < MAX_MISSES; start += batchSize) {
+    const promises = Array.from({ length: batchSize }, (_, i) =>
+      $fetch<EmployerListItem>(`/employers/${start + i}`, {
+        baseURL: config.public.apiBase,
+        headers: authHeaders,
+      }).catch(() => null),
+    )
+    const batch = await Promise.all(promises)
+    const hits = batch.filter((x): x is EmployerListItem => x !== null)
+    if (hits.length === 0) {
+      consecutiveMisses++
+    } else {
+      consecutiveMisses = 0
+      results.push(...hits)
+    }
+  }
+  rawEmployers.value = results
+  isFetchingEmployers.value = false
+}
 
 /* ── Модальные окна редактирования ── */
 type EditSection =
@@ -161,6 +209,80 @@ const filteredResponses = computed(() => {
     `${item.title} ${item.company_name}`.toLowerCase().includes(query),
   )
 })
+
+const newCompanies = computed(() =>
+  rawEmployers.value.filter((e) => e.status !== 'full_verified'),
+)
+
+const filteredNewCompanies = computed(() => {
+  const q = newCompaniesSearch.value.trim().toLowerCase()
+  if (!q) return newCompanies.value
+  return newCompanies.value.filter(
+    (e) =>
+      e.companyName.toLowerCase().includes(q) ||
+      e.inn.toLowerCase().includes(q),
+  )
+})
+
+onMounted(() => {
+  if (isCurator.value) fetchAllEmployers()
+})
+
+const approveCompany = async (item: EmployerListItem) => {
+  try {
+    const full = await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      headers: authHeaders,
+    }) as Record<string, unknown>
+    await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body: {
+        userId: full.userId,
+        companyName: full.companyName,
+        description: full.description ?? null,
+        inn: full.inn,
+        website: full.website ?? null,
+        socials: full.socials ?? null,
+        logoUrl: full.logoUrl ?? null,
+        verifiedOrgName: full.verifiedOrgName ?? null,
+        status: 'full_verified',
+      },
+    })
+    rawEmployers.value = rawEmployers.value.filter((e) => e.id !== item.id)
+  } catch (err) {
+    console.error('Failed to approve company', err)
+  }
+}
+
+const rejectCompany = async (item: EmployerListItem) => {
+  try {
+    const full = await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      headers: authHeaders,
+    }) as Record<string, unknown>
+    await $fetch(`/employers/${item.id}`, {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body: {
+        userId: full.userId,
+        companyName: full.companyName,
+        description: full.description ?? null,
+        inn: full.inn,
+        website: full.website ?? null,
+        socials: full.socials ?? null,
+        logoUrl: full.logoUrl ?? null,
+        verifiedOrgName: full.verifiedOrgName ?? null,
+        status: 'auto_rejected',
+      },
+    })
+    rawEmployers.value = rawEmployers.value.filter((e) => e.id !== item.id)
+  } catch (err) {
+    console.error('Failed to reject company', err)
+  }
+}
 
 const favoriteStatusLabel = (status: string) => {
   const map: Record<string, string> = {
@@ -922,33 +1044,76 @@ const handleLogout = () => {
       </article>
 
       <article class="user-account__column bordered">
-        <h2 class="user-account__section-title">Отклики по возможностям</h2>
-        <BaseAppInput
-          v-model="responsesSearch"
-          placeholder="Поиск по откликам выбранной возможности"
-        />
+        <template v-if="!isCurator">
+          <h2 class="user-account__section-title">Отклики по возможностям</h2>
+          <BaseAppInput
+            v-model="responsesSearch"
+            placeholder="Поиск по откликам выбранной возможности"
+          />
 
-        <div class="user-account__list">
-          <div
-            v-for="(item, idx) in filteredResponses"
-            :key="idx"
-            class="user-account__list-item bordered"
-          >
-            <div>
-              <p class="user-account__item-title">{{ item.title }}</p>
-              <p class="user-account__item-subtitle">{{ item.company_name }}</p>
-            </div>
-            <span
-              :class="[
-                'user-account__badge',
-                `user-account__badge--${responseStatusClass(item.response_status)}`,
-              ]"
+          <div class="user-account__list">
+            <div
+              v-for="(item, idx) in filteredResponses"
+              :key="idx"
+              class="user-account__list-item bordered"
             >
-              {{ responseStatusLabel(item.response_status) }}
-            </span>
+              <div>
+                <p class="user-account__item-title">{{ item.title }}</p>
+                <p class="user-account__item-subtitle">{{ item.company_name }}</p>
+              </div>
+              <span
+                :class="[
+                  'user-account__badge',
+                  `user-account__badge--${responseStatusClass(item.response_status)}`,
+                ]"
+              >
+                {{ responseStatusLabel(item.response_status) }}
+              </span>
+            </div>
+            <p v-if="!filteredResponses.length" class="user-account__muted">Откликов пока нет</p>
           </div>
-          <p v-if="!filteredResponses.length" class="user-account__muted">Откликов пока нет</p>
-        </div>
+        </template>
+
+        <template v-else>
+          <h2 class="user-account__section-title">Новые Компании</h2>
+          <BaseAppInput v-model="newCompaniesSearch" placeholder="Поиск по компаниям" />
+
+          <div class="user-account__list">
+            <div
+              v-for="item in filteredNewCompanies"
+              :key="item.id"
+              class="user-account__list-item bordered user-account__list-item--clickable"
+              @click="navigateTo(`/employers/${item.id}`)"
+            >
+              <div>
+                <p class="user-account__item-title">{{ item.companyName }}</p>
+                <p class="user-account__item-subtitle">ИНН {{ item.inn }}</p>
+              </div>
+              <div class="user-account__company-actions">
+                <button
+                  class="user-account__action-btn user-account__action-btn--approve"
+                  type="button"
+                  title="Утвердить"
+                  @click.stop="approveCompany(item)"
+                >
+                  <NuxtIcon name="material-symbols:check-rounded" size="18px" />
+                </button>
+                <button
+                  class="user-account__action-btn user-account__action-btn--reject"
+                  type="button"
+                  title="Отклонить"
+                  @click.stop="rejectCompany(item)"
+                >
+                  <NuxtIcon name="material-symbols:close-rounded" size="18px" />
+                </button>
+              </div>
+            </div>
+            <p v-if="!filteredNewCompanies.length && !isFetchingEmployers" class="user-account__muted">
+              Новых компаний нет
+            </p>
+            <p v-if="isFetchingEmployers" class="user-account__muted">Загрузка...</p>
+          </div>
+        </template>
       </article>
     </section>
     <div class="user-account__logout-row">
@@ -1387,6 +1552,39 @@ const handleLogout = () => {
 
     &:hover .user-account__item-title {
       text-decoration: underline;
+    }
+  }
+
+  &__list-item--clickable {
+    cursor: pointer;
+  }
+
+  &__company-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &--approve {
+      background-color: #4e8f62;
+      color: #fff;
+      &:hover { opacity: 0.85; }
+    }
+
+    &--reject {
+      background-color: #c74e4e;
+      color: #fff;
+      &:hover { opacity: 0.85; }
     }
   }
 
