@@ -1,5 +1,11 @@
 <script lang="ts" setup>
-import type { CreateOpportunityRequest, MediaUploadResponse, OpportunityFormat, OpportunityType, Tag } from '~/types'
+import type {
+  CreateOpportunityRequest,
+  MediaUploadResponse,
+  OpportunityFormat,
+  OpportunityType,
+  Tag,
+} from '~/types'
 import type { FetchError } from 'ofetch'
 import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
@@ -230,8 +236,7 @@ const prevMediaSlide = () => {
 
 const nextMediaSlide = () => {
   if (mediaSlideCount.value <= 1) return
-  currentMediaSlide.value =
-    (currentMediaSlide.value + 1) % mediaSlideCount.value
+  currentMediaSlide.value = (currentMediaSlide.value + 1) % mediaSlideCount.value
 }
 
 const goToMediaSlide = (index: number) => {
@@ -336,13 +341,7 @@ const handlePublish = async () => {
     </button>
 
     <section class="opportunity-create__media bordered">
-      <input
-        ref="fileInput"
-        type="file"
-        accept="image/*"
-        hidden
-        @change="uploadMedia"
-      />
+      <input ref="fileInput" type="file" accept="image/*" hidden @change="uploadMedia" />
       <div v-if="uploadedMedia.length" class="opportunity-create__media-carousel">
         <button
           type="button"
@@ -384,12 +383,7 @@ const handlePublish = async () => {
           />
         </div>
       </div>
-      <img
-        v-else
-        src="/media/images/heroArt.webp"
-        alt=""
-        class="opportunity-create__media-image"
-      />
+      <img v-else src="/media/images/heroArt.webp" alt="" class="opportunity-create__media-image" />
       <button
         type="button"
         class="opportunity-create__media-add"
@@ -672,8 +666,12 @@ const handlePublish = async () => {
     justify-content: center;
     cursor: pointer;
 
-    &--prev { left: 12px; }
-    &--next { right: 12px; }
+    &--prev {
+      left: 12px;
+    }
+    &--next {
+      right: 12px;
+    }
   }
 
   &__media-slide {

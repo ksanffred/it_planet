@@ -184,6 +184,15 @@ const removeTag = (tag: Tag) => {
   selectedTags.value = selectedTags.value.filter((t) => t.id !== tag.id)
 }
 
+const showLogoutModal = ref(false)
+
+const handleLogout = () => {
+  tokenCookie.value = null
+  const uc = useCookie<string | null>('user_data')
+  uc.value = null
+  navigateTo('/auth/login')
+}
+
 // const handleFileChange = async (event: Event) => {
 //   try {
 //     if (!userCookie.value) {
@@ -325,6 +334,22 @@ const removeTag = (tag: Tag) => {
         /> -->
         <BaseAppButton type="submit" variant="primary">Создать профиль</BaseAppButton>
       </form>
+
+      <div class="applicant__logout-row">
+        <BaseAppButton variant="secondary" class="bordered" @click="showLogoutModal = true">
+          Выйти из профиля
+        </BaseAppButton>
+      </div>
+
+      <BaseAppModal
+        :visible="showLogoutModal"
+        title="Выход из профиля"
+        confirm-text="Выйти"
+        @confirm="handleLogout"
+        @cancel="showLogoutModal = false"
+      >
+        <p>Вы уверены, что хотите выйти?</p>
+      </BaseAppModal>
     </AppForm>
   </div>
 </template>
@@ -419,6 +444,12 @@ const removeTag = (tag: Tag) => {
     margin: 0;
     font-size: 12px;
     color: var(--text-tertiary-color);
+  }
+
+  &__logout-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
   }
 }
 </style>

@@ -210,17 +210,13 @@ const filteredResponses = computed(() => {
   )
 })
 
-const newCompanies = computed(() =>
-  rawEmployers.value.filter((e) => e.status !== 'full_verified'),
-)
+const newCompanies = computed(() => rawEmployers.value.filter((e) => e.status !== 'full_verified'))
 
 const filteredNewCompanies = computed(() => {
   const q = newCompaniesSearch.value.trim().toLowerCase()
   if (!q) return newCompanies.value
   return newCompanies.value.filter(
-    (e) =>
-      e.companyName.toLowerCase().includes(q) ||
-      e.inn.toLowerCase().includes(q),
+    (e) => e.companyName.toLowerCase().includes(q) || e.inn.toLowerCase().includes(q),
   )
 })
 
@@ -230,10 +226,10 @@ onMounted(() => {
 
 const approveCompany = async (item: EmployerListItem) => {
   try {
-    const full = await $fetch(`/employers/${item.id}`, {
+    const full = (await $fetch(`/employers/${item.id}`, {
       baseURL: config.public.apiBase,
       headers: authHeaders,
-    }) as Record<string, unknown>
+    })) as Record<string, unknown>
     await $fetch(`/employers/${item.id}`, {
       baseURL: config.public.apiBase,
       method: 'PUT',
@@ -258,10 +254,10 @@ const approveCompany = async (item: EmployerListItem) => {
 
 const rejectCompany = async (item: EmployerListItem) => {
   try {
-    const full = await $fetch(`/employers/${item.id}`, {
+    const full = (await $fetch(`/employers/${item.id}`, {
       baseURL: config.public.apiBase,
       headers: authHeaders,
-    }) as Record<string, unknown>
+    })) as Record<string, unknown>
     await $fetch(`/employers/${item.id}`, {
       baseURL: config.public.apiBase,
       method: 'PUT',
@@ -1108,7 +1104,10 @@ const handleLogout = () => {
                 </button>
               </div>
             </div>
-            <p v-if="!filteredNewCompanies.length && !isFetchingEmployers" class="user-account__muted">
+            <p
+              v-if="!filteredNewCompanies.length && !isFetchingEmployers"
+              class="user-account__muted"
+            >
               Новых компаний нет
             </p>
             <p v-if="isFetchingEmployers" class="user-account__muted">Загрузка...</p>
@@ -1578,13 +1577,17 @@ const handleLogout = () => {
     &--approve {
       background-color: #4e8f62;
       color: #fff;
-      &:hover { opacity: 0.85; }
+      &:hover {
+        opacity: 0.85;
+      }
     }
 
     &--reject {
       background-color: #c74e4e;
       color: #fff;
-      &:hover { opacity: 0.85; }
+      &:hover {
+        opacity: 0.85;
+      }
     }
   }
 

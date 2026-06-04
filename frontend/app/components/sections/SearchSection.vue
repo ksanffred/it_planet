@@ -17,9 +17,8 @@ const emit = defineEmits<{
   'update:showMap': [value: boolean]
 }>()
 
-const internshipOpportunity = ref(false)
-const eventOpportunity = ref(false)
-const vacansyOpportunity = ref(false)
+const { internshipOpportunity, eventOpportunity, vacansyOpportunity, clearTypes } =
+  useOpportunityFilters()
 
 const searchText: Ref<string> = ref('')
 const searchTags: Ref<Tag[]> = ref([])
@@ -40,19 +39,6 @@ const initFromUrl = () => {
   const searchTextParts: string[] = []
 
   searchParts.forEach((part) => {
-    if (part === 'стажировка') {
-      internshipOpportunity.value = true
-      return
-    }
-    if (part === 'мероприятие') {
-      eventOpportunity.value = true
-      return
-    }
-    if (part === 'вакансия') {
-      vacansyOpportunity.value = true
-      return
-    }
-
     const matchingTag = tags.value!.find((t) => t.name === part)
     if (matchingTag) {
       selectedTagNames.push(part)
@@ -75,10 +61,6 @@ watch(tags, initFromUrl, { immediate: true })
 const buildSearchQuery = () => {
   const parts: string[] = []
 
-  if (internshipOpportunity.value) parts.push('стажировка')
-  if (eventOpportunity.value) parts.push('мероприятие')
-  if (vacansyOpportunity.value) parts.push('вакансия')
-
   const tagNames = searchTags.value.map((t) => t.name)
   if (tagNames.length > 0) parts.push(...tagNames)
 
@@ -97,7 +79,7 @@ const submitSearch = () => {
   updateQuery()
 }
 
-watch([internshipOpportunity, eventOpportunity, vacansyOpportunity, searchTags], updateQuery, {
+watch([searchTags], updateQuery, {
   deep: true,
 })
 

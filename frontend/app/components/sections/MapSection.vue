@@ -72,6 +72,8 @@ const route = useRoute()
 const tokenCookie = useCookie<string | null>('auth_token')
 const FAVORITES_STORAGE_KEY = 'opportunity-favorite-ids'
 
+const { activeTypes } = useOpportunityFilters()
+
 const searchQuery = computed(() => {
   const value = route.query.search
   return typeof value === 'string' ? value.trim() : ''
@@ -89,6 +91,12 @@ const { data: miniCards, pending } = await useFetch<OpportunityMiniCard[]>(
     watch: [searchQuery],
   },
 )
+
+const filteredCards = computed(() => {
+  if (!miniCards.value) return []
+  if (activeTypes.value.length === 0) return miniCards.value
+  return miniCards.value.filter((card) => activeTypes.value.includes(card.type))
+})
 
 const mapContainerRef = ref<HTMLElement | null>(null)
 const mapError = ref('')
@@ -225,12 +233,12 @@ const extractFavoriteSignatures = (payload: unknown): string[] => {
 }
 
 const applyFavoriteSignatures = () => {
-  if (favoriteSignatures.value.length === 0 || !miniCards.value?.length) {
+  if (favoriteSignatures.value.length === 0 || filteredCards.value.length === 0) {
     return
   }
 
   const signatures = new Set(favoriteSignatures.value)
-  favoriteIds.value = miniCards.value
+  favoriteIds.value = filteredCards.value
     .filter((card) =>
       signatures.has(buildFavoriteSignature(card.title, card.employerName, card.type)),
     )
@@ -469,7 +477,7 @@ const renderClusterer = (options?: { recenter?: boolean }) => {
 
   removeClusterer()
 
-  const features = cardsToFeatures(miniCards.value ?? [])
+  const features = cardsToFeatures(filteredCards.value)
   if (features.length === 0) {
     resetMapView()
     return
@@ -543,20 +551,20 @@ const initMap = async () => {
 }
 
 const selectedCard = computed(
-  () => (miniCards.value ?? []).find((card) => card.id === selectedCardId.value) ?? null,
+  () => filteredCards.value.find((card) => card.id === selectedCardId.value) ?? null,
 )
-const isEmptySearchResult = computed(() => !pending.value && (miniCards.value?.length ?? 0) === 0)
+const isEmptySearchResult = computed(() => !pending.value && filteredCards.value.length === 0)
 const selectedClusterCards = computed(() => {
   if (selectedClusterCardIds.value.length === 0) return []
 
-  const byId = new Map((miniCards.value ?? []).map((card) => [card.id, card]))
+  const byId = new Map(filteredCards.value.map((card) => [card.id, card]))
   return selectedClusterCardIds.value
     .map((id) => byId.get(id))
     .filter((card): card is OpportunityMiniCard => Boolean(card))
 })
 
 watch(
-  miniCards,
+  filteredCards,
   (cards) => {
     const nextCards = cards ?? []
     if (nextCards.length === 0) {
@@ -591,7 +599,8 @@ watch(favoriteIds, () => {
   renderClusterer({ recenter: false })
 })
 watch(tokenCookie, loadFavorites, { immediate: true })
-watch(miniCards, applyFavoriteSignatures)
+watch(filteredCards, applyFavoriteSignatures)
+watch(activeTypes, () => renderClusterer({ recenter: true }))
 watch(favoriteIds, writeLocalFavoriteIds, { deep: true })
 
 onMounted(initMap)
