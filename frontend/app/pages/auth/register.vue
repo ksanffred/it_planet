@@ -83,7 +83,11 @@ const handleFormSubmit = async () => {
       role: response.role,
     })
 
-    navigateTo('/applicants')
+    if (response.role === 'EMPLOYER') {
+      navigateTo('/employers/register')
+    } else {
+      navigateTo('/applicants')
+    }
   } catch (registerError: unknown) {
     const err = registerError as FetchError
 

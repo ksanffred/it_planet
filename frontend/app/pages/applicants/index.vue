@@ -26,6 +26,15 @@ if (!tokenCookie.value) {
   navigateTo('/auth/login')
 }
 
+const userData = (() => {
+  if (!userCookie.value) return null
+  try { return JSON.parse(userCookie.value) } catch { return null }
+})()
+
+if (userData?.role === 'EMPLOYER') {
+  navigateTo('/employers/me')
+}
+
 const { data, pending, error } = await useFetch('/applicants/me', {
   baseURL: config.public.apiBase,
   method: 'GET',

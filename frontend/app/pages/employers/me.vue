@@ -156,6 +156,158 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
   if (Number.isNaN(date.getTime())) return ''
   return `до ${date.toLocaleDateString('ru-RU')}`
 }
+
+type EditSection = 'description' | 'links' | 'logo' | null
+const activeModal = ref<EditSection>(null)
+const editDescription = ref('')
+const editWebsite = ref('')
+const editSocials = ref('')
+const editLogoUrl = ref('')
+const logoMode = ref<'file' | 'url'>('url')
+const logoFile = ref<File | null>(null)
+const logoFilePreview = ref('')
+const isLogoUploading = ref(false)
+const logoUploadError = ref('')
+const logoFileInput = ref<HTMLInputElement | null>(null)
+const isSavingSection = ref(false)
+const sectionSaveError = ref('')
+
+const logoSaveText = computed(() =>
+  logoMode.value === 'file' ? 'Загрузить' : 'Сохранить',
+)
+
+const openEditDescription = () => {
+  editDescription.value = employer.value?.description ?? ''
+  activeModal.value = 'description'
+}
+
+const openEditLinks = () => {
+  editWebsite.value = employer.value?.website ?? ''
+  editSocials.value = employer.value?.socials ?? ''
+  activeModal.value = 'links'
+}
+
+const openEditLogo = () => {
+  editLogoUrl.value = employer.value?.logoUrl ?? ''
+  logoMode.value = 'url'
+  logoFile.value = null
+  logoFilePreview.value = ''
+  logoUploadError.value = ''
+  activeModal.value = 'logo'
+}
+
+const handleLogoFileChange = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    logoUploadError.value = 'Можно загрузить только изображение'
+    input.value = ''
+    return
+  }
+
+  logoFile.value = file
+  logoFilePreview.value = URL.createObjectURL(file)
+  logoUploadError.value = ''
+}
+
+const uploadLogoFile = async () => {
+  if (!logoFile.value || !employer.value) return
+
+  isLogoUploading.value = true
+  logoUploadError.value = ''
+
+  try {
+    const formData = new FormData()
+    formData.append('file', logoFile.value)
+
+    const response = await $fetch<{ path?: string; url?: string }>(
+      `/employers/${employer.value.id}/logo`,
+      {
+        baseURL: config.public.apiBase,
+        method: 'POST',
+        headers: authHeaders,
+        body: formData,
+      },
+    )
+
+    const nextLogoUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
+    if (nextLogoUrl && employer.value) {
+      employer.value = { ...employer.value, logoUrl: nextLogoUrl }
+    }
+
+    activeModal.value = null
+  } catch (err) {
+    logoUploadError.value = 'Не удалось загрузить логотип'
+    console.error('Failed to upload logo', err)
+  } finally {
+    isLogoUploading.value = false
+  }
+}
+
+const confirmLogoSave = () => {
+  if (logoMode.value === 'file' && logoFile.value) {
+    uploadLogoFile()
+  } else {
+    saveSection()
+  }
+}
+
+const saveSection = async () => {
+  if (!employer.value || isSavingSection.value || !activeModal.value) return
+  isSavingSection.value = true
+  sectionSaveError.value = ''
+
+  const body: Record<string, unknown> = {
+    description: employer.value.description ?? null,
+    website: employer.value.website ?? null,
+    socials: employer.value.socials ?? null,
+    logoUrl: employer.value.logoUrl ?? null,
+  }
+  switch (activeModal.value) {
+    case 'description':
+      body.description = editDescription.value || null
+      break
+    case 'links':
+      body.website = editWebsite.value || null
+      body.socials = editSocials.value || null
+      break
+    case 'logo':
+      body.logoUrl = editLogoUrl.value || null
+      break
+  }
+
+  try {
+    const updated = await $fetch<EmployerProfileMe>('/employers/me', {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      headers: authHeaders,
+      body,
+    })
+    employer.value = updated
+    activeModal.value = null
+  } catch (err) {
+    sectionSaveError.value = 'Не удалось сохранить изменения'
+    console.error('Failed to save employer section', err)
+  } finally {
+    isSavingSection.value = false
+  }
+}
+
+const closeSectionModal = () => {
+  activeModal.value = null
+  sectionSaveError.value = ''
+}
+
+const showLogoutModal = ref(false)
+
+const handleLogout = () => {
+  tokenCookie.value = null
+  const userCookie = useCookie<string | null>('user_data')
+  userCookie.value = null
+  navigateTo('/auth/login')
+}
 </script>
 
 <template>
@@ -168,14 +320,19 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     <section class="employer-cabinet__profile bordered">
       <div class="employer-cabinet__profile-top">
         <div class="employer-cabinet__identity">
-          <div class="employer-cabinet__avatar">
-            <img
-              v-if="employerLogoUrl"
-              :src="employerLogoUrl"
-              alt="Логотип компании"
-              class="employer-cabinet__avatar-image"
-            />
-            <span v-else>{{ employerInitials }}</span>
+          <div class="employer-cabinet__avatar-wrap">
+            <button class="employer-cabinet__avatar" type="button" @click="openEditLogo">
+              <img
+                v-if="employerLogoUrl"
+                :src="employerLogoUrl"
+                alt="Логотип компании"
+                class="employer-cabinet__avatar-image"
+              />
+              <span v-else>{{ employerInitials }}</span>
+              <span class="employer-cabinet__avatar-overlay">
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </span>
+            </button>
           </div>
           <div class="employer-cabinet__identity-text">
             <p class="employer-cabinet__name">{{ employer?.companyName || 'Компания' }}</p>
@@ -183,19 +340,26 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
           </div>
         </div>
 
-        <BaseAppButton type="button" class="employer-cabinet__edit-btn" variant="primary">
-          Редактировать
-        </BaseAppButton>
       </div>
 
       <div class="employer-cabinet__profile-fields">
         <article class="employer-cabinet__profile-field bordered">
-          <h3 class="employer-cabinet__profile-field-title">Описание</h3>
+          <div class="employer-cabinet__profile-field-head">
+            <h3 class="employer-cabinet__profile-field-title">Описание</h3>
+            <button class="employer-cabinet__edit-btn" type="button" @click="openEditDescription">
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p class="employer-cabinet__profile-field-text">{{ profileDescription }}</p>
         </article>
 
         <article class="employer-cabinet__profile-field bordered">
-          <h3 class="employer-cabinet__profile-field-title">Ссылки</h3>
+          <div class="employer-cabinet__profile-field-head">
+            <h3 class="employer-cabinet__profile-field-title">Ссылки</h3>
+            <button class="employer-cabinet__edit-btn" type="button" @click="openEditLinks">
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p class="employer-cabinet__profile-field-text">{{ profileLinks }}</p>
         </article>
 
@@ -280,7 +444,121 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
         </div>
       </article>
     </section>
+
+    <p v-if="sectionSaveError" class="employer-cabinet__save-error">
+      {{ sectionSaveError }}
+    </p>
+
+    <div class="employer-cabinet__logout-row">
+      <BaseAppButton variant="secondary" class="bordered" @click="showLogoutModal = true">
+        Выйти из профиля
+      </BaseAppButton>
+    </div>
   </div>
+
+  <BaseAppModal
+    :visible="activeModal === 'description'"
+    title="Описание компании"
+    @confirm="saveSection"
+    @cancel="closeSectionModal"
+  >
+    <FormInputField
+      id="edit-description"
+      label="Описание"
+      v-model="editDescription"
+    />
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'links'"
+    title="Ссылки"
+    @confirm="saveSection"
+    @cancel="closeSectionModal"
+  >
+    <FormInputField
+      id="edit-website"
+      label="Сайт"
+      v-model="editWebsite"
+      type="url"
+    />
+    <FormInputField
+      id="edit-socials"
+      label="Соцсети/контакты"
+      v-model="editSocials"
+    />
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'logo'"
+    title="Логотип компании"
+    :confirm-text="logoSaveText"
+    @confirm="confirmLogoSave"
+    @cancel="closeSectionModal"
+  >
+    <div class="employer-cabinet__logo-tabs">
+      <button
+        type="button"
+        :class="['employer-cabinet__logo-tab', { 'employer-cabinet__logo-tab--active': logoMode === 'file' }]"
+        @click="logoMode = 'file'"
+      >
+        Загрузить файл
+      </button>
+      <button
+        type="button"
+        :class="['employer-cabinet__logo-tab', { 'employer-cabinet__logo-tab--active': logoMode === 'url' }]"
+        @click="logoMode = 'url'"
+      >
+        Указать ссылку
+      </button>
+    </div>
+
+    <template v-if="logoMode === 'file'">
+      <button
+        type="button"
+        class="employer-cabinet__logo-file-btn"
+        :disabled="isLogoUploading"
+        @click="logoFileInput?.click()"
+      >
+        {{ logoFile ? 'Изменить файл' : 'Выбрать изображение' }}
+      </button>
+      <input
+        ref="logoFileInput"
+        type="file"
+        accept="image/*"
+        hidden
+        @change="handleLogoFileChange"
+      />
+      <img
+        v-if="logoFilePreview"
+        :src="logoFilePreview"
+        alt="Предпросмотр"
+        class="employer-cabinet__logo-preview"
+      />
+      <p v-if="isLogoUploading" class="employer-cabinet__muted">Загружаем...</p>
+      <p v-if="logoUploadError" class="employer-cabinet__save-error">
+        {{ logoUploadError }}
+      </p>
+    </template>
+
+    <template v-else>
+      <FormInputField
+        id="edit-logo"
+        label="Ссылка на логотип"
+        type="url"
+        v-model="editLogoUrl"
+      />
+    </template>
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="showLogoutModal"
+    title="Выход из профиля"
+    confirm-text="Выйти"
+    @confirm="handleLogout"
+    @cancel="showLogoutModal = false"
+  >
+    <p class="employer-cabinet__logout-confirm-text">Вы уверены, что хотите выйти?</p>
+  </BaseAppModal>
 </template>
 
 <style lang="scss" scoped>
@@ -327,6 +605,10 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     gap: 12px;
   }
 
+  &__avatar-wrap {
+    position: relative;
+  }
+
   &__avatar {
     width: 54px;
     height: 54px;
@@ -341,12 +623,87 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     background: #dce9fa;
     overflow: hidden;
     flex-shrink: 0;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
   }
 
   &__avatar-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &__avatar-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    display: none;
+    place-items: center;
+  }
+
+  &__avatar:hover &__avatar-overlay {
+    display: grid;
+  }
+
+  &__logo-tabs {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  &__logo-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &--active {
+      background-color: var(--background-tertiary-color);
+      color: var(--text-inverted-color);
+    }
+
+    &:not(&--active):hover {
+      background-color: var(--background-primary-color);
+    }
+  }
+
+  &__logo-file-btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px dashed var(--border-color);
+    background: transparent;
+    color: var(--text-tertiary-color);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-primary-color);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__logo-preview {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
   }
 
   &__identity-text {
@@ -372,9 +729,29 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
   }
 
   &__edit-btn {
-    padding-inline: 14px;
-    font-size: 12px;
-    border-radius: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary-color);
+      color: var(--primary-color);
+    }
+  }
+
+  &__profile-field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
   }
 
   &__profile-fields {
@@ -402,6 +779,14 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     margin: 0;
     font-size: 14px;
     color: var(--text-inverted-color);
+  }
+
+  &__save-error {
+    margin: 0;
+    color: #c74e4e;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
   }
 
   &__columns {
@@ -526,6 +911,18 @@ const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
     margin: 0;
     color: var(--text-tertiary-color);
     font-size: 13px;
+  }
+
+  &__logout-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  &__logout-confirm-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-inverted-color);
   }
 }
 
