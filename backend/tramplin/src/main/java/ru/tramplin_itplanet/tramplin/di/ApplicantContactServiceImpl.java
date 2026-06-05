@@ -107,6 +107,7 @@ public class ApplicantContactServiceImpl implements ApplicantContactService {
                             ? contact.getRecipient()
                             : contact.getRequester();
                     return new ApplicantContactPreview(
+                            contact.getId(),
                             other.getAvatarUrl(),
                             other.getName(),
                             other.getDesiredPosition(),

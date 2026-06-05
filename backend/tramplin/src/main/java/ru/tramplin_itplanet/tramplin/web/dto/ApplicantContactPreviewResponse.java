@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Applicant contact preview item")
 public record ApplicantContactPreviewResponse(
+        @Schema(description = "Contact request ID", example = "42")
+        Long id,
+
         @Schema(description = "Contact photo URL", nullable = true, example = "https://cdn.example.com/photos/user1.jpg")
         String photo,
 

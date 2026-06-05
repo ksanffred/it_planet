@@ -10,6 +10,7 @@ public final class ApplicantContactPreviewMapper {
 
     public static ApplicantContactPreviewResponse toResponse(ApplicantContactPreview preview) {
         return new ApplicantContactPreviewResponse(
+                preview.id(),
                 preview.photo(),
                 preview.name(),
                 preview.desiredProfession(),

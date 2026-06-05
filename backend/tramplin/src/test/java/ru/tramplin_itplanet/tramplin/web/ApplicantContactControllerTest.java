@@ -98,6 +98,7 @@ class ApplicantContactControllerTest {
     void getMyContacts_validApplicant_returns200() throws Exception {
         when(applicantContactService.getMyContacts("applicant@example.com")).thenReturn(
                 java.util.List.of(new ApplicantContactPreview(
+                        1L,
                         "https://cdn.example.com/photos/user1.jpg",
                         "Ivan Ivanov",
                         "Backend Developer Intern",
@@ -107,6 +108,7 @@ class ApplicantContactControllerTest {
 
         mockMvc.perform(get("/applicants/me/contacts"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].photo").value("https://cdn.example.com/photos/user1.jpg"))
                 .andExpect(jsonPath("$[0].name").value("Ivan Ivanov"))
                 .andExpect(jsonPath("$[0].desired_profession").value("Backend Developer Intern"))
