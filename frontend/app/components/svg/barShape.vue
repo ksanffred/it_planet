@@ -1,5 +1,5 @@
 <template>
-  <svg width="400" height="120" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="400" height="120" rx="60" ry="60" />
+  <svg width="212" height="28" xmlns="http://www.w3.org/2000/svg">
+    <rect width="212" height="28" rx="14" ry="14" />
   </svg>
 </template>

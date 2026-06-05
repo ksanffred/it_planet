@@ -785,7 +785,7 @@ const saveSection = async () => {
       </BaseAppButton>
     </div>
 
-    <section v-else class="user-account__error-card bordered">
+    <section v-if="applicantLoadErrorMessage" class="user-account__error-card bordered">
       <p class="user-account__error-card-text">
         {{ applicantLoadErrorMessage }}
       </p>

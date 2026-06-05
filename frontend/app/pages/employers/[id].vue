@@ -378,7 +378,9 @@ const handleDeleteProfile = async () => {
           </div>
           <div class="employer-cabinet__identity-text">
             <div class="employer-cabinet__name-row">
-              <p class="employer-cabinet__name">{{ employer?.companyName || 'Компания' }}</p>
+              <p class="employer-cabinet__name">
+                {{ employer?.companyName || 'Компания' }}
+              </p>
               <button
                 v-if="isCurator"
                 class="employer-cabinet__pencil-btn"
@@ -408,7 +410,9 @@ const handleDeleteProfile = async () => {
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
-          <p class="employer-cabinet__profile-field-text">{{ profileDescription }}</p>
+          <p class="employer-cabinet__profile-field-text">
+            {{ profileDescription }}
+          </p>
         </article>
 
         <article class="employer-cabinet__profile-field bordered">
@@ -453,7 +457,8 @@ const handleDeleteProfile = async () => {
           <div
             v-for="item in filteredOpportunities"
             :key="item.id"
-            class="employer-cabinet__list-item bordered"
+            class="employer-cabinet__list-item bordered employer-cabinet__list-item--clickable"
+            @click="navigateTo(`/opportunities/${item.id}`)"
           >
             <div>
               <p class="employer-cabinet__item-title">{{ item.title }}</p>
@@ -494,7 +499,9 @@ const handleDeleteProfile = async () => {
             class="employer-cabinet__list-item bordered"
           >
             <div>
-              <p class="employer-cabinet__item-title">{{ item.applicant_name }}</p>
+              <p class="employer-cabinet__item-title">
+                {{ item.applicant_name }}
+              </p>
               <p class="employer-cabinet__item-subtitle">
                 {{ item.desired_position || 'Позиция не указана' }} ·
                 {{ item.recommendation }} рекомендаций
@@ -627,13 +634,20 @@ const handleDeleteProfile = async () => {
       <p class="employer-cabinet__logout-confirm-text">
         Вы уверены, что хотите удалить этот профиль?
       </p>
-      <p v-if="deleteError" class="employer-cabinet__error">{{ deleteError }}</p>
+      <p v-if="deleteError" class="employer-cabinet__error">
+        {{ deleteError }}
+      </p>
     </BaseAppModal>
+    <SvgBlockShape class="block-shape" />
+    <SvgRingShape class="ring-shape" />
+    <SvgBarShape class="bar-shape" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .employer-cabinet {
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -976,6 +990,14 @@ const handleDeleteProfile = async () => {
     gap: 10px;
   }
 
+  &__list-item--clickable {
+    cursor: pointer;
+
+    &:hover &__item-title {
+      text-decoration: underline;
+    }
+  }
+
   &__item-title {
     margin: 0;
     font-size: 16px;
@@ -1100,5 +1122,29 @@ const handleDeleteProfile = async () => {
       align-items: flex-start;
     }
   }
+}
+.block-shape {
+  position: absolute;
+  fill: var(--secondary-color);
+  z-index: -1;
+  right: -100px;
+  top: 300px;
+}
+
+.ring-shape {
+  position: absolute;
+  fill: var(--primary-color);
+  z-index: -1;
+  bottom: 0;
+  left: -100px;
+}
+
+.bar-shape {
+  position: absolute;
+  transform: rotate(66deg);
+  fill: var(--background-tertiary-color);
+  z-index: -1;
+  top: 200px;
+  left: -120px;
 }
 </style>

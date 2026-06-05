@@ -185,25 +185,22 @@ const handleFormSubmit = async () => {
         <FormInputField
           v-model="website"
           id="website"
-          label="Сайт"
+          label="Сайт (необязательно)"
           placeholder="https://acme.com"
-          required
           type="url"
         />
         <FormInputField
           v-model="socials"
           id="socials"
-          label="Соцсети/контакты"
+          label="Соцсети/контакты (необязательно)"
           placeholder="@acme_hr"
-          required
           type="text"
         />
         <FormInputField
           v-model="logoUrl"
           id="logoUrl"
-          label="Ссылка на логотип"
+          label="Ссылка на логотип (необязательно)"
           placeholder="https://acme.com/logo.png"
-          required
           type="url"
         />
 
@@ -213,7 +210,7 @@ const handleFormSubmit = async () => {
           type="submit"
           variant="primary"
           :disabled="
-            isSubmitting || !companyName || !description || !inn || !website || !socials || !logoUrl
+            isSubmitting || !companyName || !description || !inn
           "
         >
           {{ isSubmitting ? 'Отправка...' : 'Зарегистрировать организацию' }}

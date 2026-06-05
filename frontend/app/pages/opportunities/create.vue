@@ -52,7 +52,11 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 const { data: employer, error: employerError } = await useFetch<EmployerMeResponse>(
   '/employers/me',
-  { baseURL: config.public.apiBase, method: 'GET', headers: authHeaders },
+  {
+    baseURL: config.public.apiBase,
+    method: 'GET',
+    headers: authHeaders,
+  },
 )
 
 watchEffect(() => {
@@ -153,10 +157,19 @@ const geocodeAddress = async (query: string) => {
   try {
     response = await $fetch('https://geocode-maps.yandex.ru/1.x/', {
       method: 'GET',
-      query: { apikey: apiKey, geocode: query, format: 'json', lang: 'ru_RU', results: 1 },
+      query: {
+        apikey: apiKey,
+        geocode: query,
+        format: 'json',
+        lang: 'ru_RU',
+        results: 1,
+      },
     })
   } catch (geocodeError) {
-    console.error('[create-opportunity] geocode failed', { query, geocodeError })
+    console.error('[create-opportunity] geocode failed', {
+      query,
+      geocodeError,
+    })
     throw geocodeError
   }
   const pos =
@@ -300,7 +313,10 @@ const handlePublish = async () => {
     if (response?.id) await navigateTo(`/opportunities/${response.id}`)
     else await navigateTo('/employers/me')
   } catch (requestError) {
-    const typedError = requestError as FetchError<{ error?: string; message?: string }>
+    const typedError = requestError as FetchError<{
+      error?: string
+      message?: string
+    }>
     const backendMessage =
       typedError.data?.error || typedError.data?.message || typedError.message || ''
     console.error('[create-opportunity] create failed', {
@@ -335,10 +351,7 @@ const handlePublish = async () => {
 
 <template>
   <div class="opportunity-create container">
-    <button type="button" class="opportunity-create__back-btn" @click="navigateTo('/')">
-      <NuxtIcon name="material-symbols:arrow-back-rounded" size="16px" />
-      Вернуться к выбору
-    </button>
+    <BaseBackButton />
 
     <section class="opportunity-create__media bordered">
       <input ref="fileInput" type="file" accept="image/*" hidden @change="uploadMedia" />
@@ -377,7 +390,9 @@ const handlePublish = async () => {
             type="button"
             :class="[
               'opportunity-create__dot',
-              { 'opportunity-create__dot--active': index === currentMediaSlide },
+              {
+                'opportunity-create__dot--active': index === currentMediaSlide,
+              },
             ]"
             @click="goToMediaSlide(index)"
           />
@@ -406,7 +421,9 @@ const handlePublish = async () => {
             <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
           </button>
         </div>
-        <p v-if="displaySalary" class="opportunity-create__salary">{{ displaySalary }}</p>
+        <p v-if="displaySalary" class="opportunity-create__salary">
+          {{ displaySalary }}
+        </p>
       </div>
       <BaseAppButton
         type="button"
@@ -428,7 +445,9 @@ const handlePublish = async () => {
           <span>??</span>
         </div>
         <div class="opportunity-create__company-content">
-          <p class="opportunity-create__company-title">{{ employer?.companyName || 'Компания' }}</p>
+          <p class="opportunity-create__company-title">
+            {{ employer?.companyName || 'Компания' }}
+          </p>
           <p class="opportunity-create__company-description">
             Информация о компании будет доступна после публикации
           </p>
@@ -443,7 +462,12 @@ const handlePublish = async () => {
           </button>
         </div>
         <div v-if="editTags.length" class="opportunity-create__tags-list">
-          <BaseAppTag v-for="tag in editTags" :key="tag.id" class="opportunity-create__tag">
+          <BaseAppTag
+            v-for="tag in editTags"
+            text-color="var(--text-primary-color)"
+            :key="tag.id"
+            class="opportunity-create__tag"
+          >
             {{ tag.name }}
           </BaseAppTag>
         </div>
@@ -461,7 +485,9 @@ const handlePublish = async () => {
             <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
           </button>
         </div>
-        <p class="opportunity-create__description-text">{{ displayDescription }}</p>
+        <p class="opportunity-create__description-text">
+          {{ displayDescription }}
+        </p>
       </article>
 
       <div class="opportunity-create__meta-grid">
@@ -556,7 +582,12 @@ const handlePublish = async () => {
   >
     <BaseTagSelector v-model:selected-tags="editTags" :available-tags="availableTags" />
     <div v-if="editTags.length" class="opportunity-create__modal-tags-list">
-      <BaseAppTag v-for="tag in editTags" :key="tag.id" class="opportunity-create__tag">
+      <BaseAppTag
+        v-for="tag in editTags"
+        :key="tag.id"
+        text-color="var(--text-primary-color)"
+        class="opportunity-create__tag"
+      >
         {{ tag.name }}
       </BaseAppTag>
     </div>
@@ -612,20 +643,6 @@ const handlePublish = async () => {
   gap: 12px;
   margin-top: 16px;
   margin-bottom: 24px;
-
-  &__back-btn {
-    border: 0;
-    background-color: var(--primary-color);
-    color: #fff;
-    border-radius: 999px;
-    padding: 8px 14px;
-    width: fit-content;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 700;
-    cursor: pointer;
-  }
 
   &__media {
     position: relative;

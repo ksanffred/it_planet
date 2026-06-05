@@ -390,7 +390,8 @@ const handleLogout = () => {
           <div
             v-for="item in filteredOpportunities"
             :key="item.id"
-            class="employer-cabinet__list-item bordered"
+            class="employer-cabinet__list-item bordered employer-cabinet__list-item--clickable"
+            @click="navigateTo(`/opportunities/${item.id}`)"
           >
             <div>
               <p class="employer-cabinet__item-title">{{ item.title }}</p>
@@ -459,6 +460,7 @@ const handleLogout = () => {
     </div>
     <SvgBlockShape class="block-shape" />
     <SvgRingShape class="ring-shape" />
+    <SvgBarShape class="bar-shape" />
   </div>
 
   <BaseAppModal
@@ -861,6 +863,14 @@ const handleLogout = () => {
     gap: 10px;
   }
 
+  &__list-item--clickable {
+    cursor: pointer;
+
+    &:hover &__item-title {
+      text-decoration: underline;
+    }
+  }
+
   &__item-title {
     margin: 0;
     font-size: 16px;
@@ -1013,5 +1023,14 @@ const handleLogout = () => {
   z-index: -1;
   bottom: 0;
   left: -100px;
+}
+
+.bar-shape {
+  position: absolute;
+  transform: rotate(66deg);
+  fill: var(--background-tertiary-color);
+  z-index: -1;
+  top: 200px;
+  left: -120px;
 }
 </style>

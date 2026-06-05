@@ -5,15 +5,39 @@ interface Props {
   textColor?: string
 }
 
-const { backgroundColor, bordered, textColor } = defineProps<Props>()
+const props = defineProps<Props>()
+
+const tagColors = [
+  'var(--primary-color)',
+  'var(--secondary-color)',
+  'var(--tertiary-color)',
+  'var(--background-secondary-color)',
+]
+
+const lightBackground = 'var(--background-secondary-color)'
+
+const resolvedBg = ref(props.backgroundColor ?? tagColors[0])
+
+const resolvedTextColor = computed(() => {
+  if (resolvedBg.value === lightBackground) {
+    return 'var(--text-inverted-color)'
+  }
+  return props.textColor ?? 'inherit'
+})
+
+onMounted(() => {
+  if (!props.backgroundColor) {
+    resolvedBg.value = tagColors[Math.floor(Math.random() * tagColors.length)]
+  }
+})
 </script>
 
 <template>
   <span
     :class="['app-tag', { bordered: bordered }]"
     :style="{
-      backgroundColor: backgroundColor ?? 'var(--primary-color)',
-      color: textColor ? textColor : 'inherit',
+      backgroundColor: resolvedBg,
+      color: resolvedTextColor,
     }"
   >
     <slot></slot>
