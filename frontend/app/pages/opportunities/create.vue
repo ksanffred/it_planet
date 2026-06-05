@@ -5,301 +5,283 @@ import type {
   OpportunityFormat,
   OpportunityType,
   Tag,
-} from "~/types";
-import type { FetchError } from "ofetch";
-import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
+} from '~/types'
+import type { FetchError } from 'ofetch'
+import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
 
 type EmployerMeResponse = {
-  id: number;
-  companyName?: string;
-};
-
-type CreatedOpportunityResponse = {
-  id?: number;
-};
-
-type EditSection =
-  | "title"
-  | "description"
-  | "tags"
-  | "format"
-  | "place"
-  | "date"
-  | null;
-
-const config = useRuntimeConfig();
-const tokenCookie = useCookie<string | null>("auth_token");
-
-if (!tokenCookie.value) {
-  await navigateTo("/auth/login?redirect=/opportunities/create");
+  id: number
+  companyName?: string
 }
 
-const authHeaders = { Authorization: `Bearer ${tokenCookie.value}` };
+type CreatedOpportunityResponse = {
+  id?: number
+}
 
-const activeModal = ref<EditSection>(null);
-const editTitle = ref("");
-const editDescription = ref("");
-const editFormat = ref<OpportunityFormat>("REMOTE");
-const editCity = ref("");
-const editAddress = ref("");
-const editSalaryFrom = ref<string>("");
-const editSalaryTo = ref<string>("");
-const editExpiresAt = ref("");
-const editTags = ref<Tag[]>([]);
-const availableTags = ref<Tag[]>([]);
-const opportunityType = ref<OpportunityType>("VACANCY");
-const isSubmitting = ref(false);
-const isGeocoding = ref(false);
-const error = ref("");
+type EditSection = 'title' | 'description' | 'tags' | 'format' | 'place' | 'date' | null
 
-const uploadedMedia = ref<MediaUploadResponse[]>([]);
-const isUploadingMedia = ref(false);
-const mediaUploadError = ref("");
-const fileInput = ref<HTMLInputElement | null>(null);
+const config = useRuntimeConfig()
+const tokenCookie = useCookie<string | null>('auth_token')
 
-const { data: employer, error: employerError } =
-  await useFetch<EmployerMeResponse>("/employers/me", {
+if (!tokenCookie.value) {
+  await navigateTo('/auth/login?redirect=/opportunities/create')
+}
+
+const authHeaders = { Authorization: `Bearer ${tokenCookie.value}` }
+
+const activeModal = ref<EditSection>(null)
+const editTitle = ref('')
+const editDescription = ref('')
+const editFormat = ref<OpportunityFormat>('REMOTE')
+const editCity = ref('')
+const editAddress = ref('')
+const editSalaryFrom = ref<string>('')
+const editSalaryTo = ref<string>('')
+const editExpiresAt = ref('')
+const editTags = ref<Tag[]>([])
+const availableTags = ref<Tag[]>([])
+const opportunityType = ref<OpportunityType>('VACANCY')
+const isSubmitting = ref(false)
+const isGeocoding = ref(false)
+const error = ref('')
+
+const uploadedMedia = ref<MediaUploadResponse[]>([])
+const isUploadingMedia = ref(false)
+const mediaUploadError = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const { data: employer, error: employerError } = await useFetch<EmployerMeResponse>(
+  '/employers/me',
+  {
     baseURL: config.public.apiBase,
-    method: "GET",
+    method: 'GET',
     headers: authHeaders,
-  });
+  },
+)
 
 watchEffect(() => {
-  if (employerError.value?.statusCode === 404)
-    navigateTo("/employers/register");
+  if (employerError.value?.statusCode === 404) navigateTo('/employers/register')
   else if (employerError.value?.statusCode === 401)
-    navigateTo("/auth/login?redirect=/opportunities/create");
-});
+    navigateTo('/auth/login?redirect=/opportunities/create')
+})
 
-const { data: tagsData } = await useFetch<Tag[]>("/tags", {
+const { data: tagsData } = await useFetch<Tag[]>('/tags', {
   baseURL: config.public.apiBase,
-  method: "GET",
+  method: 'GET',
   default: () => [],
-});
+})
 
 watchEffect(() => {
-  availableTags.value = tagsData.value ?? [];
-});
+  availableTags.value = tagsData.value ?? []
+})
 
-const showSalary = computed(() => opportunityType.value !== "EVENT");
+const showSalary = computed(() => opportunityType.value !== 'EVENT')
 
 const titleRowBg = computed(() => {
   const map: Record<OpportunityType, string> = {
-    VACANCY: "#374151",
-    INTERNSHIP: "var(--tertiary-color)",
-    MENTORSHIP: "#7c3aed",
-    EVENT: "var(--primary-color)",
-  };
-  return map[opportunityType.value];
-});
+    VACANCY: '#374151',
+    INTERNSHIP: 'var(--tertiary-color)',
+    MENTORSHIP: '#7c3aed',
+    EVENT: 'var(--primary-color)',
+  }
+  return map[opportunityType.value]
+})
 
-const displayTitle = computed(() => editTitle.value || "Название возможности");
+const displayTitle = computed(() => editTitle.value || 'Название возможности')
 
 const displaySalary = computed(() => {
-  if (!showSalary.value || (!editSalaryFrom.value && !editSalaryTo.value))
-    return "";
+  if (!showSalary.value || (!editSalaryFrom.value && !editSalaryTo.value)) return ''
   return [editSalaryFrom.value, editSalaryTo.value]
     .filter(Boolean)
-    .map((s) => `${Number(s).toLocaleString("ru-RU")} ₽`)
-    .join(" — ");
-});
+    .map((s) => `${Number(s).toLocaleString('ru-RU')} ₽`)
+    .join(' — ')
+})
 
 const displayFormatLabel = computed(() => {
   const map: Record<OpportunityFormat, string> = {
-    REMOTE: "Удалённо",
-    OFFICE: "Офис",
-    HYBRID: "Гибрид",
-  };
-  return map[editFormat.value] || "Не указано";
-});
+    REMOTE: 'Удалённо',
+    OFFICE: 'Офис',
+    HYBRID: 'Гибрид',
+  }
+  return map[editFormat.value] || 'Не указано'
+})
 
 const displayPlace = computed(
-  () =>
-    [editCity.value, editAddress.value].filter(Boolean).join(", ") ||
-    "Не указано",
-);
+  () => [editCity.value, editAddress.value].filter(Boolean).join(', ') || 'Не указано',
+)
 
 const displayDate = computed(() => {
-  if (!editExpiresAt.value) return "Дата не указана";
-  return `До: ${new Date(editExpiresAt.value).toLocaleDateString("ru-RU")}`;
-});
+  if (!editExpiresAt.value) return 'Дата не указана'
+  return `До: ${new Date(editExpiresAt.value).toLocaleDateString('ru-RU')}`
+})
 
-const displayDescription = computed(
-  () => editDescription.value || "Описание отсутствует",
-);
+const displayDescription = computed(() => editDescription.value || 'Описание отсутствует')
 
 const openEditTitle = () => {
-  activeModal.value = "title";
-};
+  activeModal.value = 'title'
+}
 const openEditDescription = () => {
-  activeModal.value = "description";
-};
+  activeModal.value = 'description'
+}
 const openEditTags = () => {
-  activeModal.value = "tags";
-};
+  activeModal.value = 'tags'
+}
 const openEditFormat = () => {
-  activeModal.value = "format";
-};
+  activeModal.value = 'format'
+}
 const openEditPlace = () => {
-  activeModal.value = "place";
-};
+  activeModal.value = 'place'
+}
 const openEditDate = () => {
-  activeModal.value = "date";
-};
+  activeModal.value = 'date'
+}
 const closeSectionModal = () => {
-  activeModal.value = null;
-  error.value = "";
-};
+  activeModal.value = null
+  error.value = ''
+}
 
 const resolveGeocodeApiKey = () =>
-  String(
-    config.public.yandexMapsApiKey || "071323d3-8c9a-48c3-9baf-5c437af0f80e",
-  ).trim();
+  String(config.public.yandexMapsApiKey || '071323d3-8c9a-48c3-9baf-5c437af0f80e').trim()
 
 const geocodeAddress = async (query: string) => {
-  const apiKey = resolveGeocodeApiKey();
+  const apiKey = resolveGeocodeApiKey()
   let response: {
     response?: {
       GeoObjectCollection?: {
         featureMember?: Array<{
-          GeoObject?: { Point?: { pos?: string } };
-        }>;
-      };
-    };
-  };
+          GeoObject?: { Point?: { pos?: string } }
+        }>
+      }
+    }
+  }
   try {
-    response = await $fetch("https://geocode-maps.yandex.ru/1.x/", {
-      method: "GET",
+    response = await $fetch('https://geocode-maps.yandex.ru/1.x/', {
+      method: 'GET',
       query: {
         apikey: apiKey,
         geocode: query,
-        format: "json",
-        lang: "ru_RU",
+        format: 'json',
+        lang: 'ru_RU',
         results: 1,
       },
-    });
+    })
   } catch (geocodeError) {
-    console.error("[create-opportunity] geocode failed", {
+    console.error('[create-opportunity] geocode failed', {
       query,
       geocodeError,
-    });
-    throw geocodeError;
+    })
+    throw geocodeError
   }
   const pos =
-    response.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point
-      ?.pos ?? "";
-  const [lngRaw, latRaw] = String(pos).trim().split(/\s+/);
-  const lat = Number(latRaw);
-  const lng = Number(lngRaw);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  return { lat, lng };
-};
+    response.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos ?? ''
+  const [lngRaw, latRaw] = String(pos).trim().split(/\s+/)
+  const lat = Number(latRaw)
+  const lng = Number(lngRaw)
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+  return { lat, lng }
+}
 
 const toOptionalNumber = (value: string) => {
-  const n = String(value ?? "").trim();
-  if (!n) return undefined;
-  const p = Number(n);
-  return Number.isFinite(p) ? p : undefined;
-};
+  const n = String(value ?? '').trim()
+  if (!n) return undefined
+  const p = Number(n)
+  return Number.isFinite(p) ? p : undefined
+}
 
 const toIsoDate = (value: string) => {
-  const n = String(value ?? "").trim();
-  if (!n) return undefined;
-  return new Date(n).toISOString();
-};
+  const n = String(value ?? '').trim()
+  if (!n) return undefined
+  return new Date(n).toISOString()
+}
 
-const triggerMediaUpload = () => fileInput.value?.click();
+const triggerMediaUpload = () => fileInput.value?.click()
 
 const uploadMedia = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
-  if (!file) return;
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
 
-  if (!file.type.startsWith("image/")) {
-    mediaUploadError.value = "Можно загружать только изображения";
-    input.value = "";
-    return;
+  if (!file.type.startsWith('image/')) {
+    mediaUploadError.value = 'Можно загружать только изображения'
+    input.value = ''
+    return
   }
 
-  isUploadingMedia.value = true;
-  mediaUploadError.value = "";
+  isUploadingMedia.value = true
+  mediaUploadError.value = ''
 
   try {
-    const formData = new FormData();
-    formData.append("file", file);
+    const formData = new FormData()
+    formData.append('file', file)
 
-    const response = await $fetch<MediaUploadResponse>("/opportunities/media", {
+    const response = await $fetch<MediaUploadResponse>('/opportunities/media', {
       baseURL: config.public.apiBase,
-      method: "POST",
+      method: 'POST',
       headers: authHeaders,
       body: formData,
-    });
+    })
 
-    uploadedMedia.value.push(response);
+    uploadedMedia.value.push(response)
   } catch {
-    mediaUploadError.value = "Не удалось загрузить изображение";
+    mediaUploadError.value = 'Не удалось загрузить изображение'
   } finally {
-    isUploadingMedia.value = false;
-    input.value = "";
+    isUploadingMedia.value = false
+    input.value = ''
   }
-};
+}
 
 const removeMedia = (index: number) => {
-  uploadedMedia.value.splice(index, 1);
+  uploadedMedia.value.splice(index, 1)
   if (currentMediaSlide.value >= uploadedMedia.value.length) {
-    currentMediaSlide.value = Math.max(0, uploadedMedia.value.length - 1);
+    currentMediaSlide.value = Math.max(0, uploadedMedia.value.length - 1)
   }
-};
+}
 
-const currentMediaSlide = ref(0);
-const mediaSlideCount = computed(() => uploadedMedia.value.length);
-const currentMediaItem = computed(
-  () => uploadedMedia.value[currentMediaSlide.value],
-);
+const currentMediaSlide = ref(0)
+const mediaSlideCount = computed(() => uploadedMedia.value.length)
+const currentMediaItem = computed(() => uploadedMedia.value[currentMediaSlide.value])
 
 const prevMediaSlide = () => {
-  if (mediaSlideCount.value <= 1) return;
+  if (mediaSlideCount.value <= 1) return
   currentMediaSlide.value =
-    (currentMediaSlide.value - 1 + mediaSlideCount.value) %
-    mediaSlideCount.value;
-};
+    (currentMediaSlide.value - 1 + mediaSlideCount.value) % mediaSlideCount.value
+}
 
 const nextMediaSlide = () => {
-  if (mediaSlideCount.value <= 1) return;
-  currentMediaSlide.value =
-    (currentMediaSlide.value + 1) % mediaSlideCount.value;
-};
+  if (mediaSlideCount.value <= 1) return
+  currentMediaSlide.value = (currentMediaSlide.value + 1) % mediaSlideCount.value
+}
 
 const goToMediaSlide = (index: number) => {
-  if (index < 0 || index >= mediaSlideCount.value) return;
-  currentMediaSlide.value = index;
-};
+  if (index < 0 || index >= mediaSlideCount.value) return
+  currentMediaSlide.value = index
+}
 
 const handlePublish = async () => {
-  if (isSubmitting.value) return;
-  error.value = "";
+  if (isSubmitting.value) return
+  error.value = ''
   if (!editTitle.value.trim()) {
-    error.value = "Укажите название возможности";
-    return;
+    error.value = 'Укажите название возможности'
+    return
   }
   if (!employer.value?.id) {
-    error.value = "Не удалось определить организацию";
-    return;
+    error.value = 'Не удалось определить организацию'
+    return
   }
 
-  isSubmitting.value = true;
-  isGeocoding.value = true;
+  isSubmitting.value = true
+  isGeocoding.value = true
 
   try {
-    let coordinates: { lat: number; lng: number } | null = null;
+    let coordinates: { lat: number; lng: number } | null = null
     const geocodeQuery = [editCity.value.trim(), editAddress.value.trim()]
       .filter(Boolean)
-      .join(", ");
+      .join(', ')
     if (geocodeQuery) {
-      coordinates = await geocodeAddress(geocodeQuery);
+      coordinates = await geocodeAddress(geocodeQuery)
       if (!coordinates) {
-        error.value = "Не удалось определить координаты по указанному адресу";
-        return;
+        error.value = 'Не удалось определить координаты по указанному адресу'
+        return
       }
     }
 
@@ -313,93 +295,70 @@ const handlePublish = async () => {
       address: editAddress.value.trim() || undefined,
       lat: coordinates?.lat,
       lng: coordinates?.lng,
-      salaryFrom: showSalary.value
-        ? toOptionalNumber(editSalaryFrom.value)
-        : undefined,
-      salaryTo: showSalary.value
-        ? toOptionalNumber(editSalaryTo.value)
-        : undefined,
+      salaryFrom: showSalary.value ? toOptionalNumber(editSalaryFrom.value) : undefined,
+      salaryTo: showSalary.value ? toOptionalNumber(editSalaryTo.value) : undefined,
       expiresAt: toIsoDate(editExpiresAt.value),
-      status: "ACTIVE" as const,
+      status: 'ACTIVE' as const,
       tagIds: editTags.value.map((t) => t.id),
       media: uploadedMedia.value.map((m) => m.path || m.url),
-    };
+    }
 
-    const response = await $fetch<CreatedOpportunityResponse>(
-      "/opportunities",
-      {
-        baseURL: config.public.apiBase,
-        method: "POST",
-        headers: authHeaders,
-        body: payload,
-      },
-    );
+    const response = await $fetch<CreatedOpportunityResponse>('/opportunities', {
+      baseURL: config.public.apiBase,
+      method: 'POST',
+      headers: authHeaders,
+      body: payload,
+    })
 
-    if (response?.id) await navigateTo(`/opportunities/${response.id}`);
-    else await navigateTo("/employers/me");
+    if (response?.id) await navigateTo(`/opportunities/${response.id}`)
+    else await navigateTo('/employers/me')
   } catch (requestError) {
     const typedError = requestError as FetchError<{
-      error?: string;
-      message?: string;
-    }>;
+      error?: string
+      message?: string
+    }>
     const backendMessage =
-      typedError.data?.error ||
-      typedError.data?.message ||
-      typedError.message ||
-      "";
-    console.error("[create-opportunity] create failed", {
+      typedError.data?.error || typedError.data?.message || typedError.message || ''
+    console.error('[create-opportunity] create failed', {
       statusCode: typedError.statusCode,
       data: typedError.data,
       requestError,
-    });
+    })
 
     if (typedError.statusCode === 400) {
       error.value = backendMessage
         ? `Проверьте данные: ${backendMessage}`
-        : "Проверьте корректность введенных данных";
+        : 'Проверьте корректность введенных данных'
     } else if (typedError.statusCode === 401) {
-      error.value = "Требуется авторизация";
+      error.value = 'Требуется авторизация'
     } else if (typedError.statusCode === 403) {
-      error.value = "Недостаточно прав для создания возможности";
+      error.value = 'Недостаточно прав для создания возможности'
     } else if (typedError.statusCode === 0 || !typedError.statusCode) {
       error.value = backendMessage
         ? `Сетевая ошибка: ${backendMessage}`
-        : "Сетевая ошибка при создании возможности";
+        : 'Сетевая ошибка при создании возможности'
     } else {
       error.value = backendMessage
         ? `Не удалось создать возможность: ${backendMessage}`
-        : "Не удалось создать возможность";
+        : 'Не удалось создать возможность'
     }
   } finally {
-    isGeocoding.value = false;
-    isSubmitting.value = false;
+    isGeocoding.value = false
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <template>
   <div class="opportunity-create container">
-    <button
-      type="button"
-      class="opportunity-create__back-btn"
-      @click="navigateTo('/')"
-    >
+    <button type="button" class="opportunity-create__back-btn" @click="navigateTo('/')">
       <NuxtIcon name="material-symbols:arrow-back-rounded" size="16px" />
       Вернуться к выбору
     </button>
 
     <section class="opportunity-create__media bordered">
-      <input
-        ref="fileInput"
-        type="file"
-        accept="image/*"
-        hidden
-        @change="uploadMedia"
-      />
-      <div
-        v-if="uploadedMedia.length"
-        class="opportunity-create__media-carousel"
-      >
+      <input ref="fileInput" type="file" accept="image/*" hidden @change="uploadMedia" />
+      <div v-if="uploadedMedia.length" class="opportunity-create__media-carousel">
         <button
           type="button"
           class="opportunity-create__media-nav opportunity-create__media-nav--prev"
@@ -409,11 +368,7 @@ const handlePublish = async () => {
         </button>
         <div class="opportunity-create__media-slide">
           <img
-            :src="
-              normalizeStorageAssetUrl(
-                currentMediaItem?.url || currentMediaItem?.path || '',
-              )
-            "
+            :src="normalizeStorageAssetUrl(currentMediaItem?.url || currentMediaItem?.path || '')"
             alt=""
           />
           <button
@@ -446,41 +401,26 @@ const handlePublish = async () => {
           />
         </div>
       </div>
-      <img
-        v-else
-        src="/media/images/heroArt.webp"
-        alt=""
-        class="opportunity-create__media-image"
-      />
+      <img v-else src="/media/images/heroArt.webp" alt="" class="opportunity-create__media-image" />
       <button
         type="button"
         class="opportunity-create__media-add"
         :disabled="isUploadingMedia"
         @click="triggerMediaUpload"
       >
-        <NuxtIcon
-          name="material-symbols:add-photo-alternate-rounded"
-          size="20px"
-        />
-        {{ isUploadingMedia ? "Загрузка..." : "Добавить" }}
+        <NuxtIcon name="material-symbols:add-photo-alternate-rounded" size="20px" />
+        {{ isUploadingMedia ? 'Загрузка...' : 'Добавить' }}
       </button>
       <p v-if="mediaUploadError" class="opportunity-create__media-error">
         {{ mediaUploadError }}
       </p>
     </section>
 
-    <section
-      class="opportunity-create__title-row"
-      :style="{ backgroundColor: titleRowBg }"
-    >
+    <section class="opportunity-create__title-row" :style="{ backgroundColor: titleRowBg }">
       <div class="opportunity-create__title-content">
         <div class="opportunity-create__title-head">
           <h1 class="opportunity-create__title">{{ displayTitle }}</h1>
-          <button
-            class="opportunity-create__edit-btn"
-            type="button"
-            @click="openEditTitle"
-          >
+          <button class="opportunity-create__edit-btn" type="button" @click="openEditTitle">
             <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
           </button>
         </div>
@@ -496,11 +436,7 @@ const handlePublish = async () => {
         @click="handlePublish"
       >
         {{
-          isSubmitting
-            ? isGeocoding
-              ? "Определяем адрес..."
-              : "Публикация..."
-            : "Опубликовать"
+          isSubmitting ? (isGeocoding ? 'Определяем адрес...' : 'Публикация...') : 'Опубликовать'
         }}
       </BaseAppButton>
     </section>
@@ -513,7 +449,7 @@ const handlePublish = async () => {
         </div>
         <div class="opportunity-create__company-content">
           <p class="opportunity-create__company-title">
-            {{ employer?.companyName || "Компания" }}
+            {{ employer?.companyName || 'Компания' }}
           </p>
           <p class="opportunity-create__company-description">
             Информация о компании будет доступна после публикации
@@ -524,11 +460,7 @@ const handlePublish = async () => {
       <article class="opportunity-create__tags bordered">
         <div class="opportunity-create__tags-head">
           <p class="opportunity-create__tags-title">Теги</p>
-          <button
-            class="opportunity-create__edit-btn"
-            type="button"
-            @click="openEditTags"
-          >
+          <button class="opportunity-create__edit-btn" type="button" @click="openEditTags">
             <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
           </button>
         </div>
@@ -547,20 +479,12 @@ const handlePublish = async () => {
     </section>
 
     <section class="opportunity-create__details bordered">
-      <h2 class="opportunity-create__details-title">
-        Информация о возможности
-      </h2>
+      <h2 class="opportunity-create__details-title">Информация о возможности</h2>
 
       <article class="opportunity-create__description bordered">
         <div class="opportunity-create__description-head">
-          <h3 class="opportunity-create__description-title">
-            Краткое описание и требования
-          </h3>
-          <button
-            class="opportunity-create__edit-btn"
-            type="button"
-            @click="openEditDescription"
-          >
+          <h3 class="opportunity-create__description-title">Краткое описание и требования</h3>
+          <button class="opportunity-create__edit-btn" type="button" @click="openEditDescription">
             <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
           </button>
         </div>
@@ -575,11 +499,7 @@ const handlePublish = async () => {
         >
           <div class="opportunity-create__meta-head">
             <p class="opportunity-create__meta-label">Формат</p>
-            <button
-              class="opportunity-create__edit-btn"
-              type="button"
-              @click="openEditFormat"
-            >
+            <button class="opportunity-create__edit-btn" type="button" @click="openEditFormat">
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
@@ -589,11 +509,7 @@ const handlePublish = async () => {
         <article class="opportunity-create__meta-card bordered">
           <div class="opportunity-create__meta-head">
             <p class="opportunity-create__meta-label">Место</p>
-            <button
-              class="opportunity-create__edit-btn"
-              type="button"
-              @click="openEditPlace"
-            >
+            <button class="opportunity-create__edit-btn" type="button" @click="openEditPlace">
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
@@ -603,11 +519,7 @@ const handlePublish = async () => {
         <article class="opportunity-create__meta-card bordered">
           <div class="opportunity-create__meta-head">
             <p class="opportunity-create__meta-label">Дата</p>
-            <button
-              class="opportunity-create__edit-btn"
-              type="button"
-              @click="openEditDate"
-            >
+            <button class="opportunity-create__edit-btn" type="button" @click="openEditDate">
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
@@ -626,10 +538,7 @@ const handlePublish = async () => {
     <FormInputField id="edit-title" label="Название" v-model="editTitle" />
     <label class="opportunity-create__modal-field">
       Тип возможности
-      <select
-        v-model="opportunityType"
-        class="opportunity-create__modal-control bordered"
-      >
+      <select v-model="opportunityType" class="opportunity-create__modal-control bordered">
         <option value="VACANCY">Вакансия</option>
         <option value="INTERNSHIP">Стажировка</option>
         <option value="MENTORSHIP">Менторство</option>
@@ -674,10 +583,7 @@ const handlePublish = async () => {
     @confirm="closeSectionModal"
     @cancel="closeSectionModal"
   >
-    <BaseTagSelector
-      v-model:selected-tags="editTags"
-      :available-tags="availableTags"
-    />
+    <BaseTagSelector v-model:selected-tags="editTags" :available-tags="availableTags" />
     <div v-if="editTags.length" class="opportunity-create__modal-tags-list">
       <BaseAppTag
         v-for="tag in editTags"
@@ -698,10 +604,7 @@ const handlePublish = async () => {
   >
     <label class="opportunity-create__modal-field">
       Формат
-      <select
-        v-model="editFormat"
-        class="opportunity-create__modal-control bordered"
-      >
+      <select v-model="editFormat" class="opportunity-create__modal-control bordered">
         <option value="REMOTE">Удалённо</option>
         <option value="OFFICE">Офис</option>
         <option value="HYBRID">Гибрид</option>
@@ -920,7 +823,7 @@ const handlePublish = async () => {
     margin: 0;
     font-size: 40px;
     line-height: 1.1;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
   }
 
@@ -1048,7 +951,7 @@ const handlePublish = async () => {
     font-size: 36px;
     font-weight: 800;
     color: var(--text-inverted-color);
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
   &__description {

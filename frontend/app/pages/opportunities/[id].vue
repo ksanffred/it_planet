@@ -1,233 +1,282 @@
 <script lang="ts" setup>
-import type { ApplicantResponsesLookup, OpportunityCardResponse } from '~/types'
-import { formatOpporunityFormat } from '~/utils/formatOpportunityFormat'
-import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
+import type {
+  ApplicantResponsesLookup,
+  OpportunityCardResponse,
+} from "~/types";
+import { formatOpporunityFormat } from "~/utils/formatOpportunityFormat";
+import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
 
-const route = useRoute()
-const config = useRuntimeConfig()
-const tokenCookie = useCookie<string | null>('auth_token')
-const userCookie = useCookie<string | null>('user_data')
+const route = useRoute();
+const config = useRuntimeConfig();
+const tokenCookie = useCookie<string | null>("auth_token");
+const userCookie = useCookie<string | null>("user_data");
 
 const currentUserData = computed(() => {
-  if (!userCookie.value) return null
+  if (!userCookie.value) return null;
   try {
-    return JSON.parse(userCookie.value) as { id: number; email: string; role: string }
+    return JSON.parse(userCookie.value) as {
+      id: number;
+      email: string;
+      role: string;
+    };
   } catch {
-    return null
+    return null;
   }
-})
+});
 
-const isEmployer = computed(() => currentUserData.value?.role === 'EMPLOYER')
+const isEmployer = computed(() => currentUserData.value?.role === "EMPLOYER");
 
 const opportunityId = computed(() => {
-  const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  const parsed = Number(raw)
-  return Number.isInteger(parsed) ? parsed : null
-})
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) ? parsed : null;
+});
 
 const {
   data: opportunity,
   pending,
   error,
-} = await useFetch<OpportunityCardResponse>(`/opportunities/${opportunityId.value ?? ''}`, {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  immediate: Boolean(opportunityId.value),
-})
+} = await useFetch<OpportunityCardResponse>(
+  `/opportunities/${opportunityId.value ?? ""}`,
+  {
+    baseURL: config.public.apiBase,
+    method: "GET",
+    immediate: Boolean(opportunityId.value),
+  },
+);
 
-const currentSlide = ref(0)
-const isApplying = ref(false)
-const applyError = ref('')
-const applySuccess = ref(false)
-const hasExistingResponse = ref(false)
+const currentSlide = ref(0);
+const isApplying = ref(false);
+const applyError = ref("");
+const applySuccess = ref(false);
+const hasExistingResponse = ref(false);
 
 const mediaList = computed(() => {
   const list = (opportunity.value?.media ?? [])
-    .map((item) => normalizeStorageAssetUrl(String(item ?? '').trim()))
-    .filter((item) => item.length > 0 && item.toLowerCase() !== 'string')
+    .map((item) => normalizeStorageAssetUrl(String(item ?? "").trim()))
+    .filter((item) => item.length > 0 && item.toLowerCase() !== "string");
   if (list.length > 0) {
-    return list
+    return list;
   }
-  return ['/media/images/heroArt.webp']
-})
+  return ["/media/images/heroArt.webp"];
+});
 
 watch(mediaList, () => {
-  currentSlide.value = 0
-})
+  currentSlide.value = 0;
+});
 
-const slideCount = computed(() => mediaList.value.length)
-const tagNames = computed(() => (opportunity.value?.tags ?? []).map((tag) => tag.name))
+const slideCount = computed(() => mediaList.value.length);
+const tagNames = computed(() =>
+  (opportunity.value?.tags ?? []).map((tag) => tag.name),
+);
 
 const employerData = computed(
-  () => (opportunity.value?.employer ?? {}) as Record<string, string | number | undefined>,
-)
+  () =>
+    (opportunity.value?.employer ?? {}) as Record<
+      string,
+      string | number | undefined
+    >,
+);
 
 const companyName = computed<string>(() =>
-  String(employerData.value.companyName ?? employerData.value.name ?? 'Название компании'),
-)
+  String(
+    employerData.value.companyName ??
+      employerData.value.name ??
+      "Название компании",
+  ),
+);
 const companyDescription = computed<string>(() =>
-  String(employerData.value.description ?? 'Информация о компании не указана'),
-)
+  String(employerData.value.description ?? "Информация о компании не указана"),
+);
 const companyContacts = computed(() => {
-  const website = employerData.value.website
-  const socials = employerData.value.socials
-  const contacts = employerData.value.contacts
-  return [website, socials, contacts].filter(Boolean).join(' • ')
-})
+  const website = employerData.value.website;
+  const socials = employerData.value.socials;
+  const contacts = employerData.value.contacts;
+  return [website, socials, contacts].filter(Boolean).join(" • ");
+});
 const companyLogoUrl = computed(() =>
-  normalizeStorageAssetUrl(String(employerData.value.logoUrl ?? '')),
-)
+  normalizeStorageAssetUrl(String(employerData.value.logoUrl ?? "")),
+);
 const companyInitials = computed(() => {
-  const source = companyName.value.trim()
-  if (!source) return '?'
+  const source = companyName.value.trim();
+  if (!source) return "?";
   return source
     .split(/\s+/)
     .slice(0, 2)
     .map((part: string) => part.charAt(0).toUpperCase())
-    .join('')
-})
+    .join("");
+});
 
 const normalizeValue = (value: unknown) =>
-  String(value ?? '')
+  String(value ?? "")
     .trim()
-    .toLowerCase()
-const buildResponseSignature = (title: unknown, companyName: unknown, type: unknown) =>
-  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`
+    .toLowerCase();
+const buildResponseSignature = (
+  title: unknown,
+  companyName: unknown,
+  type: unknown,
+) =>
+  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`;
 
 const formatLabel = computed(() =>
-  opportunity.value ? formatOpporunityFormat(opportunity.value.format, 'ru') : 'Не указано',
-)
+  opportunity.value
+    ? formatOpporunityFormat(opportunity.value.format, "ru")
+    : "Не указано",
+);
 const placeLabel = computed(() => {
-  const city = opportunity.value?.city ?? ''
-  const address = opportunity.value?.address ?? ''
-  return [city, address].filter(Boolean).join(', ') || 'Не указано'
-})
+  const city = opportunity.value?.city ?? "";
+  const address = opportunity.value?.address ?? "";
+  return [city, address].filter(Boolean).join(", ") || "Не указано";
+});
 const dateLabel = computed(() => {
   if (!opportunity.value?.expiresAt && !opportunity.value?.publishedAt) {
-    return 'Дата не указана'
+    return "Дата не указана";
   }
 
-  const parts: string[] = []
+  const parts: string[] = [];
   if (opportunity.value.publishedAt) {
     parts.push(
-      `Опубликовано: ${new Date(opportunity.value.publishedAt).toLocaleDateString('ru-RU')}`,
-    )
+      `Опубликовано: ${new Date(opportunity.value.publishedAt).toLocaleDateString("ru-RU")}`,
+    );
   }
   if (opportunity.value.expiresAt) {
-    parts.push(`До: ${new Date(opportunity.value.expiresAt).toLocaleDateString('ru-RU')}`)
+    parts.push(
+      `До: ${new Date(opportunity.value.expiresAt).toLocaleDateString("ru-RU")}`,
+    );
   }
-  return parts.join(' · ')
-})
+  return parts.join(" · ");
+});
 
 const applyButtonLabel = computed(() => {
-  if (hasExistingResponse.value) return 'Вы уже откликнулись'
-  if (isApplying.value) return 'Отправка...'
-  if (applySuccess.value) return 'Отклик отправлен'
-  return 'Откликнуться'
-})
+  if (hasExistingResponse.value) return "Вы уже откликнулись";
+  if (isApplying.value) return "Отправка...";
+  if (applySuccess.value) return "Отклик отправлен";
+  return "Откликнуться";
+});
 
 const isApplyDisabled = computed(
   () => isApplying.value || applySuccess.value || hasExistingResponse.value,
-)
+);
 
 const prevSlide = () => {
-  if (slideCount.value <= 1) return
-  currentSlide.value = (currentSlide.value - 1 + slideCount.value) % slideCount.value
-}
+  if (slideCount.value <= 1) return;
+  currentSlide.value =
+    (currentSlide.value - 1 + slideCount.value) % slideCount.value;
+};
 
 const nextSlide = () => {
-  if (slideCount.value <= 1) return
-  currentSlide.value = (currentSlide.value + 1) % slideCount.value
-}
+  if (slideCount.value <= 1) return;
+  currentSlide.value = (currentSlide.value + 1) % slideCount.value;
+};
 
 const goToSlide = (index: number) => {
-  if (index < 0 || index >= slideCount.value) return
-  currentSlide.value = index
-}
+  if (index < 0 || index >= slideCount.value) return;
+  currentSlide.value = index;
+};
 
 const loadExistingResponse = async () => {
   if (!tokenCookie.value || !opportunity.value || isEmployer.value) {
-    hasExistingResponse.value = false
-    return
+    hasExistingResponse.value = false;
+    return;
   }
 
   try {
-    const responses = await $fetch<ApplicantResponsesLookup[]>('/opportunities/responses/me', {
-      baseURL: config.public.apiBase,
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${tokenCookie.value}`,
+    const responses = await $fetch<ApplicantResponsesLookup[]>(
+      "/opportunities/responses/me",
+      {
+        baseURL: config.public.apiBase,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${tokenCookie.value}`,
+        },
       },
-    })
+    );
 
     const currentSignature = buildResponseSignature(
       opportunity.value.title,
       companyName.value,
       opportunity.value.type,
-    )
+    );
 
     const signatures = new Set(
       (responses ?? []).map((item) =>
-        buildResponseSignature(item.title, item.company_name, item.opportunity_type),
+        buildResponseSignature(
+          item.title,
+          item.company_name,
+          item.opportunity_type,
+        ),
       ),
-    )
+    );
 
-    hasExistingResponse.value = signatures.has(currentSignature)
+    hasExistingResponse.value = signatures.has(currentSignature);
   } catch (requestError) {
-    hasExistingResponse.value = false
-    console.error('Failed to load current applicant responses', requestError)
+    hasExistingResponse.value = false;
+    console.error("Failed to load current applicant responses", requestError);
   }
-}
+};
 
-watch([opportunity, tokenCookie, companyName], loadExistingResponse, { immediate: true })
+watch([opportunity, tokenCookie, companyName], loadExistingResponse, {
+  immediate: true,
+});
 
 const applyToOpportunity = async () => {
   if (!opportunity.value?.id || isApplyDisabled.value || isEmployer.value) {
-    return
+    return;
   }
 
   if (!tokenCookie.value) {
-    navigateTo('/auth/login')
-    return
+    navigateTo("/auth/login");
+    return;
   }
 
-  isApplying.value = true
-  applyError.value = ''
+  isApplying.value = true;
+  applyError.value = "";
 
   try {
     await $fetch(`/opportunities/${opportunity.value.id}/responses`, {
       baseURL: config.public.apiBase,
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${tokenCookie.value}`,
       },
-    })
-    applySuccess.value = true
-    hasExistingResponse.value = true
+    });
+    applySuccess.value = true;
+    hasExistingResponse.value = true;
   } catch (requestError) {
-    const typedError = requestError as { statusCode?: number; status?: number }
+    const typedError = requestError as { statusCode?: number; status?: number };
     if (typedError.statusCode === 409 || typedError.status === 409) {
-      applySuccess.value = true
-      hasExistingResponse.value = true
-      return
+      applySuccess.value = true;
+      hasExistingResponse.value = true;
+      return;
     }
-    applyError.value = 'Не удалось отправить отклик'
-    console.error('Failed to apply to opportunity', requestError)
+    applyError.value = "Не удалось отправить отклик";
+    console.error("Failed to apply to opportunity", requestError);
   } finally {
-    isApplying.value = false
+    isApplying.value = false;
   }
-}
+};
 </script>
 
 <template>
   <div class="opportunity-page container">
-    <button type="button" class="opportunity-page__back-btn" @click="navigateTo('/')">
+    <button
+      type="button"
+      class="opportunity-page__back-btn"
+      @click="navigateTo('/')"
+    >
       <NuxtIcon name="material-symbols:arrow-back-rounded" size="16px" />
       Вернуться к выбору
     </button>
 
-    <div v-if="pending" class="opportunity-page__state bordered">Загрузка...</div>
-    <div v-else-if="error || !opportunity" class="opportunity-page__state bordered">
+    <div v-if="pending" class="opportunity-page__state bordered">
+      Загрузка...
+    </div>
+    <div
+      v-else-if="error || !opportunity"
+      class="opportunity-page__state bordered"
+    >
       Возможность не найдена
     </div>
     <template v-else>
@@ -294,8 +343,13 @@ const applyToOpportunity = async () => {
           </div>
           <div class="opportunity-page__company-content">
             <p class="opportunity-page__company-title">{{ companyName }}</p>
-            <p class="opportunity-page__company-description">{{ companyDescription }}</p>
-            <p v-if="companyContacts" class="opportunity-page__company-contacts">
+            <p class="opportunity-page__company-description">
+              {{ companyDescription }}
+            </p>
+            <p
+              v-if="companyContacts"
+              class="opportunity-page__company-contacts"
+            >
               {{ companyContacts }}
             </p>
           </div>
@@ -304,7 +358,12 @@ const applyToOpportunity = async () => {
         <article class="opportunity-page__tags bordered">
           <p class="opportunity-page__tags-title">Теги</p>
           <div class="opportunity-page__tags-list">
-            <BaseAppTag v-for="tag in tagNames" :key="tag" class="opportunity-page__tag">
+            <BaseAppTag
+              v-for="tag in tagNames"
+              text-color="var(--text-primary-color)"
+              :key="tag"
+              class="opportunity-page__tag"
+            >
               {{ tag }}
             </BaseAppTag>
           </div>
@@ -312,17 +371,23 @@ const applyToOpportunity = async () => {
       </section>
 
       <section class="opportunity-page__details bordered">
-        <h2 class="opportunity-page__details-title">Информация о возможности</h2>
+        <h2 class="opportunity-page__details-title">
+          Информация о возможности
+        </h2>
 
         <article class="opportunity-page__description bordered">
-          <h3 class="opportunity-page__description-title">Краткое описание и требования</h3>
+          <h3 class="opportunity-page__description-title">
+            Краткое описание и требования
+          </h3>
           <p class="opportunity-page__description-text">
-            {{ opportunity.description || 'Описание отсутствует' }}
+            {{ opportunity.description || "Описание отсутствует" }}
           </p>
         </article>
 
         <div class="opportunity-page__meta-grid">
-          <article class="opportunity-page__meta-card opportunity-page__meta-card--format bordered">
+          <article
+            class="opportunity-page__meta-card opportunity-page__meta-card--format bordered"
+          >
             <p class="opportunity-page__meta-label">Формат</p>
             <p class="opportunity-page__meta-value">{{ formatLabel }}</p>
           </article>
@@ -448,7 +513,7 @@ const applyToOpportunity = async () => {
     margin: 0;
     font-size: 40px;
     line-height: 1.1;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
   }
 
@@ -562,7 +627,7 @@ const applyToOpportunity = async () => {
     font-size: 36px;
     font-weight: 800;
     color: var(--text-inverted-color);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
   }
 
   &__description {
