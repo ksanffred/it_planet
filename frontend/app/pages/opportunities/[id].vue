@@ -6,335 +6,376 @@ import type {
   EmployerProfileResponse,
   TagResponse,
   OpportunityFormat,
-} from '~/types'
-import { formatOpporunityFormat } from '~/utils/formatOpportunityFormat'
-import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
+} from "~/types";
+import { formatOpporunityFormat } from "~/utils/formatOpportunityFormat";
+import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
 
-const route = useRoute()
-const config = useRuntimeConfig()
-const tokenCookie = useCookie<string | null>('auth_token')
-const userCookie = useCookie<string | null>('user_data')
+const route = useRoute();
+const config = useRuntimeConfig();
+const tokenCookie = useCookie<string | null>("auth_token");
+const userCookie = useCookie<string | null>("user_data");
 
 const currentUserData = computed(() => {
-  if (!userCookie.value) return null
+  if (!userCookie.value) return null;
   try {
     return JSON.parse(userCookie.value) as {
-      id: number
-      email: string
-      role: string
-    }
+      id: number;
+      email: string;
+      role: string;
+    };
   } catch {
-    return null
+    return null;
   }
-})
+});
 
-const isEmployer = computed(() => currentUserData.value?.role === 'EMPLOYER')
+const isEmployer = computed(() => currentUserData.value?.role === "EMPLOYER");
 
 const authHeaders = {
   Authorization: `Bearer ${tokenCookie.value}`,
-}
+};
 
 const { data: currentEmployer } = isEmployer.value
-  ? await useFetch<EmployerProfileResponse>('/employers/me', {
+  ? await useFetch<EmployerProfileResponse>("/employers/me", {
       baseURL: config.public.apiBase,
-      method: 'GET',
+      method: "GET",
       headers: authHeaders,
     })
-  : { data: ref(null) }
+  : { data: ref(null) };
 
 const isOwnOpportunity = computed(
-  () => isEmployer.value && opportunity.value?.employer?.id === currentEmployer.value?.id,
-)
+  () =>
+    isEmployer.value &&
+    opportunity.value?.employer?.id === currentEmployer.value?.id,
+);
 
 const opportunityId = computed(() => {
-  const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  const parsed = Number(raw)
-  return Number.isInteger(parsed) ? parsed : null
-})
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) ? parsed : null;
+});
 
 const {
   data: opportunity,
   pending,
   error,
-} = await useFetch<OpportunityCardResponse>(`/opportunities/${opportunityId.value ?? ''}`, {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  immediate: Boolean(opportunityId.value),
-})
+} = await useFetch<OpportunityCardResponse>(
+  `/opportunities/${opportunityId.value ?? ""}`,
+  {
+    baseURL: config.public.apiBase,
+    method: "GET",
+    immediate: Boolean(opportunityId.value),
+  },
+);
 
-const currentSlide = ref(0)
-const isApplying = ref(false)
-const applyError = ref('')
-const applySuccess = ref(false)
-const hasExistingResponse = ref(false)
+const currentSlide = ref(0);
+const isApplying = ref(false);
+const applyError = ref("");
+const applySuccess = ref(false);
+const hasExistingResponse = ref(false);
 
 const mediaList = computed(() => {
   const list = (opportunity.value?.media ?? [])
-    .map((item) => normalizeStorageAssetUrl(String(item ?? '').trim()))
-    .filter((item) => item.length > 0 && item.toLowerCase() !== 'string')
+    .map((item) => normalizeStorageAssetUrl(String(item ?? "").trim()))
+    .filter((item) => item.length > 0 && item.toLowerCase() !== "string");
   if (list.length > 0) {
-    return list
+    return list;
   }
-  return ['/media/images/heroArt.webp']
-})
+  return ["/media/images/heroArt.webp"];
+});
 
 watch(mediaList, () => {
-  currentSlide.value = 0
-})
+  currentSlide.value = 0;
+});
 
-const slideCount = computed(() => mediaList.value.length)
-const tagNames = computed(() => (opportunity.value?.tags ?? []).map((tag) => tag.name))
+const slideCount = computed(() => mediaList.value.length);
+const tagNames = computed(() =>
+  (opportunity.value?.tags ?? []).map((tag) => tag.name),
+);
 
 const employerData = computed(
-  () => (opportunity.value?.employer ?? {}) as Record<string, string | number | undefined>,
-)
+  () =>
+    (opportunity.value?.employer ?? {}) as Record<
+      string,
+      string | number | undefined
+    >,
+);
 
 const companyName = computed<string>(() =>
-  String(employerData.value.companyName ?? employerData.value.name ?? 'Название компании'),
-)
+  String(
+    employerData.value.companyName ??
+      employerData.value.name ??
+      "Название компании",
+  ),
+);
 const companyDescription = computed<string>(() =>
-  String(employerData.value.description ?? 'Информация о компании не указана'),
-)
+  String(employerData.value.description ?? "Информация о компании не указана"),
+);
 const companyContacts = computed(() => {
-  const website = employerData.value.website
-  const socials = employerData.value.socials
-  const contacts = employerData.value.contacts
-  return [website, socials, contacts].filter(Boolean).join(' • ')
-})
+  const website = employerData.value.website;
+  const socials = employerData.value.socials;
+  const contacts = employerData.value.contacts;
+  return [website, socials, contacts].filter(Boolean).join(" • ");
+});
 const companyLogoUrl = computed(() =>
-  normalizeStorageAssetUrl(String(employerData.value.logoUrl ?? '')),
-)
+  normalizeStorageAssetUrl(String(employerData.value.logoUrl ?? "")),
+);
 const companyInitials = computed(() => {
-  const source = companyName.value.trim()
-  if (!source) return '?'
+  const source = companyName.value.trim();
+  if (!source) return "?";
   return source
     .split(/\s+/)
     .slice(0, 2)
     .map((part: string) => part.charAt(0).toUpperCase())
-    .join('')
-})
+    .join("");
+});
 
 const normalizeValue = (value: unknown) =>
-  String(value ?? '')
+  String(value ?? "")
     .trim()
-    .toLowerCase()
-const buildResponseSignature = (title: unknown, companyName: unknown, type: unknown) =>
-  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`
+    .toLowerCase();
+const buildResponseSignature = (
+  title: unknown,
+  companyName: unknown,
+  type: unknown,
+) =>
+  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`;
 
 const formatLabel = computed(() =>
-  opportunity.value ? formatOpporunityFormat(opportunity.value.format, 'ru') : 'Не указано',
-)
+  opportunity.value
+    ? formatOpporunityFormat(opportunity.value.format, "ru")
+    : "Не указано",
+);
 const placeLabel = computed(() => {
-  const city = opportunity.value?.city ?? ''
-  const address = opportunity.value?.address ?? ''
-  return [city, address].filter(Boolean).join(', ') || 'Не указано'
-})
+  const city = opportunity.value?.city ?? "";
+  const address = opportunity.value?.address ?? "";
+  return [city, address].filter(Boolean).join(", ") || "Не указано";
+});
 const dateLabel = computed(() => {
   if (!opportunity.value?.expiresAt && !opportunity.value?.publishedAt) {
-    return 'Дата не указана'
+    return "Дата не указана";
   }
 
-  const parts: string[] = []
+  const parts: string[] = [];
   if (opportunity.value.publishedAt) {
     parts.push(
-      `Опубликовано: ${new Date(opportunity.value.publishedAt).toLocaleDateString('ru-RU')}`,
-    )
+      `Опубликовано: ${new Date(opportunity.value.publishedAt).toLocaleDateString("ru-RU")}`,
+    );
   }
   if (opportunity.value.expiresAt) {
-    parts.push(`До: ${new Date(opportunity.value.expiresAt).toLocaleDateString('ru-RU')}`)
+    parts.push(
+      `До: ${new Date(opportunity.value.expiresAt).toLocaleDateString("ru-RU")}`,
+    );
   }
-  return parts.join(' · ')
-})
+  return parts.join(" · ");
+});
 
 const applyButtonLabel = computed(() => {
-  if (hasExistingResponse.value) return 'Вы уже откликнулись'
-  if (isApplying.value) return 'Отправка...'
-  if (applySuccess.value) return 'Отклик отправлен'
-  return 'Откликнуться'
-})
+  if (hasExistingResponse.value) return "Вы уже откликнулись";
+  if (isApplying.value) return "Отправка...";
+  if (applySuccess.value) return "Отклик отправлен";
+  return "Откликнуться";
+});
 
 const isApplyDisabled = computed(
   () => isApplying.value || applySuccess.value || hasExistingResponse.value,
-)
+);
 
 const prevSlide = () => {
-  if (slideCount.value <= 1) return
-  currentSlide.value = (currentSlide.value - 1 + slideCount.value) % slideCount.value
-}
+  if (slideCount.value <= 1) return;
+  currentSlide.value =
+    (currentSlide.value - 1 + slideCount.value) % slideCount.value;
+};
 
 const nextSlide = () => {
-  if (slideCount.value <= 1) return
-  currentSlide.value = (currentSlide.value + 1) % slideCount.value
-}
+  if (slideCount.value <= 1) return;
+  currentSlide.value = (currentSlide.value + 1) % slideCount.value;
+};
 
 const goToSlide = (index: number) => {
-  if (index < 0 || index >= slideCount.value) return
-  currentSlide.value = index
-}
+  if (index < 0 || index >= slideCount.value) return;
+  currentSlide.value = index;
+};
 
 const loadExistingResponse = async () => {
   if (!tokenCookie.value || !opportunity.value || isEmployer.value) {
-    hasExistingResponse.value = false
-    return
+    hasExistingResponse.value = false;
+    return;
   }
 
   try {
-    const responses = await $fetch<ApplicantResponsesLookup[]>('/opportunities/responses/me', {
-      baseURL: config.public.apiBase,
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${tokenCookie.value}`,
+    const responses = await $fetch<ApplicantResponsesLookup[]>(
+      "/opportunities/responses/me",
+      {
+        baseURL: config.public.apiBase,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${tokenCookie.value}`,
+        },
       },
-    })
+    );
 
     const currentSignature = buildResponseSignature(
       opportunity.value.title,
       companyName.value,
       opportunity.value.type,
-    )
+    );
 
     const signatures = new Set(
       (responses ?? []).map((item) =>
-        buildResponseSignature(item.title, item.company_name, item.opportunity_type),
+        buildResponseSignature(
+          item.title,
+          item.company_name,
+          item.opportunity_type,
+        ),
       ),
-    )
+    );
 
-    hasExistingResponse.value = signatures.has(currentSignature)
+    hasExistingResponse.value = signatures.has(currentSignature);
   } catch (requestError) {
-    hasExistingResponse.value = false
-    console.error('Failed to load current applicant responses', requestError)
+    hasExistingResponse.value = false;
+    console.error("Failed to load current applicant responses", requestError);
   }
-}
+};
 
 watch([opportunity, tokenCookie, companyName], loadExistingResponse, {
   immediate: true,
-})
+});
 
 const applyToOpportunity = async () => {
   if (!opportunity.value?.id || isApplyDisabled.value || isEmployer.value) {
-    return
+    return;
   }
 
   if (!tokenCookie.value) {
-    navigateTo('/auth/login')
-    return
+    navigateTo("/auth/login");
+    return;
   }
 
-  isApplying.value = true
-  applyError.value = ''
+  isApplying.value = true;
+  applyError.value = "";
 
   try {
     await $fetch(`/opportunities/${opportunity.value.id}/responses`, {
       baseURL: config.public.apiBase,
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${tokenCookie.value}`,
       },
-    })
-    applySuccess.value = true
-    hasExistingResponse.value = true
+    });
+    applySuccess.value = true;
+    hasExistingResponse.value = true;
   } catch (requestError) {
-    const typedError = requestError as { statusCode?: number; status?: number }
+    const typedError = requestError as { statusCode?: number; status?: number };
     if (typedError.statusCode === 409 || typedError.status === 409) {
-      applySuccess.value = true
-      hasExistingResponse.value = true
-      return
+      applySuccess.value = true;
+      hasExistingResponse.value = true;
+      return;
     }
-    applyError.value = 'Не удалось отправить отклик'
-    console.error('Failed to apply to opportunity', requestError)
+    applyError.value = "Не удалось отправить отклик";
+    console.error("Failed to apply to opportunity", requestError);
   } finally {
-    isApplying.value = false
+    isApplying.value = false;
   }
-}
+};
 
 /* ── Редактирование возможности (работодатель) ── */
-type EditSection = 'title' | 'description' | 'tags' | 'format' | 'place' | 'dates' | 'salary' | null
+type EditSection =
+  | "title"
+  | "description"
+  | "tags"
+  | "format"
+  | "place"
+  | "dates"
+  | "salary"
+  | null;
 
-const activeModal = ref<EditSection>(null)
-const isSaving = ref(false)
-const saveError = ref('')
+const activeModal = ref<EditSection>(null);
+const isSaving = ref(false);
+const saveError = ref("");
 
-const editTitle = ref('')
-const editDescription = ref('')
-const editTags = ref<TagResponse[]>([])
-const editFormat = ref<OpportunityFormat>('OFFICE')
-const editCity = ref('')
-const editAddress = ref('')
-const editPublishedAt = ref('')
-const editExpiresAt = ref('')
-const editSalaryFrom = ref<number | null>(null)
-const editSalaryTo = ref<number | null>(null)
+const editTitle = ref("");
+const editDescription = ref("");
+const editTags = ref<TagResponse[]>([]);
+const editFormat = ref<OpportunityFormat>("OFFICE");
+const editCity = ref("");
+const editAddress = ref("");
+const editPublishedAt = ref("");
+const editExpiresAt = ref("");
+const editSalaryFrom = ref<number | null>(null);
+const editSalaryTo = ref<number | null>(null);
 
-const { data: availableTags } = await useFetch<TagResponse[]>('/tags', {
+const { data: availableTags } = await useFetch<TagResponse[]>("/tags", {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   default: () => [],
-})
+});
 
 const salaryLabel = computed(() => {
-  const from = opportunity.value?.salaryFrom
-  const to = opportunity.value?.salaryTo
-  if (from != null && to != null) return `от ${from} до ${to}`
-  if (from != null) return `от ${from}`
-  if (to != null) return `до ${to}`
-  return null
-})
+  const from = opportunity.value?.salaryFrom;
+  const to = opportunity.value?.salaryTo;
+  if (from != null && to != null) return `от ${from} до ${to}`;
+  if (from != null) return `от ${from}`;
+  if (to != null) return `до ${to}`;
+  return null;
+});
 
 const toDateInputValue = (iso: string | undefined) => {
-  if (!iso) return ''
+  if (!iso) return "";
   try {
-    return new Date(iso).toISOString().split('T')[0] || ''
+    return new Date(iso).toISOString().split("T")[0] || "";
   } catch {
-    return ''
+    return "";
   }
-}
+};
 
 const toIsoValue = (date: string) => {
-  if (!date) return null
-  return `${date}T00:00:00`
-}
+  if (!date) return null;
+  return `${date}T00:00:00`;
+};
 
 const openEditTitle = () => {
-  editTitle.value = opportunity.value?.title ?? ''
-  activeModal.value = 'title'
-}
+  editTitle.value = opportunity.value?.title ?? "";
+  activeModal.value = "title";
+};
 const openEditDescription = () => {
-  editDescription.value = opportunity.value?.description ?? ''
-  activeModal.value = 'description'
-}
+  editDescription.value = opportunity.value?.description ?? "";
+  activeModal.value = "description";
+};
 const openEditTags = () => {
-  editTags.value = [...(opportunity.value?.tags ?? [])]
-  activeModal.value = 'tags'
-}
+  editTags.value = [...(opportunity.value?.tags ?? [])];
+  activeModal.value = "tags";
+};
 const openEditFormat = () => {
-  editFormat.value = opportunity.value?.format ?? 'OFFICE'
-  activeModal.value = 'format'
-}
+  editFormat.value = opportunity.value?.format ?? "OFFICE";
+  activeModal.value = "format";
+};
 const openEditPlace = () => {
-  editCity.value = opportunity.value?.city ?? ''
-  editAddress.value = opportunity.value?.address ?? ''
-  activeModal.value = 'place'
-}
+  editCity.value = opportunity.value?.city ?? "";
+  editAddress.value = opportunity.value?.address ?? "";
+  activeModal.value = "place";
+};
 const openEditDates = () => {
-  editPublishedAt.value = toDateInputValue(opportunity.value?.publishedAt)
-  editExpiresAt.value = toDateInputValue(opportunity.value?.expiresAt)
-  activeModal.value = 'dates'
-}
+  editPublishedAt.value = toDateInputValue(opportunity.value?.publishedAt);
+  editExpiresAt.value = toDateInputValue(opportunity.value?.expiresAt);
+  activeModal.value = "dates";
+};
 const openEditSalary = () => {
-  editSalaryFrom.value = opportunity.value?.salaryFrom ?? null
-  editSalaryTo.value = opportunity.value?.salaryTo ?? null
-  activeModal.value = 'salary'
-}
+  editSalaryFrom.value = opportunity.value?.salaryFrom ?? null;
+  editSalaryTo.value = opportunity.value?.salaryTo ?? null;
+  activeModal.value = "salary";
+};
 
 const closeModal = () => {
-  activeModal.value = null
-  saveError.value = ''
-}
+  activeModal.value = null;
+  saveError.value = "";
+};
 
 const saveSection = async () => {
-  if (!opportunity.value || isSaving.value || !activeModal.value) return
-  isSaving.value = true
-  saveError.value = ''
+  if (!opportunity.value || isSaving.value || !activeModal.value) return;
+  isSaving.value = true;
+  saveError.value = "";
 
   const body: Record<string, unknown> = {
     employerId: opportunity.value.employer.id,
@@ -353,33 +394,33 @@ const saveSection = async () => {
     status: opportunity.value.status,
     media: opportunity.value.media,
     tagIds: (opportunity.value.tags ?? []).map((t) => t.id),
-  }
+  };
 
   switch (activeModal.value) {
-    case 'title':
-      body.title = editTitle.value
-      break
-    case 'description':
-      body.description = editDescription.value || null
-      break
-    case 'tags':
-      body.tagIds = editTags.value.map((t) => t.id)
-      break
-    case 'format':
-      body.format = editFormat.value
-      break
-    case 'place':
-      body.city = editCity.value || null
-      body.address = editAddress.value || null
-      break
-    case 'dates':
-      body.publishedAt = toIsoValue(editPublishedAt.value)
-      body.expiresAt = toIsoValue(editExpiresAt.value)
-      break
-    case 'salary':
-      body.salaryFrom = editSalaryFrom.value ?? null
-      body.salaryTo = editSalaryTo.value ?? null
-      break
+    case "title":
+      body.title = editTitle.value;
+      break;
+    case "description":
+      body.description = editDescription.value || null;
+      break;
+    case "tags":
+      body.tagIds = editTags.value.map((t) => t.id);
+      break;
+    case "format":
+      body.format = editFormat.value;
+      break;
+    case "place":
+      body.city = editCity.value || null;
+      body.address = editAddress.value || null;
+      break;
+    case "dates":
+      body.publishedAt = toIsoValue(editPublishedAt.value);
+      body.expiresAt = toIsoValue(editExpiresAt.value);
+      break;
+    case "salary":
+      body.salaryFrom = editSalaryFrom.value ?? null;
+      body.salaryTo = editSalaryTo.value ?? null;
+      break;
   }
 
   try {
@@ -387,28 +428,33 @@ const saveSection = async () => {
       `/opportunities/${opportunity.value.id}`,
       {
         baseURL: config.public.apiBase,
-        method: 'PUT',
+        method: "PUT",
         headers: authHeaders,
         body,
       },
-    )
-    opportunity.value = updated
-    activeModal.value = null
+    );
+    opportunity.value = updated;
+    activeModal.value = null;
   } catch (err) {
-    saveError.value = 'Не удалось сохранить изменения'
-    console.error('Failed to save opportunity', err)
+    saveError.value = "Не удалось сохранить изменения";
+    console.error("Failed to save opportunity", err);
   } finally {
-    isSaving.value = false
+    isSaving.value = false;
   }
-}
+};
 </script>
 
 <template>
   <div class="opportunity-page container">
     <BaseBackButton />
 
-    <div v-if="pending" class="opportunity-page__state bordered">Загрузка...</div>
-    <div v-else-if="error || !opportunity" class="opportunity-page__state bordered">
+    <div v-if="pending" class="opportunity-page__state bordered">
+      Загрузка...
+    </div>
+    <div
+      v-else-if="error || !opportunity"
+      class="opportunity-page__state bordered"
+    >
       Возможность не найдена
     </div>
     <template v-else>
@@ -489,7 +535,10 @@ const saveSection = async () => {
             <p class="opportunity-page__company-description">
               {{ companyDescription }}
             </p>
-            <p v-if="companyContacts" class="opportunity-page__company-contacts">
+            <p
+              v-if="companyContacts"
+              class="opportunity-page__company-contacts"
+            >
               {{ companyContacts }}
             </p>
           </div>
@@ -523,11 +572,15 @@ const saveSection = async () => {
       </section>
 
       <section class="opportunity-page__details bordered">
-        <h2 class="opportunity-page__details-title">Информация о возможности</h2>
+        <h2 class="opportunity-page__details-title">
+          Информация о возможности
+        </h2>
 
         <article class="opportunity-page__description bordered">
           <div class="opportunity-page__description-head">
-            <h3 class="opportunity-page__description-title">Краткое описание и требования</h3>
+            <h3 class="opportunity-page__description-title">
+              Краткое описание и требования
+            </h3>
             <button
               v-if="isOwnOpportunity"
               type="button"
@@ -539,12 +592,14 @@ const saveSection = async () => {
             </button>
           </div>
           <p class="opportunity-page__description-text">
-            {{ opportunity.description || 'Описание отсутствует' }}
+            {{ opportunity.description || "Описание отсутствует" }}
           </p>
         </article>
 
         <div class="opportunity-page__meta-grid">
-          <article class="opportunity-page__meta-card opportunity-page__meta-card--format bordered">
+          <article
+            class="opportunity-page__meta-card opportunity-page__meta-card--format bordered"
+          >
             <div class="opportunity-page__meta-card-head">
               <p class="opportunity-page__meta-label">Формат</p>
               <button
@@ -609,15 +664,21 @@ const saveSection = async () => {
               </button>
             </div>
             <p class="opportunity-page__meta-value">
-              {{ salaryLabel || 'Не указана' }}
+              {{ salaryLabel || "Не указана" }}
             </p>
           </article>
         </div>
       </section>
     </template>
+    <SvgRingShape class="ring-shape" />
+    <SvgBlockShape class="block-shape" />
+    <SvgBarShape class="bar-shape" />
   </div>
 
-  <p v-if="saveError" class="opportunity-page__error opportunity-page__error--centered">
+  <p
+    v-if="saveError"
+    class="opportunity-page__error opportunity-page__error--centered"
+  >
     {{ saveError }}
   </p>
 
@@ -727,11 +788,19 @@ const saveSection = async () => {
   >
     <label class="opportunity-page__modal-field">
       Дата публикации
-      <input type="date" v-model="editPublishedAt" class="opportunity-page__modal-date bordered" />
+      <input
+        type="date"
+        v-model="editPublishedAt"
+        class="opportunity-page__modal-date bordered"
+      />
     </label>
     <label class="opportunity-page__modal-field">
       Дата окончания
-      <input type="date" v-model="editExpiresAt" class="opportunity-page__modal-date bordered" />
+      <input
+        type="date"
+        v-model="editExpiresAt"
+        class="opportunity-page__modal-date bordered"
+      />
     </label>
   </BaseAppModal>
 
@@ -741,13 +810,25 @@ const saveSection = async () => {
     @confirm="saveSection"
     @cancel="closeModal"
   >
-    <FormInputField id="edit-opp-salary-from" label="От" type="number" v-model="editSalaryFrom" />
-    <FormInputField id="edit-opp-salary-to" label="До" type="number" v-model="editSalaryTo" />
+    <FormInputField
+      id="edit-opp-salary-from"
+      label="От"
+      type="number"
+      v-model="editSalaryFrom"
+    />
+    <FormInputField
+      id="edit-opp-salary-to"
+      label="До"
+      type="number"
+      v-model="editSalaryTo"
+    />
   </BaseAppModal>
 </template>
 
 <style lang="scss" scoped>
 .opportunity-page {
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -838,7 +919,7 @@ const saveSection = async () => {
     margin: 0;
     font-size: 40px;
     line-height: 1.1;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
   }
 
@@ -945,7 +1026,7 @@ const saveSection = async () => {
     font-size: 36px;
     font-weight: 800;
     color: var(--text-inverted-color);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
   }
 
   &__description {
@@ -1191,5 +1272,30 @@ const saveSection = async () => {
       font-size: 30px;
     }
   }
+}
+
+.ring-shape {
+  position: absolute;
+  z-index: -1;
+  top: 100px;
+  left: -100px;
+  fill: var(--secondary-color);
+}
+
+.block-shape {
+  position: absolute;
+  z-index: -1;
+  right: -100px;
+  bottom: 200px;
+  fill: var(--primary-color);
+}
+
+.bar-shape {
+  position: absolute;
+  z-index: -1;
+  bottom: 150px;
+  fill: var(--tertiary-color);
+  left: -120px;
+  transform: rotate(118deg);
 }
 </style>
