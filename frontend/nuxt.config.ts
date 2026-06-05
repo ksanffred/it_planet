@@ -28,7 +28,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: 'http://localhost:8080',
+      apiBase: 'https://swagger.tramplin-itplanet.ru',
       yandexMapsApiKey: '',
     },
   },
