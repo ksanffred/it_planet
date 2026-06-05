@@ -44,7 +44,7 @@ services:
     build:
       context: ./frontend
     environment:
-      NUXT_PUBLIC_API_BASE: http://backend:8080
+      NUXT_PUBLIC_API_BASE: https://swagger.tramplin-itplanet.ru
     depends_on:
       - backend
 
