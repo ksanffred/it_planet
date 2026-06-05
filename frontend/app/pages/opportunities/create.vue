@@ -351,10 +351,7 @@ const handlePublish = async () => {
 
 <template>
   <div class="opportunity-create container">
-    <button type="button" class="opportunity-create__back-btn" @click="navigateTo('/')">
-      <NuxtIcon name="material-symbols:arrow-back-rounded" size="16px" />
-      Вернуться к выбору
-    </button>
+    <BaseBackButton />
 
     <section class="opportunity-create__media bordered">
       <input ref="fileInput" type="file" accept="image/*" hidden @change="uploadMedia" />
@@ -646,20 +643,6 @@ const handlePublish = async () => {
   gap: 12px;
   margin-top: 16px;
   margin-bottom: 24px;
-
-  &__back-btn {
-    border: 0;
-    background-color: var(--primary-color);
-    color: #fff;
-    border-radius: 999px;
-    padding: 8px 14px;
-    width: fit-content;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 700;
-    cursor: pointer;
-  }
 
   &__media {
     position: relative;
