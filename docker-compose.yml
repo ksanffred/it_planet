@@ -5,8 +5,6 @@ services:
       POSTGRES_DB: tramplin
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5121:5121"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -26,9 +24,12 @@ services:
   backend:
     build:
       context: ./backend/tramplin
+    env_file:
+      - path: .env
+        required: false
     environment:
       DB_HOST: db
-      DB_PORT: 5121
+      DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       REDIS_HOST: redis
