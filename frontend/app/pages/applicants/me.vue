@@ -1055,7 +1055,9 @@ const handleLogout = () => {
             >
               <div>
                 <p class="user-account__item-title">{{ item.title }}</p>
-                <p class="user-account__item-subtitle">{{ item.company_name }}</p>
+                <p class="user-account__item-subtitle">
+                  {{ item.company_name }}
+                </p>
               </div>
               <span
                 :class="[
@@ -1120,6 +1122,10 @@ const handleLogout = () => {
         Выйти из профиля
       </BaseAppButton>
     </div>
+
+    <SvgArcShape class="arc-shape" />
+    <SvgCircleShape class="circle-shape" />
+    <SvgBlockShape class="block-shape" />
   </div>
 
   <BaseAppModal
@@ -1136,6 +1142,8 @@ const handleLogout = () => {
 <style lang="scss" scoped>
 .user-account {
   display: flex;
+  z-index: 20;
+  position: relative;
   flex-direction: column;
   gap: 12px;
   margin-top: 16px;
@@ -1517,7 +1525,7 @@ const handleLogout = () => {
 
   &__columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 2fr 3fr;
     gap: 10px;
   }
 
@@ -1534,6 +1542,20 @@ const handleLogout = () => {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
   }
 
   &__list-item {
@@ -1700,5 +1722,31 @@ const handleLogout = () => {
       grid-template-columns: 1fr;
     }
   }
+}
+
+.arc-shape {
+  position: absolute;
+  right: -100px;
+  bottom: 40px;
+  z-index: -1;
+  transform: rotate(-168deg);
+  fill: var(--primary-color);
+}
+
+.circle-shape {
+  position: absolute;
+  fill: var(--tertiary-color);
+  left: -100px;
+  top: 100px;
+  z-index: -1;
+}
+
+.block-shape {
+  position: absolute;
+  fill: var(--secondary-color);
+  right: -100px;
+  z-index: -1;
+  top: 200px;
+  position: absolute;
 }
 </style>

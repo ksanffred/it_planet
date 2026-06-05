@@ -102,7 +102,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 
 .modal-body {
   padding: 16px 18px;
-  overflow-y: auto;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   gap: 12px;

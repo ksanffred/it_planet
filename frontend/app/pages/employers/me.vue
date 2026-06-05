@@ -333,7 +333,9 @@ const handleLogout = () => {
             </button>
           </div>
           <div class="employer-cabinet__identity-text">
-            <p class="employer-cabinet__name">{{ employer?.companyName || 'Компания' }}</p>
+            <p class="employer-cabinet__name">
+              {{ employer?.companyName || 'Компания' }}
+            </p>
             <p class="employer-cabinet__subtitle">Профиль компании</p>
           </div>
         </div>
@@ -347,7 +349,9 @@ const handleLogout = () => {
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
-          <p class="employer-cabinet__profile-field-text">{{ profileDescription }}</p>
+          <p class="employer-cabinet__profile-field-text">
+            {{ profileDescription }}
+          </p>
         </article>
 
         <article class="employer-cabinet__profile-field bordered">
@@ -427,7 +431,9 @@ const handleLogout = () => {
             class="employer-cabinet__list-item bordered"
           >
             <div>
-              <p class="employer-cabinet__item-title">{{ item.applicant_name }}</p>
+              <p class="employer-cabinet__item-title">
+                {{ item.applicant_name }}
+              </p>
               <p class="employer-cabinet__item-subtitle">
                 {{ item.desired_position || 'Позиция не указана' }} ·
                 {{ item.recommendation }} рекомендаций
@@ -451,6 +457,8 @@ const handleLogout = () => {
         Выйти из профиля
       </BaseAppButton>
     </div>
+    <SvgBlockShape class="block-shape" />
+    <SvgRingShape class="ring-shape" />
   </div>
 
   <BaseAppModal
@@ -551,6 +559,8 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 10;
   margin-top: 16px;
   margin-bottom: 24px;
 
@@ -778,7 +788,7 @@ const handleLogout = () => {
 
   &__columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 2fr 3fr;
     gap: 12px;
   }
 
@@ -825,6 +835,20 @@ const handleLogout = () => {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
   }
 
   &__list-item {
@@ -973,5 +997,21 @@ const handleLogout = () => {
       align-items: flex-start;
     }
   }
+}
+
+.block-shape {
+  position: absolute;
+  fill: var(--secondary-color);
+  z-index: -1;
+  right: -100px;
+  top: 300px;
+}
+
+.ring-shape {
+  position: absolute;
+  fill: var(--primary-color);
+  z-index: -1;
+  bottom: 0;
+  left: -100px;
 }
 </style>

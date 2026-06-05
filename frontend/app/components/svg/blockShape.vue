@@ -1,7 +1,6 @@
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 164 164">
+  <svg xmlns="http://www.w3.org/2000/svg" width="164" height="164" viewBox="0 0 164 164">
     <path
-      fill="#FD5E00"
       d="M31 0h96l3-1q15 1 26 12 8 8 8 20v96l1 3q-1 15-12 26-8 8-20 8H37l-3 1q-14-1-26-12-8-8-8-20v-23l-1-76Q0 20 11 8q8-8 20-8"
     />
   </svg>

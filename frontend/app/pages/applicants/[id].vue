@@ -658,6 +658,7 @@ const saveSection = async () => {
             <BaseAppTag
               v-for="skill in applicant?.skills || []"
               :key="skill.id"
+              text-color="var(--text-primary-color)"
               class="user-account__skill-tag"
               >{{ skill.name }}</BaseAppTag
             >
@@ -866,9 +867,13 @@ const saveSection = async () => {
         @update:selected-tags="editSkills = $event"
       />
       <div v-if="editSkills.length" class="user-account__edit-skills-preview">
-        <BaseAppTag v-for="tag in editSkills" :key="tag.id" class="user-account__skill-tag">{{
-          tag.name
-        }}</BaseAppTag>
+        <BaseAppTag
+          v-for="tag in editSkills"
+          text-color="var(--text-primary-color)"
+          :key="tag.id"
+          class="user-account__skill-tag"
+          >{{ tag.name }}</BaseAppTag
+        >
       </div>
     </BaseAppModal>
 
@@ -910,11 +915,17 @@ const saveSection = async () => {
       <p class="user-account__logout-confirm-text">Вы уверены, что хотите удалить этот профиль?</p>
       <p v-if="deleteError" class="user-account__error">{{ deleteError }}</p>
     </BaseAppModal>
+
+    <SvgArcShape class="arc-shape" />
+    <SvgCircleShape class="circle-shape" />
+    <SvgBlockShape class="block-shape" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .user-account {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1154,7 +1165,7 @@ const saveSection = async () => {
 
   &__columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 2fr 3fr;
     gap: 10px;
   }
 
@@ -1171,6 +1182,20 @@ const saveSection = async () => {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
   }
 
   &__list-item {
@@ -1286,5 +1311,31 @@ const saveSection = async () => {
       grid-template-columns: 1fr;
     }
   }
+}
+
+.arc-shape {
+  position: absolute;
+  right: -100px;
+  bottom: 40px;
+  z-index: -1;
+  transform: rotate(-168deg);
+  fill: var(--primary-color);
+}
+
+.circle-shape {
+  position: absolute;
+  fill: var(--tertiary-color);
+  left: -100px;
+  top: 100px;
+  z-index: -1;
+}
+
+.block-shape {
+  position: absolute;
+  fill: var(--secondary-color);
+  right: -100px;
+  z-index: -1;
+  top: 200px;
+  position: absolute;
 }
 </style>

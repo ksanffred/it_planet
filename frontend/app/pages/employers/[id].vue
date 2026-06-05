@@ -903,7 +903,7 @@ const handleDeleteProfile = async () => {
 
   &__columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 2fr 3fr;
     gap: 12px;
   }
 
@@ -950,6 +950,20 @@ const handleDeleteProfile = async () => {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
   }
 
   &__list-item {
