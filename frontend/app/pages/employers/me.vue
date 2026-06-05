@@ -778,7 +778,7 @@ const handleLogout = () => {
 
   &__columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 2fr 3fr;
     gap: 12px;
   }
 
@@ -829,9 +829,16 @@ const handleLogout = () => {
     overflow-y: auto;
     padding-right: 4px;
 
-    &::-webkit-scrollbar { width: 6px; }
-    &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
   }
 
   &__list-item {

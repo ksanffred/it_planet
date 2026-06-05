@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
+import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
 
 import type {
   Applicant,
@@ -8,28 +8,30 @@ import type {
   ApplicantResponsesLookup,
   FavoriteOpportunityResponse,
   Tag,
-} from '~/types'
+} from "~/types";
 
-type FavoriteCard = Omit<FavoriteOpportunityResponse, 'id'> & { id?: number }
-type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number }
+type FavoriteCard = Omit<FavoriteOpportunityResponse, "id"> & { id?: number };
+type FavoriteCardWithOpportunityId = FavoriteCard & { opportunityId?: number };
 type ContactLookup = {
-  id?: number | string
-  applicantId?: number | string
-  requesterApplicantId?: number | string
-  recipientApplicantId?: number | string
-  name?: string
-  status?: string
-}
+  id?: number | string;
+  applicantId?: number | string;
+  requesterApplicantId?: number | string;
+  recipientApplicantId?: number | string;
+  name?: string;
+  status?: string;
+};
 
-const config = useRuntimeConfig()
-const route = useRoute()
-const tokenCookie = useCookie<string | null>('auth_token')
+const config = useRuntimeConfig();
+const route = useRoute();
+const tokenCookie = useCookie<string | null>("auth_token");
 
 const applicantId = computed(() => {
-  const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  const parsed = Number(raw)
-  return Number.isInteger(parsed) ? parsed : null
-})
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) ? parsed : null;
+});
 
 const authHeaders = computed(() =>
   tokenCookie.value
@@ -37,68 +39,68 @@ const authHeaders = computed(() =>
         Authorization: `Bearer ${tokenCookie.value}`,
       }
     : undefined,
-)
+);
 
-const { data: currentUser } = await useFetch<CurrentUserResponse>('/auth/me', {
+const { data: currentUser } = await useFetch<CurrentUserResponse>("/auth/me", {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   headers: authHeaders.value,
   immediate: Boolean(tokenCookie.value),
-})
+});
 
-const isCurator = computed(() => currentUser.value?.role === 'CURATOR')
-const isEmployer = computed(() => currentUser.value?.role === 'EMPLOYER')
+const isCurator = computed(() => currentUser.value?.role === "CURATOR");
+const isEmployer = computed(() => currentUser.value?.role === "EMPLOYER");
 
 type EditSection =
-  | 'name'
-  | 'desiredPosition'
-  | 'university'
-  | 'additionalEducation'
-  | 'skills'
-  | 'portfolio'
-  | 'resume'
-  | null
+  | "name"
+  | "desiredPosition"
+  | "university"
+  | "additionalEducation"
+  | "skills"
+  | "portfolio"
+  | "resume"
+  | null;
 
-const activeModal = ref<EditSection>(null)
-const editName = ref('')
-const editDesiredPosition = ref('')
+const activeModal = ref<EditSection>(null);
+const editName = ref("");
+const editDesiredPosition = ref("");
 const editUniversity = reactive({
-  university: '',
-  faculty: '',
-  currentFieldOfStudy: '',
+  university: "",
+  faculty: "",
+  currentFieldOfStudy: "",
   graduationYear: 0,
-})
-const editAdditionalEducation = ref('')
-const editSkills = ref<Tag[]>([])
-const editPortfolioUrl = ref('')
-const editResumeUrl = ref('')
-const availableTags = ref<Tag[]>([])
-const isSavingSection = ref(false)
-const sectionSaveError = ref('')
+});
+const editAdditionalEducation = ref("");
+const editSkills = ref<Tag[]>([]);
+const editPortfolioUrl = ref("");
+const editResumeUrl = ref("");
+const availableTags = ref<Tag[]>([]);
+const isSavingSection = ref(false);
+const sectionSaveError = ref("");
 
-const showDeleteModal = ref(false)
-const isDeleting = ref(false)
-const deleteError = ref('')
+const showDeleteModal = ref(false);
+const isDeleting = ref(false);
+const deleteError = ref("");
 
-const favoritesSearch = ref('')
-const responsesSearch = ref('')
-const isAddingContact = ref(false)
-const addContactError = ref('')
-const contactRequestSent = ref(false)
-const alreadyInContacts = ref(false)
+const favoritesSearch = ref("");
+const responsesSearch = ref("");
+const isAddingContact = ref(false);
+const addContactError = ref("");
+const contactRequestSent = ref(false);
+const alreadyInContacts = ref(false);
 
 const {
   data: applicant,
   pending: applicantPending,
   error: applicantError,
-} = await useFetch<Applicant>(`/applicants/${applicantId.value ?? ''}`, {
+} = await useFetch<Applicant>(`/applicants/${applicantId.value ?? ""}`, {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   headers: authHeaders.value,
   immediate: Boolean(applicantId.value),
-})
+});
 
-const hasCheckedSelfRedirect = ref(false)
+const hasCheckedSelfRedirect = ref(false);
 
 watchEffect(() => {
   if (
@@ -107,255 +109,277 @@ watchEffect(() => {
     applicantPending.value ||
     !applicant.value
   ) {
-    return
+    return;
   }
 
-  hasCheckedSelfRedirect.value = true
+  hasCheckedSelfRedirect.value = true;
 
   void (async () => {
     try {
-      const currentApplicant = await $fetch<Applicant>('/applicants/me', {
+      const currentApplicant = await $fetch<Applicant>("/applicants/me", {
         baseURL: config.public.apiBase,
-        method: 'GET',
+        method: "GET",
         headers: authHeaders.value,
-      })
+      });
 
       if (
         currentApplicant.id === applicant.value?.id &&
         currentApplicant.userId === applicant.value?.userId
       ) {
-        navigateTo('/applicants/me')
+        navigateTo("/applicants/me");
       }
     } catch (error) {
-      console.error('Failed to fetch current applicant for self-check', error)
+      console.error("Failed to fetch current applicant for self-check", error);
     }
-  })()
-})
+  })();
+});
 
 const { data: favorites } = await useFetch<FavoriteCard[]>(
-  `/applicants/${applicantId.value ?? ''}/favorites/opportunities`,
+  `/applicants/${applicantId.value ?? ""}/favorites/opportunities`,
   {
     baseURL: config.public.apiBase,
-    method: 'GET',
+    method: "GET",
     headers: authHeaders.value,
     immediate: Boolean(applicantId.value),
     default: () => [],
   },
-)
-const { data: miniCards } = await useFetch<OpportunityMiniCard[]>('/opportunities/mini-cards', {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  default: () => [],
-})
+);
+const { data: miniCards } = await useFetch<OpportunityMiniCard[]>(
+  "/opportunities/mini-cards",
+  {
+    baseURL: config.public.apiBase,
+    method: "GET",
+    default: () => [],
+  },
+);
 
 const { data: responses } = await useFetch<ApplicantResponsesLookup[]>(
-  `/applicants/${applicantId.value ?? ''}/responses`,
+  `/applicants/${applicantId.value ?? ""}/responses`,
   {
     baseURL: config.public.apiBase,
-    method: 'GET',
+    method: "GET",
     headers: authHeaders.value,
     immediate: Boolean(applicantId.value),
     default: () => [],
   },
-)
+);
 
 const applicantLoadErrorMessage = computed(() => {
   if (!applicantId.value) {
-    return 'Некорректный id профиля'
+    return "Некорректный id профиля";
   }
 
   if (applicantPending.value || !applicantError.value) {
-    return ''
+    return "";
   }
 
-  const status = applicantError.value.statusCode
+  const status = applicantError.value.statusCode;
   if (status === 404) {
-    return 'Профиль пользователя не найден'
+    return "Профиль пользователя не найден";
   }
   if (status === 403) {
-    return 'Этот профиль недоступен'
+    return "Этот профиль недоступен";
   }
-  return 'Не удалось загрузить профиль пользователя'
-})
+  return "Не удалось загрузить профиль пользователя";
+});
 
-const isPrivate = computed(() => applicant.value?.visibility === 'PRIVATE' && !isCurator.value)
+const isPrivate = computed(
+  () => applicant.value?.visibility === "PRIVATE" && !isCurator.value,
+);
 
 const applicantInitials = computed(() => {
-  const source = applicant.value?.name?.trim()
-  if (!source) return '??'
+  const source = applicant.value?.name?.trim();
+  if (!source) return "??";
 
-  const parts = source.split(/\s+/).filter(Boolean)
+  const parts = source.split(/\s+/).filter(Boolean);
   return parts
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
-    .join('')
-})
+    .join("");
+});
 
-const applicantAvatarUrl = computed(() => normalizeStorageAssetUrl(applicant.value?.avatarUrl))
+const applicantAvatarUrl = computed(() =>
+  normalizeStorageAssetUrl(applicant.value?.avatarUrl),
+);
 
 const filteredFavorites = computed(() => {
-  const query = favoritesSearch.value.trim().toLowerCase()
-  if (!query) return favorites.value ?? []
+  const query = favoritesSearch.value.trim().toLowerCase();
+  if (!query) return favorites.value ?? [];
 
   return (favorites.value ?? []).filter((item) =>
     `${item.title} ${item.company_name}`.toLowerCase().includes(query),
-  )
-})
+  );
+});
 
 const filteredResponses = computed(() => {
-  const query = responsesSearch.value.trim().toLowerCase()
-  if (!query) return responses.value ?? []
+  const query = responsesSearch.value.trim().toLowerCase();
+  if (!query) return responses.value ?? [];
 
   return (responses.value ?? []).filter((item) =>
     `${item.title} ${item.company_name}`.toLowerCase().includes(query),
-  )
-})
+  );
+});
 
 const favoriteStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    ACTIVE: 'Активна',
-    CLOSED: 'Закрыто',
-    PLANNED: 'Запланировано',
-  }
-  return map[status] ?? status
-}
+    ACTIVE: "Активна",
+    CLOSED: "Закрыто",
+    PLANNED: "Запланировано",
+  };
+  return map[status] ?? status;
+};
 
 const responseStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    NOT_REVIEWED: 'Не рассмотрен',
-    REVIEWED: 'В резерве',
-    ACCEPTED: 'Принят',
-    REJECTED: 'Отклонен',
-  }
-  return map[status] ?? status
-}
+    NOT_REVIEWED: "Не рассмотрен",
+    REVIEWED: "В резерве",
+    ACCEPTED: "Принят",
+    REJECTED: "Отклонен",
+  };
+  return map[status] ?? status;
+};
 
 const responseStatusClass = (status: string) => {
   const map: Record<string, string> = {
-    NOT_REVIEWED: 'neutral',
-    REVIEWED: 'neutral',
-    ACCEPTED: 'success',
-    REJECTED: 'danger',
-  }
-  return map[status] ?? 'neutral'
-}
+    NOT_REVIEWED: "neutral",
+    REVIEWED: "neutral",
+    ACCEPTED: "success",
+    REJECTED: "danger",
+  };
+  return map[status] ?? "neutral";
+};
 
 const toNumberOrNull = (value: unknown) => {
-  const parsed = Number(value)
-  return Number.isInteger(parsed) ? parsed : null
-}
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : null;
+};
 
 const normalizeValue = (value: unknown) =>
-  String(value ?? '')
+  String(value ?? "")
     .trim()
-    .toLowerCase()
-const buildFavoriteSignature = (title: unknown, companyName: unknown, type: unknown) =>
-  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`
+    .toLowerCase();
+const buildFavoriteSignature = (
+  title: unknown,
+  companyName: unknown,
+  type: unknown,
+) =>
+  `${normalizeValue(title)}|${normalizeValue(companyName)}|${normalizeValue(type)}`;
 
 const miniCardIdBySignature = computed(() => {
-  const map = new Map<string, number>()
+  const map = new Map<string, number>();
   for (const card of miniCards.value ?? []) {
-    map.set(buildFavoriteSignature(card.title, card.employerName, card.type), card.id)
+    map.set(
+      buildFavoriteSignature(card.title, card.employerName, card.type),
+      card.id,
+    );
   }
-  return map
-})
+  return map;
+});
 
 const resolveFavoriteOpportunityId = (item: FavoriteCard) => {
   const typedItem = item as FavoriteCardWithOpportunityId & {
-    opportunity?: { id?: number | string }
-  }
+    opportunity?: { id?: number | string };
+  };
   const directId =
     toNumberOrNull(typedItem.id) ??
     toNumberOrNull(typedItem.opportunityId) ??
-    toNumberOrNull(typedItem.opportunity?.id)
+    toNumberOrNull(typedItem.opportunity?.id);
 
   if (directId) {
-    return directId
+    return directId;
   }
 
   return (
     miniCardIdBySignature.value.get(
-      buildFavoriteSignature(typedItem.title, typedItem.company_name, typedItem.type),
+      buildFavoriteSignature(
+        typedItem.title,
+        typedItem.company_name,
+        typedItem.type,
+      ),
     ) ?? null
-  )
-}
+  );
+};
 
 const goToFavoriteOpportunity = (item: FavoriteCard) => {
-  const opportunityId = resolveFavoriteOpportunityId(item)
+  const opportunityId = resolveFavoriteOpportunityId(item);
   if (!opportunityId) {
-    return
+    return;
   }
 
-  navigateTo(`/opportunities/${opportunityId}`)
-}
+  navigateTo(`/opportunities/${opportunityId}`);
+};
 
-const isFavoriteItemClickable = (item: FavoriteCard) => Boolean(resolveFavoriteOpportunityId(item))
+const isFavoriteItemClickable = (item: FavoriteCard) =>
+  Boolean(resolveFavoriteOpportunityId(item));
 
 const contactButtonLabel = computed(() => {
-  if (alreadyInContacts.value) return 'Уже в контактах'
-  if (contactRequestSent.value) return 'Запрос отправлен'
-  if (isAddingContact.value) return 'Отправка...'
-  return 'Добавить в контакты'
-})
+  if (alreadyInContacts.value) return "Уже в контактах";
+  if (contactRequestSent.value) return "Запрос отправлен";
+  if (isAddingContact.value) return "Отправка...";
+  return "Добавить в контакты";
+});
 
 const isContactButtonDisabled = computed(
-  () => isAddingContact.value || contactRequestSent.value || alreadyInContacts.value,
-)
+  () =>
+    isAddingContact.value ||
+    contactRequestSent.value ||
+    alreadyInContacts.value,
+);
 
 const detectExistingContact = (payload: unknown) => {
   if (!Array.isArray(payload) || !applicantId.value) {
-    alreadyInContacts.value = false
-    return
+    alreadyInContacts.value = false;
+    return;
   }
 
-  const targetId = applicantId.value
-  const targetName = applicant.value?.name?.trim().toLowerCase() ?? ''
+  const targetId = applicantId.value;
+  const targetName = applicant.value?.name?.trim().toLowerCase() ?? "";
 
   alreadyInContacts.value = payload.some((raw) => {
-    if (!raw || typeof raw !== 'object') return false
-    const contact = raw as ContactLookup
+    if (!raw || typeof raw !== "object") return false;
+    const contact = raw as ContactLookup;
 
     const directIdMatch =
       toNumberOrNull(contact.applicantId) === targetId ||
       toNumberOrNull(contact.requesterApplicantId) === targetId ||
-      toNumberOrNull(contact.recipientApplicantId) === targetId
+      toNumberOrNull(contact.recipientApplicantId) === targetId;
 
-    if (directIdMatch) return true
+    if (directIdMatch) return true;
 
-    const status = (contact.status ?? '').toString().toLowerCase()
-    const normalizedName = (contact.name ?? '').trim().toLowerCase()
+    const status = (contact.status ?? "").toString().toLowerCase();
+    const normalizedName = (contact.name ?? "").trim().toLowerCase();
     return Boolean(
       targetName &&
       normalizedName &&
       normalizedName === targetName &&
-      ['accepted', 'sent', 'received', 'pending'].includes(status),
-    )
-  })
-}
+      ["accepted", "sent", "received", "pending"].includes(status),
+    );
+  });
+};
 
 const loadMyContacts = async () => {
   if (!tokenCookie.value || !applicantId.value) {
-    alreadyInContacts.value = false
-    return
+    alreadyInContacts.value = false;
+    return;
   }
 
   try {
-    const contacts = await $fetch<unknown>('/applicants/me/contacts', {
+    const contacts = await $fetch<unknown>("/applicants/me/contacts", {
       baseURL: config.public.apiBase,
-      method: 'GET',
+      method: "GET",
       headers: authHeaders.value,
-    })
+    });
 
-    detectExistingContact(contacts)
+    detectExistingContact(contacts);
   } catch (error) {
-    alreadyInContacts.value = false
-    console.error('Failed to load contacts for contact-check', error)
+    alreadyInContacts.value = false;
+    console.error("Failed to load contacts for contact-check", error);
   }
-}
+};
 
 watch([applicantId, applicant, tokenCookie], loadMyContacts, {
   immediate: true,
-})
+});
 
 const addToContacts = async () => {
   if (
@@ -364,117 +388,119 @@ const addToContacts = async () => {
     contactRequestSent.value ||
     alreadyInContacts.value
   ) {
-    return
+    return;
   }
 
   if (!tokenCookie.value) {
-    navigateTo('/auth/login')
-    return
+    navigateTo("/auth/login");
+    return;
   }
 
-  isAddingContact.value = true
-  addContactError.value = ''
+  isAddingContact.value = true;
+  addContactError.value = "";
 
   try {
     await $fetch(`/applicants/me/contacts/${applicantId.value}`, {
       baseURL: config.public.apiBase,
-      method: 'POST',
+      method: "POST",
       headers: authHeaders.value,
-    })
+    });
 
-    contactRequestSent.value = true
+    contactRequestSent.value = true;
   } catch (error) {
-    const typedError = error as { statusCode?: number; status?: number }
+    const typedError = error as { statusCode?: number; status?: number };
     if (typedError.statusCode === 409 || typedError.status === 409) {
-      alreadyInContacts.value = true
-      return
+      alreadyInContacts.value = true;
+      return;
     }
 
-    addContactError.value = 'Не удалось отправить запрос в контакты'
-    console.error('Failed to add applicant to contacts', error)
+    addContactError.value = "Не удалось отправить запрос в контакты";
+    console.error("Failed to add applicant to contacts", error);
   } finally {
-    isAddingContact.value = false
+    isAddingContact.value = false;
   }
-}
+};
 
 const handleDeleteProfile = async () => {
-  if (!applicantId.value || isDeleting.value) return
-  isDeleting.value = true
-  deleteError.value = ''
+  if (!applicantId.value || isDeleting.value) return;
+  isDeleting.value = true;
+  deleteError.value = "";
   try {
     await $fetch(`/applicants/${applicantId.value}`, {
       baseURL: config.public.apiBase,
-      method: 'DELETE',
+      method: "DELETE",
       headers: authHeaders.value,
-    })
-    await navigateTo('/')
+    });
+    await navigateTo("/");
   } catch (err) {
-    deleteError.value = 'Не удалось удалить профиль'
-    console.error('[curator-delete] Failed to delete applicant profile', err)
+    deleteError.value = "Не удалось удалить профиль";
+    console.error("[curator-delete] Failed to delete applicant profile", err);
   } finally {
-    isDeleting.value = false
+    isDeleting.value = false;
   }
-}
+};
 
-const { data: tagsData } = await useFetch<Tag[]>('/tags', {
+const { data: tagsData } = await useFetch<Tag[]>("/tags", {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   default: () => [],
-})
+});
 
 watchEffect(() => {
-  availableTags.value = tagsData.value ?? []
-})
+  availableTags.value = tagsData.value ?? [];
+});
 
 const openEditName = () => {
-  editName.value = applicant.value?.name ?? ''
-  activeModal.value = 'name'
-}
+  editName.value = applicant.value?.name ?? "";
+  activeModal.value = "name";
+};
 
 const openEditDesiredPosition = () => {
-  editDesiredPosition.value = applicant.value?.desiredPosition ?? ''
-  activeModal.value = 'desiredPosition'
-}
+  editDesiredPosition.value = applicant.value?.desiredPosition ?? "";
+  activeModal.value = "desiredPosition";
+};
 
 const openEditUniversity = () => {
-  if (!applicant.value) return
-  editUniversity.university = applicant.value.university ?? ''
-  editUniversity.faculty = applicant.value.faculty ?? ''
-  editUniversity.currentFieldOfStudy = applicant.value.currentFieldOfStudy ?? ''
-  editUniversity.graduationYear = applicant.value.graduationYear ?? 0
-  activeModal.value = 'university'
-}
+  if (!applicant.value) return;
+  editUniversity.university = applicant.value.university ?? "";
+  editUniversity.faculty = applicant.value.faculty ?? "";
+  editUniversity.currentFieldOfStudy =
+    applicant.value.currentFieldOfStudy ?? "";
+  editUniversity.graduationYear = applicant.value.graduationYear ?? 0;
+  activeModal.value = "university";
+};
 
 const openEditAdditionalEducation = () => {
-  editAdditionalEducation.value = applicant.value?.additionalEducationDetails ?? ''
-  activeModal.value = 'additionalEducation'
-}
+  editAdditionalEducation.value =
+    applicant.value?.additionalEducationDetails ?? "";
+  activeModal.value = "additionalEducation";
+};
 
 const openEditSkills = () => {
-  editSkills.value = [...(applicant.value?.skills ?? [])]
-  activeModal.value = 'skills'
-}
+  editSkills.value = [...(applicant.value?.skills ?? [])];
+  activeModal.value = "skills";
+};
 
 const openEditPortfolio = () => {
-  editPortfolioUrl.value = applicant.value?.portfolioUrl ?? ''
-  activeModal.value = 'portfolio'
-}
+  editPortfolioUrl.value = applicant.value?.portfolioUrl ?? "";
+  activeModal.value = "portfolio";
+};
 
 const openEditResume = () => {
-  editResumeUrl.value = applicant.value?.resumeUrl ?? ''
-  activeModal.value = 'resume'
-}
+  editResumeUrl.value = applicant.value?.resumeUrl ?? "";
+  activeModal.value = "resume";
+};
 
 const closeModal = () => {
-  activeModal.value = null
-  sectionSaveError.value = ''
-}
+  activeModal.value = null;
+  sectionSaveError.value = "";
+};
 
 const saveSection = async () => {
-  if (!applicant.value || isSavingSection.value || !activeModal.value) return
+  if (!applicant.value || isSavingSection.value || !activeModal.value) return;
 
-  isSavingSection.value = true
-  sectionSaveError.value = ''
+  isSavingSection.value = true;
+  sectionSaveError.value = "";
 
   const body: Record<string, unknown> = {
     userId: applicant.value.userId,
@@ -485,57 +511,61 @@ const saveSection = async () => {
     desiredPosition: applicant.value.desiredPosition ?? null,
     major: applicant.value.major ?? null,
     graduationYear: applicant.value.graduationYear ?? null,
-    additionalEducationDetails: applicant.value.additionalEducationDetails ?? null,
+    additionalEducationDetails:
+      applicant.value.additionalEducationDetails ?? null,
     portfolioUrl: applicant.value.portfolioUrl ?? null,
     resumeUrl: applicant.value.resumeUrl ?? null,
     skillTagIds: (applicant.value.skills ?? []).map((s) => s.id),
-  }
+  };
 
   switch (activeModal.value) {
-    case 'name':
-      body.name = editName.value || null
-      break
-    case 'desiredPosition':
-      body.desiredPosition = editDesiredPosition.value || null
-      break
-    case 'university':
-      body.university = editUniversity.university || null
-      body.faculty = editUniversity.faculty || null
-      body.currentFieldOfStudy = editUniversity.currentFieldOfStudy || null
+    case "name":
+      body.name = editName.value || null;
+      break;
+    case "desiredPosition":
+      body.desiredPosition = editDesiredPosition.value || null;
+      break;
+    case "university":
+      body.university = editUniversity.university || null;
+      body.faculty = editUniversity.faculty || null;
+      body.currentFieldOfStudy = editUniversity.currentFieldOfStudy || null;
       body.graduationYear = editUniversity.graduationYear
         ? Number(editUniversity.graduationYear)
-        : null
-      break
-    case 'additionalEducation':
-      body.additionalEducationDetails = editAdditionalEducation.value || null
-      break
-    case 'skills':
-      body.skillTagIds = editSkills.value.map((t) => t.id)
-      break
-    case 'portfolio':
-      body.portfolioUrl = editPortfolioUrl.value || null
-      break
-    case 'resume':
-      body.resumeUrl = editResumeUrl.value || null
-      break
+        : null;
+      break;
+    case "additionalEducation":
+      body.additionalEducationDetails = editAdditionalEducation.value || null;
+      break;
+    case "skills":
+      body.skillTagIds = editSkills.value.map((t) => t.id);
+      break;
+    case "portfolio":
+      body.portfolioUrl = editPortfolioUrl.value || null;
+      break;
+    case "resume":
+      body.resumeUrl = editResumeUrl.value || null;
+      break;
   }
 
   try {
-    const updated = await $fetch<Applicant>(`/applicants/${applicant.value.id}`, {
-      baseURL: config.public.apiBase,
-      method: 'PUT',
-      headers: authHeaders.value,
-      body,
-    })
-    applicant.value = updated
-    activeModal.value = null
+    const updated = await $fetch<Applicant>(
+      `/applicants/${applicant.value.id}`,
+      {
+        baseURL: config.public.apiBase,
+        method: "PUT",
+        headers: authHeaders.value,
+        body,
+      },
+    );
+    applicant.value = updated;
+    activeModal.value = null;
   } catch (err) {
-    sectionSaveError.value = 'Не удалось сохранить изменения'
-    console.error('[curator-edit] Failed to save section', err)
+    sectionSaveError.value = "Не удалось сохранить изменения";
+    console.error("[curator-edit] Failed to save section", err);
   } finally {
-    isSavingSection.value = false
+    isSavingSection.value = false;
   }
-}
+};
 </script>
 
 <template>
@@ -545,7 +575,10 @@ const saveSection = async () => {
       <BaseBackButton />
     </header>
 
-    <section v-if="!applicantLoadErrorMessage" class="user-account__profile bordered">
+    <section
+      v-if="!applicantLoadErrorMessage"
+      class="user-account__profile bordered"
+    >
       <div class="user-account__profile-top">
         <div class="user-account__identity">
           <div class="user-account__avatar">
@@ -560,7 +593,7 @@ const saveSection = async () => {
           <div class="user-account__identity-text">
             <div class="user-account__name-row">
               <p class="user-account__name">
-                {{ applicant?.name || 'Пользователь' }}
+                {{ applicant?.name || "Пользователь" }}
               </p>
               <button
                 v-if="isCurator"
@@ -574,7 +607,7 @@ const saveSection = async () => {
             </div>
             <div class="user-account__subtitle-row">
               <p class="user-account__subtitle">
-                {{ applicant?.desiredPosition || 'Публичный профиль' }}
+                {{ applicant?.desiredPosition || "Публичный профиль" }}
               </p>
               <button
                 v-if="isCurator"
@@ -606,7 +639,9 @@ const saveSection = async () => {
       <div v-if="!isPrivate" class="user-account__profile-grid">
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
-            <h3 class="user-account__panel-title">Общая информация об университете</h3>
+            <h3 class="user-account__panel-title">
+              Общая информация об университете
+            </h3>
             <button
               v-if="isCurator"
               class="user-account__edit-btn"
@@ -617,15 +652,19 @@ const saveSection = async () => {
               <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
             </button>
           </div>
-          <p>Университет: {{ applicant?.university || 'Не указано' }}</p>
-          <p>Факультет: {{ applicant?.faculty || 'Не указано' }}</p>
-          <p>Направление: {{ applicant?.currentFieldOfStudy || 'Не указано' }}</p>
-          <p>Год выпуска: {{ applicant?.graduationYear || 'Не указано' }}</p>
+          <p>Университет: {{ applicant?.university || "Не указано" }}</p>
+          <p>Факультет: {{ applicant?.faculty || "Не указано" }}</p>
+          <p>
+            Направление: {{ applicant?.currentFieldOfStudy || "Не указано" }}
+          </p>
+          <p>Год выпуска: {{ applicant?.graduationYear || "Не указано" }}</p>
         </article>
 
         <article class="user-account__panel bordered">
           <div class="user-account__panel-head">
-            <h3 class="user-account__panel-title">Ключевое дополнительное образование</h3>
+            <h3 class="user-account__panel-title">
+              Ключевое дополнительное образование
+            </h3>
             <button
               v-if="isCurator"
               class="user-account__edit-btn"
@@ -637,7 +676,10 @@ const saveSection = async () => {
             </button>
           </div>
           <p>
-            {{ applicant?.additionalEducationDetails || 'Дополнительное образование не заполнено' }}
+            {{
+              applicant?.additionalEducationDetails ||
+              "Дополнительное образование не заполнено"
+            }}
           </p>
         </article>
 
@@ -658,6 +700,7 @@ const saveSection = async () => {
             <BaseAppTag
               v-for="skill in applicant?.skills || []"
               :key="skill.id"
+              text-color="var(--text-primary-color)"
               class="user-account__skill-tag"
               >{{ skill.name }}</BaseAppTag
             >
@@ -713,13 +756,21 @@ const saveSection = async () => {
           <span v-else class="user-account__muted">Резюме не загружено</span>
         </article>
       </div>
-      <div v-else class="user-account__private-message">Профиль пользователя скрыт</div>
+      <div v-else class="user-account__private-message">
+        Профиль пользователя скрыт
+      </div>
     </section>
 
-    <section v-if="!applicantLoadErrorMessage && !isPrivate" class="user-account__columns">
+    <section
+      v-if="!applicantLoadErrorMessage && !isPrivate"
+      class="user-account__columns"
+    >
       <article class="user-account__column bordered">
         <h2 class="user-account__section-title">Избранные возможности</h2>
-        <BaseAppInput v-model="favoritesSearch" placeholder="Поиск по возможностям" />
+        <BaseAppInput
+          v-model="favoritesSearch"
+          placeholder="Поиск по возможностям"
+        />
 
         <div class="user-account__list">
           <div
@@ -728,7 +779,8 @@ const saveSection = async () => {
             :class="[
               'user-account__list-item bordered',
               {
-                'user-account__list-item--interactive': isFavoriteItemClickable(item),
+                'user-account__list-item--interactive':
+                  isFavoriteItemClickable(item),
               },
             ]"
             @click="goToFavoriteOpportunity(item)"
@@ -773,13 +825,22 @@ const saveSection = async () => {
               {{ responseStatusLabel(item.response_status) }}
             </span>
           </div>
-          <p v-if="!filteredResponses.length" class="user-account__muted">Откликов пока нет</p>
+          <p v-if="!filteredResponses.length" class="user-account__muted">
+            Откликов пока нет
+          </p>
         </div>
       </article>
     </section>
 
-    <div v-if="isCurator && !applicantLoadErrorMessage" class="user-account__logout-row">
-      <BaseAppButton variant="secondary" class="bordered" @click="showDeleteModal = true">
+    <div
+      v-if="isCurator && !applicantLoadErrorMessage"
+      class="user-account__logout-row"
+    >
+      <BaseAppButton
+        variant="secondary"
+        class="bordered"
+        @click="showDeleteModal = true"
+      >
         Удалить профиль
       </BaseAppButton>
     </div>
@@ -790,7 +851,10 @@ const saveSection = async () => {
       </p>
     </section>
 
-    <p v-if="sectionSaveError" class="user-account__error user-account__error--centered">
+    <p
+      v-if="sectionSaveError"
+      class="user-account__error user-account__error--centered"
+    >
       {{ sectionSaveError }}
     </p>
 
@@ -827,7 +891,11 @@ const saveSection = async () => {
         label="Университет"
         v-model="editUniversity.university"
       />
-      <FormInputField id="cur-edit-faculty" label="Факультет" v-model="editUniversity.faculty" />
+      <FormInputField
+        id="cur-edit-faculty"
+        label="Факультет"
+        v-model="editUniversity.faculty"
+      />
       <FormInputField
         id="cur-edit-field"
         label="Направление"
@@ -866,9 +934,13 @@ const saveSection = async () => {
         @update:selected-tags="editSkills = $event"
       />
       <div v-if="editSkills.length" class="user-account__edit-skills-preview">
-        <BaseAppTag v-for="tag in editSkills" :key="tag.id" class="user-account__skill-tag">{{
-          tag.name
-        }}</BaseAppTag>
+        <BaseAppTag
+          v-for="tag in editSkills"
+          text-color="var(--text-primary-color)"
+          :key="tag.id"
+          class="user-account__skill-tag"
+          >{{ tag.name }}</BaseAppTag
+        >
       </div>
     </BaseAppModal>
 
@@ -907,14 +979,22 @@ const saveSection = async () => {
       @confirm="handleDeleteProfile"
       @cancel="showDeleteModal = false"
     >
-      <p class="user-account__logout-confirm-text">Вы уверены, что хотите удалить этот профиль?</p>
+      <p class="user-account__logout-confirm-text">
+        Вы уверены, что хотите удалить этот профиль?
+      </p>
       <p v-if="deleteError" class="user-account__error">{{ deleteError }}</p>
     </BaseAppModal>
+
+    <SvgArcShape class="arc-shape" />
+    <SvgCircleShape class="circle-shape" />
+    <SvgBlockShape class="block-shape" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .user-account {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -930,7 +1010,7 @@ const saveSection = async () => {
 
   &__page-title {
     margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 32px;
     line-height: 1;
     font-weight: 800;
@@ -965,7 +1045,7 @@ const saveSection = async () => {
     color: #2052d4;
     display: grid;
     place-items: center;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
     font-size: 14px;
     background: #dce9fa;
@@ -1000,7 +1080,7 @@ const saveSection = async () => {
     margin: 0;
     font-size: 34px;
     line-height: 1;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
     color: var(--text-inverted-color);
   }
@@ -1112,7 +1192,7 @@ const saveSection = async () => {
     margin: 0 0 6px;
     font-size: 12px;
     line-height: 1.2;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     color: var(--text-inverted-color);
     font-weight: 800;
   }
@@ -1140,13 +1220,13 @@ const saveSection = async () => {
     font-weight: 800;
     text-align: center;
     padding: 48px 20px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     color: var(--text-inverted-color);
   }
 
   &__section-title {
     margin: 0 0 8px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 24px;
     font-weight: 800;
     color: var(--text-inverted-color);
@@ -1154,7 +1234,7 @@ const saveSection = async () => {
 
   &__columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 2fr 3fr;
     gap: 10px;
   }
 
@@ -1175,9 +1255,16 @@ const saveSection = async () => {
     overflow-y: auto;
     padding-right: 4px;
 
-    &::-webkit-scrollbar { width: 6px; }
-    &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
   }
 
   &__list-item {
@@ -1201,7 +1288,7 @@ const saveSection = async () => {
   &__item-title {
     margin: 0;
     font-size: 13px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 700;
     color: var(--text-inverted-color);
     line-height: 1.2;
@@ -1293,5 +1380,31 @@ const saveSection = async () => {
       grid-template-columns: 1fr;
     }
   }
+}
+
+.arc-shape {
+  position: absolute;
+  right: -100px;
+  bottom: 40px;
+  z-index: -1;
+  transform: rotate(-168deg);
+  fill: var(--primary-color);
+}
+
+.circle-shape {
+  position: absolute;
+  fill: var(--tertiary-color);
+  left: -100px;
+  top: 100px;
+  z-index: -1;
+}
+
+.block-shape {
+  position: absolute;
+  fill: var(--secondary-color);
+  right: -100px;
+  z-index: -1;
+  top: 200px;
+  position: absolute;
 }
 </style>

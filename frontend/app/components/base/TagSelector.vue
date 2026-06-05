@@ -119,7 +119,7 @@ onUnmounted(() => {
   &__dropdown {
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
+    left: 0;
     min-width: 200px;
     max-height: 300px;
     overflow-y: auto;
