@@ -2,6 +2,10 @@
 import type {
   ApplicantResponsesLookup,
   OpportunityCardResponse,
+  CreateOpportunityRequest,
+  EmployerProfileResponse,
+  TagResponse,
+  OpportunityFormat,
 } from "~/types";
 import { formatOpporunityFormat } from "~/utils/formatOpportunityFormat";
 import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
@@ -25,6 +29,24 @@ const currentUserData = computed(() => {
 });
 
 const isEmployer = computed(() => currentUserData.value?.role === "EMPLOYER");
+
+const authHeaders = {
+  Authorization: `Bearer ${tokenCookie.value}`,
+};
+
+const { data: currentEmployer } = isEmployer.value
+  ? await useFetch<EmployerProfileResponse>("/employers/me", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      headers: authHeaders,
+    })
+  : { data: ref(null) };
+
+const isOwnOpportunity = computed(
+  () =>
+    isEmployer.value &&
+    opportunity.value?.employer?.id === currentEmployer.value?.id,
+);
 
 const opportunityId = computed(() => {
   const raw = Array.isArray(route.params.id)
@@ -257,6 +279,169 @@ const applyToOpportunity = async () => {
     isApplying.value = false;
   }
 };
+
+/* ── Редактирование возможности (работодатель) ── */
+type EditSection =
+  | "title"
+  | "description"
+  | "tags"
+  | "format"
+  | "place"
+  | "dates"
+  | "salary"
+  | null;
+
+const activeModal = ref<EditSection>(null);
+const isSaving = ref(false);
+const saveError = ref("");
+
+const editTitle = ref("");
+const editDescription = ref("");
+const editTags = ref<TagResponse[]>([]);
+const editFormat = ref<OpportunityFormat>("OFFICE");
+const editCity = ref("");
+const editAddress = ref("");
+const editPublishedAt = ref("");
+const editExpiresAt = ref("");
+const editSalaryFrom = ref<number | null>(null);
+const editSalaryTo = ref<number | null>(null);
+
+const { data: availableTags } = await useFetch<TagResponse[]>("/tags", {
+  baseURL: config.public.apiBase,
+  method: "GET",
+  default: () => [],
+});
+
+const salaryLabel = computed(() => {
+  const from = opportunity.value?.salaryFrom;
+  const to = opportunity.value?.salaryTo;
+  if (from != null && to != null) return `от ${from} до ${to}`;
+  if (from != null) return `от ${from}`;
+  if (to != null) return `до ${to}`;
+  return null;
+});
+
+const toDateInputValue = (iso: string | undefined) => {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toISOString().split("T")[0] || "";
+  } catch {
+    return "";
+  }
+};
+
+const toIsoValue = (date: string) => {
+  if (!date) return null;
+  return `${date}T00:00:00`;
+};
+
+const openEditTitle = () => {
+  editTitle.value = opportunity.value?.title ?? "";
+  activeModal.value = "title";
+};
+const openEditDescription = () => {
+  editDescription.value = opportunity.value?.description ?? "";
+  activeModal.value = "description";
+};
+const openEditTags = () => {
+  editTags.value = [...(opportunity.value?.tags ?? [])];
+  activeModal.value = "tags";
+};
+const openEditFormat = () => {
+  editFormat.value = opportunity.value?.format ?? "OFFICE";
+  activeModal.value = "format";
+};
+const openEditPlace = () => {
+  editCity.value = opportunity.value?.city ?? "";
+  editAddress.value = opportunity.value?.address ?? "";
+  activeModal.value = "place";
+};
+const openEditDates = () => {
+  editPublishedAt.value = toDateInputValue(opportunity.value?.publishedAt);
+  editExpiresAt.value = toDateInputValue(opportunity.value?.expiresAt);
+  activeModal.value = "dates";
+};
+const openEditSalary = () => {
+  editSalaryFrom.value = opportunity.value?.salaryFrom ?? null;
+  editSalaryTo.value = opportunity.value?.salaryTo ?? null;
+  activeModal.value = "salary";
+};
+
+const closeModal = () => {
+  activeModal.value = null;
+  saveError.value = "";
+};
+
+const saveSection = async () => {
+  if (!opportunity.value || isSaving.value || !activeModal.value) return;
+  isSaving.value = true;
+  saveError.value = "";
+
+  const body: Record<string, unknown> = {
+    employerId: opportunity.value.employer.id,
+    title: opportunity.value.title,
+    description: opportunity.value.description ?? null,
+    type: opportunity.value.type,
+    format: opportunity.value.format,
+    address: opportunity.value.address ?? null,
+    city: opportunity.value.city ?? null,
+    lat: opportunity.value.lat ?? null,
+    lng: opportunity.value.lng ?? null,
+    salaryFrom: opportunity.value.salaryFrom ?? null,
+    salaryTo: opportunity.value.salaryTo ?? null,
+    publishedAt: opportunity.value.publishedAt ?? null,
+    expiresAt: opportunity.value.expiresAt ?? null,
+    status: opportunity.value.status,
+    media: opportunity.value.media,
+    tagIds: (opportunity.value.tags ?? []).map((t) => t.id),
+  };
+
+  switch (activeModal.value) {
+    case "title":
+      body.title = editTitle.value;
+      break;
+    case "description":
+      body.description = editDescription.value || null;
+      break;
+    case "tags":
+      body.tagIds = editTags.value.map((t) => t.id);
+      break;
+    case "format":
+      body.format = editFormat.value;
+      break;
+    case "place":
+      body.city = editCity.value || null;
+      body.address = editAddress.value || null;
+      break;
+    case "dates":
+      body.publishedAt = toIsoValue(editPublishedAt.value);
+      body.expiresAt = toIsoValue(editExpiresAt.value);
+      break;
+    case "salary":
+      body.salaryFrom = editSalaryFrom.value ?? null;
+      body.salaryTo = editSalaryTo.value ?? null;
+      break;
+  }
+
+  try {
+    const updated = await $fetch<OpportunityCardResponse>(
+      `/opportunities/${opportunity.value.id}`,
+      {
+        baseURL: config.public.apiBase,
+        method: "PUT",
+        headers: authHeaders,
+        body,
+      },
+    );
+    opportunity.value = updated;
+    activeModal.value = null;
+  } catch (err) {
+    saveError.value = "Не удалось сохранить изменения";
+    console.error("Failed to save opportunity", err);
+  } finally {
+    isSaving.value = false;
+  }
+};
 </script>
 
 <template>
@@ -316,7 +501,18 @@ const applyToOpportunity = async () => {
       </section>
 
       <section class="opportunity-page__title-row bordered">
-        <h1 class="opportunity-page__title">{{ opportunity.title }}</h1>
+        <div class="opportunity-page__title-wrap">
+          <h1 class="opportunity-page__title">{{ opportunity.title }}</h1>
+          <button
+            v-if="isOwnOpportunity"
+            type="button"
+            class="opportunity-page__edit-btn"
+            @click="openEditTitle"
+            aria-label="Редактировать название"
+          >
+            <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+          </button>
+        </div>
         <BaseAppButton
           v-if="!isEmployer"
           type="button"
@@ -356,10 +552,22 @@ const applyToOpportunity = async () => {
         </article>
 
         <article class="opportunity-page__tags bordered">
-          <p class="opportunity-page__tags-title">Теги</p>
+          <div class="opportunity-page__tags-head">
+            <p class="opportunity-page__tags-title">Теги</p>
+            <button
+              v-if="isOwnOpportunity"
+              type="button"
+              class="opportunity-page__edit-btn"
+              @click="openEditTags"
+              aria-label="Редактировать теги"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <div class="opportunity-page__tags-list">
             <BaseAppTag
               v-for="tag in tagNames"
+              bordered
               text-color="var(--text-primary-color)"
               :key="tag"
               class="opportunity-page__tag"
@@ -376,9 +584,20 @@ const applyToOpportunity = async () => {
         </h2>
 
         <article class="opportunity-page__description bordered">
-          <h3 class="opportunity-page__description-title">
-            Краткое описание и требования
-          </h3>
+          <div class="opportunity-page__description-head">
+            <h3 class="opportunity-page__description-title">
+              Краткое описание и требования
+            </h3>
+            <button
+              v-if="isOwnOpportunity"
+              type="button"
+              class="opportunity-page__edit-btn"
+              @click="openEditDescription"
+              aria-label="Редактировать описание"
+            >
+              <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+            </button>
+          </div>
           <p class="opportunity-page__description-text">
             {{ opportunity.description || "Описание отсутствует" }}
           </p>
@@ -388,23 +607,226 @@ const applyToOpportunity = async () => {
           <article
             class="opportunity-page__meta-card opportunity-page__meta-card--format bordered"
           >
-            <p class="opportunity-page__meta-label">Формат</p>
+            <div class="opportunity-page__meta-card-head">
+              <p class="opportunity-page__meta-label">Формат</p>
+              <button
+                v-if="isOwnOpportunity"
+                type="button"
+                class="opportunity-page__edit-btn"
+                @click="openEditFormat"
+                aria-label="Редактировать формат"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
             <p class="opportunity-page__meta-value">{{ formatLabel }}</p>
           </article>
 
           <article class="opportunity-page__meta-card bordered">
-            <p class="opportunity-page__meta-label">Место</p>
+            <div class="opportunity-page__meta-card-head">
+              <p class="opportunity-page__meta-label">Место</p>
+              <button
+                v-if="isOwnOpportunity"
+                type="button"
+                class="opportunity-page__edit-btn"
+                @click="openEditPlace"
+                aria-label="Редактировать место"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
             <p class="opportunity-page__meta-value">{{ placeLabel }}</p>
           </article>
 
           <article class="opportunity-page__meta-card bordered">
-            <p class="opportunity-page__meta-label">Дата</p>
+            <div class="opportunity-page__meta-card-head">
+              <p class="opportunity-page__meta-label">Дата</p>
+              <button
+                v-if="isOwnOpportunity"
+                type="button"
+                class="opportunity-page__edit-btn"
+                @click="openEditDates"
+                aria-label="Редактировать даты"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
             <p class="opportunity-page__meta-value">{{ dateLabel }}</p>
+          </article>
+
+          <article
+            v-if="salaryLabel || isOwnOpportunity"
+            class="opportunity-page__meta-card bordered"
+          >
+            <div class="opportunity-page__meta-card-head">
+              <p class="opportunity-page__meta-label">Зарплата</p>
+              <button
+                v-if="isOwnOpportunity"
+                type="button"
+                class="opportunity-page__edit-btn"
+                @click="openEditSalary"
+                aria-label="Редактировать зарплату"
+              >
+                <NuxtIcon name="material-symbols:edit-rounded" size="16px" />
+              </button>
+            </div>
+            <p class="opportunity-page__meta-value">
+              {{ salaryLabel || "Не указана" }}
+            </p>
           </article>
         </div>
       </section>
     </template>
   </div>
+
+  <p
+    v-if="saveError"
+    class="opportunity-page__error opportunity-page__error--centered"
+  >
+    {{ saveError }}
+  </p>
+
+  <BaseAppModal
+    :visible="activeModal === 'title'"
+    title="Название возможности"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <FormInputField id="edit-opp-title" label="Название" v-model="editTitle" />
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'description'"
+    title="Описание и требования"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <label class="opportunity-page__modal-field">
+      Описание
+      <textarea
+        v-model="editDescription"
+        class="opportunity-page__modal-textarea bordered"
+        rows="6"
+      />
+    </label>
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'tags'"
+    title="Теги"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <BaseTagSelector
+      :available-tags="availableTags"
+      :selected-tags="editTags"
+      @update:selected-tags="editTags = $event"
+    />
+    <div v-if="editTags.length" class="opportunity-page__edit-tags-preview">
+      <BaseAppTag
+        v-for="tag in editTags"
+        :key="tag.id"
+        text-color="var(--text-primary-color)"
+        class="opportunity-page__tag"
+      >
+        {{ tag.name }}
+      </BaseAppTag>
+    </div>
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'format'"
+    title="Формат работы"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <div class="opportunity-page__format-tabs">
+      <button
+        type="button"
+        :class="[
+          'opportunity-page__format-tab',
+          { 'opportunity-page__format-tab--active': editFormat === 'OFFICE' },
+        ]"
+        @click="editFormat = 'OFFICE'"
+      >
+        Офис
+      </button>
+      <button
+        type="button"
+        :class="[
+          'opportunity-page__format-tab',
+          { 'opportunity-page__format-tab--active': editFormat === 'HYBRID' },
+        ]"
+        @click="editFormat = 'HYBRID'"
+      >
+        Гибрид
+      </button>
+      <button
+        type="button"
+        :class="[
+          'opportunity-page__format-tab',
+          { 'opportunity-page__format-tab--active': editFormat === 'REMOTE' },
+        ]"
+        @click="editFormat = 'REMOTE'"
+      >
+        Удаленно
+      </button>
+    </div>
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'place'"
+    title="Место проведения"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <FormInputField id="edit-opp-city" label="Город" v-model="editCity" />
+    <FormInputField id="edit-opp-address" label="Адрес" v-model="editAddress" />
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'dates'"
+    title="Даты"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <label class="opportunity-page__modal-field">
+      Дата публикации
+      <input
+        type="date"
+        v-model="editPublishedAt"
+        class="opportunity-page__modal-date bordered"
+      />
+    </label>
+    <label class="opportunity-page__modal-field">
+      Дата окончания
+      <input
+        type="date"
+        v-model="editExpiresAt"
+        class="opportunity-page__modal-date bordered"
+      />
+    </label>
+  </BaseAppModal>
+
+  <BaseAppModal
+    :visible="activeModal === 'salary'"
+    title="Зарплата"
+    @confirm="saveSection"
+    @cancel="closeModal"
+  >
+    <FormInputField
+      id="edit-opp-salary-from"
+      label="От"
+      type="number"
+      v-model="editSalaryFrom"
+    />
+    <FormInputField
+      id="edit-opp-salary-to"
+      label="До"
+      type="number"
+      v-model="editSalaryTo"
+    />
+  </BaseAppModal>
 </template>
 
 <style lang="scss" scoped>
@@ -594,13 +1016,6 @@ const applyToOpportunity = async () => {
     background-color: var(--background-secondary-color);
   }
 
-  &__tags-title {
-    margin: 0 0 8px;
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text-inverted-color);
-  }
-
   &__tags-list {
     display: flex;
     flex-wrap: wrap;
@@ -637,7 +1052,7 @@ const applyToOpportunity = async () => {
   }
 
   &__description-title {
-    margin: 0 0 8px;
+    margin: 0;
     font-size: 13px;
     color: var(--text-inverted-color);
     font-weight: 800;
@@ -650,9 +1065,65 @@ const applyToOpportunity = async () => {
     line-height: 1.35;
   }
 
+  &__edit-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary-color);
+      color: var(--primary-color);
+    }
+  }
+
+  &__error--centered {
+    text-align: center;
+    margin: 8px 0;
+  }
+
+  &__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &__tags-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__tags-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-inverted-color);
+  }
+
+  &__description-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
   &__meta-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
   }
 
@@ -669,11 +1140,28 @@ const applyToOpportunity = async () => {
       .opportunity-page__meta-value {
         color: #fff;
       }
+
+      .opportunity-page__edit-btn {
+        color: rgba(255, 255, 255, 0.7);
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.15);
+          color: #fff;
+        }
+      }
     }
   }
 
+  &__meta-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
   &__meta-label {
-    margin: 0 0 8px;
+    margin: 0;
     font-size: 13px;
     font-weight: 700;
     color: var(--text-tertiary-color);
@@ -685,6 +1173,74 @@ const applyToOpportunity = async () => {
     font-weight: 700;
     color: var(--text-inverted-color);
     line-height: 1.3;
+  }
+
+  &__modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-inverted-color);
+  }
+
+  &__modal-textarea {
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px 14px;
+    background-color: var(--background-secondary-color);
+    color: var(--text-inverted-color);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+  }
+
+  &__modal-date {
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px 14px;
+    background-color: var(--background-secondary-color);
+    color: var(--text-inverted-color);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  &__format-tabs {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  &__format-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary-color);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &--active {
+      background-color: var(--background-color);
+      color: var(--text-inverted-color);
+    }
+
+    &:not(&--active):hover {
+      background-color: var(--background-primary-color);
+    }
+  }
+
+  &__edit-tags-preview {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
   }
 }
 
