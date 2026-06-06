@@ -37,7 +37,7 @@ services:
       DB_PASSWORD: postgres
       REDIS_HOST: redis
       REDIS_PORT: 6379
-    expose:
+    ports:
       - "8080"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/v3/api-docs >/dev/null || exit 1"]
@@ -50,28 +50,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    networks:
-      - default
-      - dokploy-network
 
   frontend:
     build:
       context: ./frontend
     restart: unless-stopped
     environment:
-      NUXT_PUBLIC_API_BASE: https://swagger.tramplin-itplanet.ru
-    expose:
+      NUXT_PUBLIC_API_BASE: https://tramplin-itplanet.ru
+    ports:
       - "3000"
     depends_on:
       backend:
         condition: service_healthy
-    networks:
-      - default
-      - dokploy-network
 
 volumes:
   postgres_data:
-
-networks:
-  dokploy-network:
-    external: true
