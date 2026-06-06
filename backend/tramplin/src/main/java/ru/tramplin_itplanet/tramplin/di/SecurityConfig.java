@@ -109,7 +109,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://backend.tramplin-itplanet.ru"));
+        configuration.setAllowedOrigins(List.of(
+            "https://tramplin-itplanet.ru",         // фронтенд
+            "https://swagger.tramplin-itplanet.ru",  // swagger UI
+            "https://backend.tramplin-itplanet.ru"   // на всякий случай
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
