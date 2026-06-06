@@ -24,7 +24,7 @@ public class EmailVerificationService {
     @Value("${app.verification.token-ttl-hours:24}")
     private long ttlHours;
 
-    @Value("${app.base-url:https://tramplin-itplanet.ru}")
+    @Value("${app.base-url:https://backend.tramplin-itplanet.ru}")
     private String baseUrl;
 
     @Value("${spring.mail.username}")
