@@ -951,7 +951,7 @@ const saveSection = async () => {
   &__profile {
     border-radius: 18px;
     padding: 12px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
   }
 
   &__profile-top {
@@ -1100,7 +1100,7 @@ const saveSection = async () => {
   }
 
   &__panel {
-    background-color: var(--background-primary-color);
+    background-color: var(--background-secondary-color);
     border-radius: 12px;
     padding: 10px 12px;
 
@@ -1172,7 +1172,7 @@ const saveSection = async () => {
   &__column {
     border-radius: 12px;
     padding: 10px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     gap: 10px;

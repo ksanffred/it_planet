@@ -1,290 +1,303 @@
 <script lang="ts" setup>
-import { normalizeStorageAssetUrl } from '~/utils/normalizeStorageAssetUrl'
-import type { CurrentUserResponse } from '~/types'
+import { normalizeStorageAssetUrl } from "~/utils/normalizeStorageAssetUrl";
+import type { CurrentUserResponse } from "~/types";
 
 type EmployerProfileById = {
-  id: number
-  userId: number
-  companyName: string
-  description?: string
-  inn: string
-  website?: string
-  socials?: string
-  logoUrl?: string
-  verifiedOrgName?: string
-  status: string
-}
+  id: number;
+  userId: number;
+  companyName: string;
+  description?: string;
+  inn: string;
+  website?: string;
+  socials?: string;
+  logoUrl?: string;
+  verifiedOrgName?: string;
+  status: string;
+};
 
 type EmployerOpportunityPosting = {
-  id: number
-  title: string
-  status: 'ACTIVE' | 'CLOSED' | 'PLANNED' | string
-  type: string
-  published_at?: string
-  expires_at?: string
-  applications_count: number
-}
+  id: number;
+  title: string;
+  status: "ACTIVE" | "CLOSED" | "PLANNED" | string;
+  type: string;
+  published_at?: string;
+  expires_at?: string;
+  applications_count: number;
+};
 
 type EmployerOpportunityApplicationItem = {
-  applicant_id: number
-  applicant_name: string
-  university?: string
-  desired_position?: string
-  recommendation: number
+  applicant_id: number;
+  applicant_name: string;
+  university?: string;
+  desired_position?: string;
+  recommendation: number;
   matching_tags?: Array<{
-    id: number
-    name: string
-    category: string
-  }>
-}
+    id: number;
+    name: string;
+    category: string;
+  }>;
+};
 
-const route = useRoute()
-const config = useRuntimeConfig()
-const tokenCookie = useCookie<string | null>('auth_token')
+const route = useRoute();
+const config = useRuntimeConfig();
+const tokenCookie = useCookie<string | null>("auth_token");
 
 const employerId = computed(() => {
-  const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  const parsed = Number(raw)
-  return Number.isInteger(parsed) ? parsed : null
-})
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) ? parsed : null;
+});
 
 if (!tokenCookie.value) {
-  navigateTo('/auth/login')
+  navigateTo("/auth/login");
 }
 
 const authHeaders = {
   Authorization: `Bearer ${tokenCookie.value}`,
-}
+};
 
-const { data: currentUser } = await useFetch<CurrentUserResponse>('/auth/me', {
+const { data: currentUser } = await useFetch<CurrentUserResponse>("/auth/me", {
   baseURL: config.public.apiBase,
-  method: 'GET',
+  method: "GET",
   headers: authHeaders,
   immediate: Boolean(tokenCookie.value),
-})
+});
 
-const isCurator = computed(() => currentUser.value?.role === 'CURATOR')
+const isCurator = computed(() => currentUser.value?.role === "CURATOR");
 
-const isOwnProfile = computed(() => employer.value?.userId === currentUser.value?.userId)
+const isOwnProfile = computed(
+  () => employer.value?.userId === currentUser.value?.userId,
+);
 
-type EditSection = 'companyName' | 'description' | 'links' | 'logo' | null
+type EditSection = "companyName" | "description" | "links" | "logo" | null;
 
-const activeModal = ref<EditSection>(null)
-const editDescription = ref('')
-const editWebsite = ref('')
-const editSocials = ref('')
-const editCompanyName = ref('')
-const editLogoUrl = ref('')
-const logoMode = ref<'file' | 'url'>('url')
-const logoFile = ref<File | null>(null)
-const logoFilePreview = ref('')
-const isLogoUploading = ref(false)
-const logoUploadError = ref('')
-const logoFileInput = ref<HTMLInputElement | null>(null)
-const isSavingSection = ref(false)
-const sectionSaveError = ref('')
-const showDeleteModal = ref(false)
-const isDeleting = ref(false)
-const deleteError = ref('')
+const activeModal = ref<EditSection>(null);
+const editDescription = ref("");
+const editWebsite = ref("");
+const editSocials = ref("");
+const editCompanyName = ref("");
+const editLogoUrl = ref("");
+const logoMode = ref<"file" | "url">("url");
+const logoFile = ref<File | null>(null);
+const logoFilePreview = ref("");
+const isLogoUploading = ref(false);
+const logoUploadError = ref("");
+const logoFileInput = ref<HTMLInputElement | null>(null);
+const isSavingSection = ref(false);
+const sectionSaveError = ref("");
+const showDeleteModal = ref(false);
+const isDeleting = ref(false);
+const deleteError = ref("");
 
-const opportunitiesSearch = ref('')
-const responsesSearch = ref('')
+const opportunitiesSearch = ref("");
+const responsesSearch = ref("");
 
 const {
   data: employer,
   pending: employerPending,
   error: employerError,
-} = await useFetch<EmployerProfileById>(`/employers/${employerId.value ?? ''}`, {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  headers: authHeaders,
-  immediate: Boolean(employerId.value),
-})
-
-const { data: opportunities } = await useFetch<EmployerOpportunityPosting[]>('/opportunities/me', {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  headers: authHeaders,
-  default: () => [],
-})
-
-const { data: responses } = await useFetch<EmployerOpportunityApplicationItem[]>(
-  '/opportunities/responses/employer',
+} = await useFetch<EmployerProfileById>(
+  `/employers/${employerId.value ?? ""}`,
   {
     baseURL: config.public.apiBase,
-    method: 'GET',
+    method: "GET",
+    headers: authHeaders,
+    immediate: Boolean(employerId.value),
+  },
+);
+
+const { data: opportunities } = await useFetch<EmployerOpportunityPosting[]>(
+  "/opportunities/me",
+  {
+    baseURL: config.public.apiBase,
+    method: "GET",
     headers: authHeaders,
     default: () => [],
   },
-)
+);
+
+const { data: responses } = await useFetch<
+  EmployerOpportunityApplicationItem[]
+>("/opportunities/responses/employer", {
+  baseURL: config.public.apiBase,
+  method: "GET",
+  headers: authHeaders,
+  default: () => [],
+});
 
 watchEffect(() => {
   if (employerError.value?.statusCode === 404) {
-    navigateTo('/')
+    navigateTo("/");
   }
 
   if (!employerPending.value && !employer.value) {
-    navigateTo('/')
+    navigateTo("/");
   }
-})
+});
 
 const employerInitials = computed(() => {
-  const source = employer.value?.companyName?.trim()
-  if (!source) return '??'
+  const source = employer.value?.companyName?.trim();
+  if (!source) return "??";
 
-  const parts = source.split(/\s+/).filter(Boolean)
+  const parts = source.split(/\s+/).filter(Boolean);
   return parts
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
-    .join('')
-})
+    .join("");
+});
 
 const employerLogoUrl = computed(() =>
-  normalizeStorageAssetUrl(String(employer.value?.logoUrl ?? '')),
-)
+  normalizeStorageAssetUrl(String(employer.value?.logoUrl ?? "")),
+);
 
 const profileDescription = computed(
-  () => employer.value?.description || 'Описание компании не заполнено',
-)
+  () => employer.value?.description || "Описание компании не заполнено",
+);
 const profileLinks = computed(() => {
-  const website = employer.value?.website
-  const socials = employer.value?.socials
-  return [website, socials].filter(Boolean).join(' • ') || 'Ссылки не указаны'
-})
+  const website = employer.value?.website;
+  const socials = employer.value?.socials;
+  return [website, socials].filter(Boolean).join(" • ") || "Ссылки не указаны";
+});
 
 const filteredOpportunities = computed(() => {
-  const query = opportunitiesSearch.value.trim().toLowerCase()
-  if (!query) return opportunities.value ?? []
+  const query = opportunitiesSearch.value.trim().toLowerCase();
+  if (!query) return opportunities.value ?? [];
 
   return (opportunities.value ?? []).filter((item) =>
     `${item.title} ${item.type} ${item.status}`.toLowerCase().includes(query),
-  )
-})
+  );
+});
 
 const filteredResponses = computed(() => {
-  const query = responsesSearch.value.trim().toLowerCase()
-  if (!query) return responses.value ?? []
+  const query = responsesSearch.value.trim().toLowerCase();
+  if (!query) return responses.value ?? [];
 
   return (responses.value ?? []).filter((item) =>
     `${item.applicant_name} ${item.desired_position} ${item.university}`
       .toLowerCase()
       .includes(query),
-  )
-})
+  );
+});
 
 const opportunityStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    ACTIVE: 'Активна',
-    CLOSED: 'Закрыто',
-    PLANNED: 'Запланировано',
-  }
-  return map[status] ?? status
-}
+    ACTIVE: "Активна",
+    CLOSED: "Закрыто",
+    PLANNED: "Запланировано",
+  };
+  return map[status] ?? status;
+};
 
 const opportunityStatusClass = (status: string) => {
   const map: Record<string, string> = {
-    ACTIVE: 'active',
-    CLOSED: 'closed',
-    PLANNED: 'planned',
-  }
-  return map[status] ?? 'default'
-}
+    ACTIVE: "active",
+    CLOSED: "closed",
+    PLANNED: "planned",
+  };
+  return map[status] ?? "default";
+};
 
 const opportunityStatusExtra = (item: EmployerOpportunityPosting) => {
-  if (!item.expires_at) return ''
-  const date = new Date(item.expires_at)
-  if (Number.isNaN(date.getTime())) return ''
-  return `до ${date.toLocaleDateString('ru-RU')}`
-}
+  if (!item.expires_at) return "";
+  const date = new Date(item.expires_at);
+  if (Number.isNaN(date.getTime())) return "";
+  return `до ${date.toLocaleDateString("ru-RU")}`;
+};
 
 const openEditDescription = () => {
-  editDescription.value = employer.value?.description ?? ''
-  activeModal.value = 'description'
-}
+  editDescription.value = employer.value?.description ?? "";
+  activeModal.value = "description";
+};
 
 const openEditLinks = () => {
-  editWebsite.value = employer.value?.website ?? ''
-  editSocials.value = employer.value?.socials ?? ''
-  activeModal.value = 'links'
-}
+  editWebsite.value = employer.value?.website ?? "";
+  editSocials.value = employer.value?.socials ?? "";
+  activeModal.value = "links";
+};
 
 const openEditCompanyName = () => {
-  editCompanyName.value = employer.value?.companyName ?? ''
-  activeModal.value = 'companyName'
-}
+  editCompanyName.value = employer.value?.companyName ?? "";
+  activeModal.value = "companyName";
+};
 
 const openEditLogo = () => {
-  editLogoUrl.value = employer.value?.logoUrl ?? ''
-  logoMode.value = 'url'
-  logoFile.value = null
-  logoFilePreview.value = ''
-  logoUploadError.value = ''
-  activeModal.value = 'logo'
-}
+  editLogoUrl.value = employer.value?.logoUrl ?? "";
+  logoMode.value = "url";
+  logoFile.value = null;
+  logoFilePreview.value = "";
+  logoUploadError.value = "";
+  activeModal.value = "logo";
+};
 
 const handleLogoFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-  if (!file.type.startsWith('image/')) {
-    logoUploadError.value = 'Можно загрузить только изображение'
-    return
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    logoUploadError.value = "Можно загрузить только изображение";
+    return;
   }
-  logoFile.value = file
-  logoFilePreview.value = URL.createObjectURL(file)
-  logoUploadError.value = ''
-}
+  logoFile.value = file;
+  logoFilePreview.value = URL.createObjectURL(file);
+  logoUploadError.value = "";
+};
 
 const uploadLogoFile = async () => {
-  if (!logoFile.value || !employer.value) return
-  isLogoUploading.value = true
-  logoUploadError.value = ''
+  if (!logoFile.value || !employer.value) return;
+  isLogoUploading.value = true;
+  logoUploadError.value = "";
   try {
-    const formData = new FormData()
-    formData.append('file', logoFile.value)
+    const formData = new FormData();
+    formData.append("file", logoFile.value);
     const response = await $fetch<{ path?: string; url?: string }>(
       `/employers/${employer.value.id}/logo`,
       {
         baseURL: config.public.apiBase,
-        method: 'POST',
+        method: "POST",
         headers: authHeaders,
         body: formData,
       },
-    )
-    const nextLogoUrl = normalizeStorageAssetUrl(response.url ?? response.path ?? '')
+    );
+    const nextLogoUrl = normalizeStorageAssetUrl(
+      response.url ?? response.path ?? "",
+    );
     if (nextLogoUrl && employer.value) {
-      employer.value = { ...employer.value, logoUrl: nextLogoUrl }
+      employer.value = { ...employer.value, logoUrl: nextLogoUrl };
     }
-    activeModal.value = null
+    activeModal.value = null;
   } catch (err) {
-    logoUploadError.value = 'Не удалось загрузить логотип'
-    console.error('Failed to upload logo', err)
+    logoUploadError.value = "Не удалось загрузить логотип";
+    console.error("Failed to upload logo", err);
   } finally {
-    isLogoUploading.value = false
+    isLogoUploading.value = false;
   }
-}
+};
 
 const confirmLogoSave = () => {
-  if (logoMode.value === 'file' && logoFile.value) {
-    uploadLogoFile()
+  if (logoMode.value === "file" && logoFile.value) {
+    uploadLogoFile();
   } else {
-    saveSection()
+    saveSection();
   }
-}
+};
 
-const logoSaveText = computed(() => (logoMode.value === 'file' ? 'Загрузить' : 'Сохранить'))
+const logoSaveText = computed(() =>
+  logoMode.value === "file" ? "Загрузить" : "Сохранить",
+);
 
 const closeModal = () => {
-  activeModal.value = null
-  sectionSaveError.value = ''
-  logoUploadError.value = ''
-}
+  activeModal.value = null;
+  sectionSaveError.value = "";
+  logoUploadError.value = "";
+};
 
 const saveSection = async () => {
-  if (!employer.value || isSavingSection.value || !activeModal.value) return
+  if (!employer.value || isSavingSection.value || !activeModal.value) return;
 
-  isSavingSection.value = true
-  sectionSaveError.value = ''
+  isSavingSection.value = true;
+  sectionSaveError.value = "";
 
   const body: Record<string, unknown> = {
     userId: employer.value.userId,
@@ -296,59 +309,62 @@ const saveSection = async () => {
     logoUrl: employer.value.logoUrl ?? null,
     verifiedOrgName: employer.value.verifiedOrgName ?? null,
     status: employer.value.status,
-  }
+  };
 
   switch (activeModal.value) {
-    case 'companyName':
-      body.companyName = editCompanyName.value || null
-      break
-    case 'description':
-      body.description = editDescription.value || null
-      break
-    case 'links':
-      body.website = editWebsite.value || null
-      body.socials = editSocials.value || null
-      break
-    case 'logo':
-      body.logoUrl = editLogoUrl.value || null
-      break
+    case "companyName":
+      body.companyName = editCompanyName.value || null;
+      break;
+    case "description":
+      body.description = editDescription.value || null;
+      break;
+    case "links":
+      body.website = editWebsite.value || null;
+      body.socials = editSocials.value || null;
+      break;
+    case "logo":
+      body.logoUrl = editLogoUrl.value || null;
+      break;
   }
 
   try {
-    const updated = await $fetch<EmployerProfileById>(`/employers/${employer.value.id}`, {
-      baseURL: config.public.apiBase,
-      method: 'PUT',
-      headers: authHeaders,
-      body,
-    })
-    employer.value = updated
-    activeModal.value = null
+    const updated = await $fetch<EmployerProfileById>(
+      `/employers/${employer.value.id}`,
+      {
+        baseURL: config.public.apiBase,
+        method: "PUT",
+        headers: authHeaders,
+        body,
+      },
+    );
+    employer.value = updated;
+    activeModal.value = null;
   } catch (err) {
-    sectionSaveError.value = 'Не удалось сохранить изменения'
-    console.error('[curator-edit] Failed to save employer section', err)
+    sectionSaveError.value = "Не удалось сохранить изменения";
+    console.error("[curator-edit] Failed to save employer section", err);
   } finally {
-    isSavingSection.value = false
+    isSavingSection.value = false;
   }
-}
+};
 
 const handleDeleteProfile = async () => {
-  if (!employerId.value || isDeleting.value) return
-  isDeleting.value = true
-  deleteError.value = ''
+  if (!employerId.value || isDeleting.value) return;
+  isDeleting.value = true;
+  deleteError.value = "";
   try {
     await $fetch(`/employers/${employerId.value}`, {
       baseURL: config.public.apiBase,
-      method: 'DELETE',
+      method: "DELETE",
       headers: authHeaders,
-    })
-    await navigateTo('/')
+    });
+    await navigateTo("/");
   } catch (err) {
-    deleteError.value = 'Не удалось удалить профиль'
-    console.error('[curator-delete] Failed to delete employer profile', err)
+    deleteError.value = "Не удалось удалить профиль";
+    console.error("[curator-delete] Failed to delete employer profile", err);
   } finally {
-    isDeleting.value = false
+    isDeleting.value = false;
   }
-}
+};
 </script>
 
 <template>
@@ -379,7 +395,7 @@ const handleDeleteProfile = async () => {
           <div class="employer-cabinet__identity-text">
             <div class="employer-cabinet__name-row">
               <p class="employer-cabinet__name">
-                {{ employer?.companyName || 'Компания' }}
+                {{ employer?.companyName || "Компания" }}
               </p>
               <button
                 v-if="isCurator"
@@ -397,7 +413,7 @@ const handleDeleteProfile = async () => {
       </div>
 
       <div class="employer-cabinet__profile-fields">
-        <article class="employer-cabinet__profile-field bordered">
+        <article class="employer-cabinet__profile-field">
           <div class="employer-cabinet__field-head">
             <h3 class="employer-cabinet__profile-field-title">Описание</h3>
             <button
@@ -415,7 +431,7 @@ const handleDeleteProfile = async () => {
           </p>
         </article>
 
-        <article class="employer-cabinet__profile-field bordered">
+        <article class="employer-cabinet__profile-field">
           <div class="employer-cabinet__field-head">
             <h3 class="employer-cabinet__profile-field-title">Ссылки</h3>
             <button
@@ -431,7 +447,7 @@ const handleDeleteProfile = async () => {
           <p class="employer-cabinet__profile-field-text">{{ profileLinks }}</p>
         </article>
 
-        <article class="employer-cabinet__profile-field bordered">
+        <article class="employer-cabinet__profile-field">
           <h3 class="employer-cabinet__profile-field-title">Адрес</h3>
           <p class="employer-cabinet__profile-field-text">Не указан</p>
         </article>
@@ -451,7 +467,10 @@ const handleDeleteProfile = async () => {
             Новая возможность
           </BaseAppButton>
         </div>
-        <BaseAppInput v-model="opportunitiesSearch" placeholder="Поиск по возможностям" />
+        <BaseAppInput
+          v-model="opportunitiesSearch"
+          placeholder="Поиск по возможностям"
+        />
 
         <div class="employer-cabinet__list">
           <div
@@ -462,7 +481,9 @@ const handleDeleteProfile = async () => {
           >
             <div>
               <p class="employer-cabinet__item-title">{{ item.title }}</p>
-              <p class="employer-cabinet__item-subtitle">{{ item.applications_count }} откликов</p>
+              <p class="employer-cabinet__item-subtitle">
+                {{ item.applications_count }} откликов
+              </p>
             </div>
             <span
               :class="[
@@ -476,7 +497,10 @@ const handleDeleteProfile = async () => {
               </template>
             </span>
           </div>
-          <p v-if="!filteredOpportunities.length" class="employer-cabinet__muted">
+          <p
+            v-if="!filteredOpportunities.length"
+            class="employer-cabinet__muted"
+          >
             Возможностей пока нет
           </p>
         </div>
@@ -485,7 +509,8 @@ const handleDeleteProfile = async () => {
       <article class="employer-cabinet__column bordered">
         <h2 class="employer-cabinet__section-title">Отклики на возможности</h2>
         <p class="employer-cabinet__section-caption">
-          Показываем отклики по выбранной возможности. Снимите выбор, чтобы увидеть всех кандидатов.
+          Показываем отклики по выбранной возможности. Снимите выбор, чтобы
+          увидеть всех кандидатов.
         </p>
         <BaseAppInput
           v-model="responsesSearch"
@@ -503,26 +528,38 @@ const handleDeleteProfile = async () => {
                 {{ item.applicant_name }}
               </p>
               <p class="employer-cabinet__item-subtitle">
-                {{ item.desired_position || 'Позиция не указана' }} ·
+                {{ item.desired_position || "Позиция не указана" }} ·
                 {{ item.recommendation }} рекомендаций
               </p>
             </div>
-            <NuxtLink class="employer-cabinet__open-link" :to="`/applicants/${item.applicant_id}`">
+            <NuxtLink
+              class="employer-cabinet__open-link"
+              :to="`/applicants/${item.applicant_id}`"
+            >
               Открыть
             </NuxtLink>
           </div>
-          <p v-if="!filteredResponses.length" class="employer-cabinet__muted">Откликов пока нет</p>
+          <p v-if="!filteredResponses.length" class="employer-cabinet__muted">
+            Откликов пока нет
+          </p>
         </div>
       </article>
     </section>
 
     <div v-if="isCurator" class="employer-cabinet__logout-row">
-      <BaseAppButton variant="secondary" class="bordered" @click="showDeleteModal = true">
+      <BaseAppButton
+        variant="secondary"
+        class="bordered"
+        @click="showDeleteModal = true"
+      >
         Удалить профиль
       </BaseAppButton>
     </div>
 
-    <p v-if="sectionSaveError" class="employer-cabinet__error employer-cabinet__error--centered">
+    <p
+      v-if="sectionSaveError"
+      class="employer-cabinet__error employer-cabinet__error--centered"
+    >
       {{ sectionSaveError }}
     </p>
 
@@ -532,7 +569,11 @@ const handleDeleteProfile = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-company-name" label="Название" v-model="editCompanyName" />
+      <FormInputField
+        id="cur-edit-company-name"
+        label="Название"
+        v-model="editCompanyName"
+      />
     </BaseAppModal>
 
     <BaseAppModal
@@ -557,8 +598,17 @@ const handleDeleteProfile = async () => {
       @confirm="saveSection"
       @cancel="closeModal"
     >
-      <FormInputField id="cur-edit-website" label="Веб-сайт" type="url" v-model="editWebsite" />
-      <FormInputField id="cur-edit-socials" label="Социальные сети" v-model="editSocials" />
+      <FormInputField
+        id="cur-edit-website"
+        label="Веб-сайт"
+        type="url"
+        v-model="editWebsite"
+      />
+      <FormInputField
+        id="cur-edit-socials"
+        label="Социальные сети"
+        v-model="editSocials"
+      />
     </BaseAppModal>
 
     <BaseAppModal
@@ -598,7 +648,7 @@ const handleDeleteProfile = async () => {
           :disabled="isLogoUploading"
           @click="logoFileInput?.click()"
         >
-          {{ logoFile ? 'Изменить файл' : 'Выбрать изображение' }}
+          {{ logoFile ? "Изменить файл" : "Выбрать изображение" }}
         </button>
         <input
           ref="logoFileInput"
@@ -613,14 +663,21 @@ const handleDeleteProfile = async () => {
           alt="Предпросмотр"
           class="employer-cabinet__logo-preview"
         />
-        <p v-if="isLogoUploading" class="employer-cabinet__muted">Загружаем...</p>
+        <p v-if="isLogoUploading" class="employer-cabinet__muted">
+          Загружаем...
+        </p>
         <p v-if="logoUploadError" class="employer-cabinet__save-error">
           {{ logoUploadError }}
         </p>
       </template>
 
       <template v-else>
-        <FormInputField id="edit-logo" label="Ссылка на логотип" type="url" v-model="editLogoUrl" />
+        <FormInputField
+          id="edit-logo"
+          label="Ссылка на логотип"
+          type="url"
+          v-model="editLogoUrl"
+        />
       </template>
     </BaseAppModal>
 
@@ -663,7 +720,7 @@ const handleDeleteProfile = async () => {
 
   &__title {
     margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 42px;
     line-height: 1;
     font-weight: 800;
@@ -673,7 +730,7 @@ const handleDeleteProfile = async () => {
   &__profile {
     border-radius: 18px;
     padding: 12px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
   }
 
   &__profile-top {
@@ -698,7 +755,7 @@ const handleDeleteProfile = async () => {
     color: #2052d4;
     display: grid;
     place-items: center;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
     font-size: 16px;
     background: #dce9fa;
@@ -722,7 +779,7 @@ const handleDeleteProfile = async () => {
     margin: 0;
     font-size: 34px;
     line-height: 1;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
     color: var(--text-inverted-color);
   }
@@ -750,7 +807,7 @@ const handleDeleteProfile = async () => {
   }
 
   &__profile-field {
-    background-color: var(--background-primary-color);
+    background-color: var(--background-secondary-color);
     border-radius: 10px;
     padding: 10px 12px;
   }
@@ -759,7 +816,7 @@ const handleDeleteProfile = async () => {
     margin: 0 0 4px;
     font-size: 12px;
     line-height: 1.2;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     color: var(--text-inverted-color);
     font-weight: 800;
   }
@@ -924,7 +981,7 @@ const handleDeleteProfile = async () => {
   &__column {
     border-radius: 18px;
     padding: 12px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -939,7 +996,7 @@ const handleDeleteProfile = async () => {
 
   &__section-title {
     margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 34px;
     font-weight: 800;
     color: var(--text-inverted-color);
@@ -1001,7 +1058,7 @@ const handleDeleteProfile = async () => {
   &__item-title {
     margin: 0;
     font-size: 16px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 700;
     color: var(--text-inverted-color);
     line-height: 1.2;
