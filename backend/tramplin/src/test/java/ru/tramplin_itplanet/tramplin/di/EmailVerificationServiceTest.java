@@ -42,7 +42,7 @@ class EmailVerificationServiceTest {
         service = new EmailVerificationService(redisTemplate, mailSender);
         // inject @Value fields via reflection
         setField(service, "ttlHours", 24L);
-        setField(service, "baseUrl", "https://tramplin-itplanet.ru");
+        setField(service, "baseUrl", "https://backend.tramplin-itplanet.ru");
         setField(service, "fromAddress", "noreply@tramplin-itplanet.ru");
     }
 
