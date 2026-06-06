@@ -56,6 +56,71 @@ const resumeUploadError = ref('')
 const newCompaniesSearch = ref('')
 const rawEmployers = ref<EmployerListItem[]>([])
 const isFetchingEmployers = ref(false)
+const showPossibleContactsModal = ref(false)
+const possibleContacts = ref<
+  Array<{
+    id: number
+    name: string
+    desiredProfession: string
+    avatarUrl: string
+    visibility: string
+  }>
+>([])
+const isFetchingPossibleContacts = ref(false)
+const addedContactIds = ref(new Set<number>())
+
+const filteredPossibleContacts = computed(() =>
+  possibleContacts.value.filter((c) => !addedContactIds.value.has(c.id)),
+)
+
+const fetchAllApplicants = async () => {
+  isFetchingPossibleContacts.value = true
+  let results: Array<{
+    id: number
+    name: string
+    desiredProfession: string
+    avatarUrl: string
+    visibility: string
+  }> = []
+  const batchSize = 10
+  let consecutiveMisses = 0
+  const MAX_MISSES = 5
+
+  for (let start = 1; start <= 500 && consecutiveMisses < MAX_MISSES; start += batchSize) {
+    const promises = Array.from({ length: batchSize }, (_, i) =>
+      $fetch<any>(`/applicants/${start + i}`, {
+        baseURL: config.public.apiBase,
+        headers: authHeaders,
+      })
+        .then((r) => ({
+          id: r.id,
+          name: r.name ?? '',
+          desiredProfession: r.desiredPosition ?? '',
+          avatarUrl: normalizeStorageAssetUrl(r.avatarUrl),
+          visibility: r.visibility ?? 'PUBLIC',
+        }))
+        .catch(() => null),
+    )
+    const batch = await Promise.all(promises)
+    const hits = batch.filter((x): x is NonNullable<typeof x> => x !== null)
+    if (hits.length === 0) {
+      consecutiveMisses++
+    } else {
+      consecutiveMisses = 0
+      results.push(...hits)
+    }
+  }
+
+  results = results.filter((c) => c.visibility !== 'PRIVATE')
+
+  const selfId = applicant.value?.id
+  if (selfId) {
+    possibleContacts.value = results.filter((c) => c.id !== selfId)
+  } else {
+    possibleContacts.value = results
+  }
+  isFetchingPossibleContacts.value = false
+}
 
 const fetchAllEmployers = async () => {
   isFetchingEmployers.value = true
@@ -674,6 +739,31 @@ const handleLogout = () => {
   userCookie.value = null
   navigateTo('/auth/login')
 }
+
+const addPossibleContact = async (contactId: number) => {
+  const contactData = possibleContacts.value.find((c) => c.id === contactId)
+  try {
+    await $fetch(`/applicants/me/contacts/${contactId}`, {
+      baseURL: config.public.apiBase,
+      method: 'POST',
+      headers: authHeaders,
+    })
+    addedContactIds.value.add(contactId)
+    if (contactData) {
+      contacts.value = [
+        ...(contacts.value ?? []),
+        {
+          photo: contactData.avatarUrl,
+          name: contactData.name,
+          desired_profession: contactData.desiredProfession,
+          status: 'sent' as const,
+        },
+      ]
+    }
+  } catch {
+    addedContactIds.value.add(contactId)
+  }
+}
 </script>
 
 <template>
@@ -979,7 +1069,15 @@ const handleLogout = () => {
     </p>
 
     <section class="user-account__contacts bordered">
-      <h2 class="user-account__section-title">Профессиональные контакты</h2>
+      <div class="user-account__contacts-header">
+        <h2 class="user-account__section-title">Профессиональные контакты</h2>
+        <BaseAppButton
+          variant="secondary"
+          @click="showPossibleContactsModal = true; fetchAllApplicants()"
+        >
+          Возможные контакты
+        </BaseAppButton>
+      </div>
       <div class="user-account__contacts-list">
         <article
           v-for="(contact, idx) in contacts"
@@ -1137,6 +1235,42 @@ const handleLogout = () => {
   >
     <p class="user-account__logout-confirm-text">Вы уверены, что хотите выйти?</p>
   </BaseAppModal>
+
+  <BaseAppModal
+    :visible="showPossibleContactsModal"
+    title="Возможные контакты"
+    :hide-footer="true"
+    @cancel="showPossibleContactsModal = false"
+  >
+    <div v-if="isFetchingPossibleContacts" class="possible-contacts__loading">Загрузка...</div>
+    <div v-else-if="!possibleContacts.length" class="possible-contacts__empty">
+      Нет доступных контактов
+    </div>
+    <div v-else class="possible-contacts__list">
+      <div
+        v-for="c in filteredPossibleContacts"
+        :key="c.id"
+        class="possible-contacts__item"
+        @click="navigateTo(`/applicants/${c.id}`)"
+      >
+        <div class="possible-contacts__avatar">
+          <img v-if="c.avatarUrl" :src="c.avatarUrl" alt="" class="possible-contacts__avatar-img" />
+          <template v-else>
+            {{ (c.name || '?').charAt(0).toUpperCase() }}
+          </template>
+        </div>
+        <div class="possible-contacts__info">
+          <p class="possible-contacts__name">{{ c.name || 'Без имени' }}</p>
+          <p class="possible-contacts__role">
+            {{ c.desiredProfession || 'Не указана' }}
+          </p>
+        </div>
+        <BaseAppButton variant="primary" @click.stop="addPossibleContact(c.id)">
+          Добавить
+        </BaseAppButton>
+      </div>
+    </div>
+  </BaseAppModal>
 </template>
 
 <style lang="scss" scoped>
@@ -1168,7 +1302,7 @@ const handleLogout = () => {
   &__profile {
     border-radius: 18px;
     padding: 12px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
   }
 
   &__profile-top {
@@ -1346,7 +1480,7 @@ const handleLogout = () => {
   }
 
   &__panel {
-    background-color: var(--background-primary-color);
+    background-color: var(--background-secondary-color);
     border-radius: 12px;
     padding: 10px 12px;
 
@@ -1447,11 +1581,18 @@ const handleLogout = () => {
   &__contacts {
     border-radius: 12px;
     padding: 10px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
+  }
+
+  &__contacts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
   }
 
   &__section-title {
-    margin: 0 0 8px;
+    margin: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 24px;
     font-weight: 800;
@@ -1459,15 +1600,21 @@ const handleLogout = () => {
   }
 
   &__contacts-list {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
     gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 16px;
   }
 
   &__contact-card {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+    width: 220px;
+    scroll-snap-align: start;
     border-radius: 10px;
     padding: 8px;
     background-color: var(--background-secondary-color);
@@ -1532,7 +1679,7 @@ const handleLogout = () => {
   &__column {
     border-radius: 12px;
     padding: 10px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1678,10 +1825,6 @@ const handleLogout = () => {
     &__profile-grid {
       grid-template-columns: 1fr 1fr;
     }
-
-    &__contacts-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 }
 
@@ -1711,10 +1854,6 @@ const handleLogout = () => {
     }
 
     &__profile-grid {
-      grid-template-columns: 1fr;
-    }
-
-    &__contacts-list {
       grid-template-columns: 1fr;
     }
 
@@ -1748,5 +1887,73 @@ const handleLogout = () => {
   z-index: -1;
   top: 200px;
   position: absolute;
+}
+
+.possible-contacts {
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: var(--background-secondary-color);
+    cursor: pointer;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  &__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-inverted-color);
+  }
+
+  &__role {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-inverted-color);
+  }
+
+  &__loading,
+  &__empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-secondary-color);
+    font-size: 14px;
+  }
 }
 </style>

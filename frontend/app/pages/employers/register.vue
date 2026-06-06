@@ -209,9 +209,7 @@ const handleFormSubmit = async () => {
         <BaseAppButton
           type="submit"
           variant="primary"
-          :disabled="
-            isSubmitting || !companyName || !description || !inn
-          "
+          :disabled="isSubmitting || !companyName || !description || !inn"
         >
           {{ isSubmitting ? 'Отправка...' : 'Зарегистрировать организацию' }}
         </BaseAppButton>

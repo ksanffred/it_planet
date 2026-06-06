@@ -397,7 +397,7 @@ const handleDeleteProfile = async () => {
       </div>
 
       <div class="employer-cabinet__profile-fields">
-        <article class="employer-cabinet__profile-field bordered">
+        <article class="employer-cabinet__profile-field">
           <div class="employer-cabinet__field-head">
             <h3 class="employer-cabinet__profile-field-title">Описание</h3>
             <button
@@ -415,7 +415,7 @@ const handleDeleteProfile = async () => {
           </p>
         </article>
 
-        <article class="employer-cabinet__profile-field bordered">
+        <article class="employer-cabinet__profile-field">
           <div class="employer-cabinet__field-head">
             <h3 class="employer-cabinet__profile-field-title">Ссылки</h3>
             <button
@@ -431,7 +431,7 @@ const handleDeleteProfile = async () => {
           <p class="employer-cabinet__profile-field-text">{{ profileLinks }}</p>
         </article>
 
-        <article class="employer-cabinet__profile-field bordered">
+        <article class="employer-cabinet__profile-field">
           <h3 class="employer-cabinet__profile-field-title">Адрес</h3>
           <p class="employer-cabinet__profile-field-text">Не указан</p>
         </article>
@@ -673,7 +673,7 @@ const handleDeleteProfile = async () => {
   &__profile {
     border-radius: 18px;
     padding: 12px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
   }
 
   &__profile-top {
@@ -750,7 +750,7 @@ const handleDeleteProfile = async () => {
   }
 
   &__profile-field {
-    background-color: var(--background-primary-color);
+    background-color: var(--background-secondary-color);
     border-radius: 10px;
     padding: 10px 12px;
   }
@@ -924,7 +924,7 @@ const handleDeleteProfile = async () => {
   &__column {
     border-radius: 18px;
     padding: 12px;
-    background-color: var(--background-secondary-color);
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     gap: 10px;

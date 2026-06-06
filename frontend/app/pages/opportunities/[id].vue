@@ -615,6 +615,9 @@ const saveSection = async () => {
         </div>
       </section>
     </template>
+    <SvgRingShape class="ring-shape" />
+    <SvgBlockShape class="block-shape" />
+    <SvgBarShape class="bar-shape" />
   </div>
 
   <p v-if="saveError" class="opportunity-page__error opportunity-page__error--centered">
@@ -748,6 +751,8 @@ const saveSection = async () => {
 
 <style lang="scss" scoped>
 .opportunity-page {
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1191,5 +1196,30 @@ const saveSection = async () => {
       font-size: 30px;
     }
   }
+}
+
+.ring-shape {
+  position: absolute;
+  z-index: -1;
+  top: 100px;
+  left: -100px;
+  fill: var(--secondary-color);
+}
+
+.block-shape {
+  position: absolute;
+  z-index: -1;
+  right: -100px;
+  bottom: 200px;
+  fill: var(--primary-color);
+}
+
+.bar-shape {
+  position: absolute;
+  z-index: -1;
+  bottom: 150px;
+  fill: var(--tertiary-color);
+  left: -120px;
+  transform: rotate(118deg);
 }
 </style>
